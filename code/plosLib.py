@@ -32,14 +32,13 @@ def generateForegroundProbMap(mySlice, mu, sigma):
     vecCDF = np.vectorize(cacheCDF)
     return vecCDF(mySlice, myDist)
 
-#TODO what to do on edge pixels
 def prodConv(myMat, x, y, neighborhood):
     minX = x - neighborhood
     maxX= x + neighborhood
     minY = y - neighborhood
     maxY= y + neighborhood
 
-    #TODO this is the edge pixel case
+    #this is the edge pixel case: return 0 since operation is not well defined
     #Minus 1 in the max case since indexing starts at 0 and shape count starts at 1
     if minX < 0 or minY < 0 or maxX > myMat.shape[0] - 1 or maxY > myMat.shape[1] - 1:
         return 0.
@@ -55,12 +54,11 @@ def generate2DPunctaMap(pForeground, neighborhood):
             returnMat[x][y] = prodConv(pForeground, x, y, neighborhood)
     return returnMat
 
-#TODO what to do on edges again
 def getInterVoxelSquaredError(voxel, x, y, z, lowerBound, upperBound):
     minZ = z - lowerBound
     maxZ = z + upperBound
 
-    #TODO this is the edge pixel case
+    #this is the edge pixel case: return 0 since operation is not well defined
     #Minus 1 in the max case since indexing starts at 0 and shape count starts at 1
     if minZ < 0 or maxZ > voxel.shape[0] - 1:
         return 0.
@@ -73,6 +71,7 @@ def generate3DPunctaMap(punctaVoxel2D, lowerBound, upperBound):
     for z in range(punctaVoxel2D.shape[0]):
         for y in range(punctaVoxel2D.shape[1]):
             for x in range(punctaVoxel2D.shape[2]):
-                returnVox[z][y][x] = getInterVoxelSquaredError(punctaVoxel2D, x, y, z, lowerBound, upperBound)
-    cv2.imwrite('post_stitch.jpg', returnVox[2] * 255)
+                returnVox[z][y][x] = punctaVoxel2D[z][y][x] * np.exp(-1 * getInterVoxelSquaredError(punctaVoxel2D, x, y, z, lowerBound, upperBound))
+    #Times 65535 for max int value to make probs look good on visualization
+    cv2.imwrite('../data/post_stitch.jpg', returnVox[2]* 65535)
     return returnVox
