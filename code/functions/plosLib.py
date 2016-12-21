@@ -44,7 +44,10 @@ def prodConv(myMat, x, y, neighborhood):
 
     #plus 1 for max since final slice argument is exclusive
     #TODO work with log probs here instead to maintain precision
-    return np.prod(myMat[minX: maxX + 1, minY: maxY+1])
+    this = np.prod(myMat[minX: maxX + 1, minY: maxY+1])
+    print this
+    print np.logaddexp(myMat[minX: maxX + 1, minY: maxY+1])
+    return this
 
 def generate2DPunctaMap(pForeground, neighborhood):
     returnMat = np.zeros_like(pForeground)
