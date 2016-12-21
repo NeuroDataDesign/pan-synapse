@@ -8,8 +8,7 @@ import functools32
 
 def pipeline(baseVoxel, neighborhood=1, lowerBound=1, upperBound=1):
     pMap2DVox = generatepMap2D(generateForegroundVoxel(baseVoxel), neighborhood=neighborhood)
-    pMap3DVox = generate3DPunctaMap(pMap2DVox, lowerBound, upperBound)
-    #TODO implement step 4 (see paper notes)
+    return generate3DPunctaMap(pMap2DVox, lowerBound, upperBound)
 
 #NOTE Both of these following functions are fully parallelizable, which would increase speed dramatically
 def generateForegroundVoxel(baseVoxel):
@@ -62,9 +61,10 @@ def getInterVoxelSquaredError(voxel, x, y, z, lowerBound, upperBound):
     #Minus 1 in the max case since indexing starts at 0 and shape count starts at 1
     if minZ < 0 or maxZ > voxel.shape[0] - 1:
         return 0.
+
     baseProb = voxel[z][y][x]
     #plus 1 for max since final slice argument is exclusive
-    return baseProb * np.sum([(baseProb - voxel[z][y][x] - lowerBound + i)**2 for i in range(minZ, maxZ + 1)])
+    return baseProb * np.sum([(baseProb - voxel[i][y][x])**2 for i in range(minZ, maxZ + 1)])
 
 def generate3DPunctaMap(punctaVoxel2D, lowerBound, upperBound):
     returnVox = np.zeros_like(punctaVoxel2D)
@@ -72,6 +72,7 @@ def generate3DPunctaMap(punctaVoxel2D, lowerBound, upperBound):
         for y in range(punctaVoxel2D.shape[1]):
             for x in range(punctaVoxel2D.shape[2]):
                 returnVox[z][y][x] = punctaVoxel2D[z][y][x] * np.exp(-1 * getInterVoxelSquaredError(punctaVoxel2D, x, y, z, lowerBound, upperBound))
+
     #Times 65535 for max int value to make probs look good on visualization
-    cv2.imwrite('../data/post_stitch.jpg', returnVox[2]* 65535)
+    #cv2.imwrite('../data/post_stitch.jpg', returnVox[2]* 65535)
     return returnVox

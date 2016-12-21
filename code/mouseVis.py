@@ -2,6 +2,8 @@ import tiffIO as tIO
 import matplotlib.pyplot as plt
 import numpy as np
 
+#TODO convert to plotly
+
 def generateVoxHist(voxel, figName='untitled', figNum=-1, bins=10, axisStart=None, axisEnd=None, normed=False):
     fig = plt.figure(figNum)
     plt.title(figName)
