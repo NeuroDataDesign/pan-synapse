@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as stats
-import scipy.misc as sciMisc
+import scipy.misc
 import cv2
 import functools32
 
@@ -43,11 +43,8 @@ def prodConv(myMat, x, y, neighborhood):
         return 0.
 
     #plus 1 for max since final slice argument is exclusive
-    #TODO work with log probs here instead to maintain precision
-    this = np.prod(myMat[minX: maxX + 1, minY: maxY+1])
-    print this
-    print np.logaddexp(myMat[minX: maxX + 1, minY: maxY+1])
-    return this
+    arg = myMat[minX: maxX + 1, minY: maxY+1]
+    return np.exp(np.sum(np.log(arg.flatten())))
 
 def generate2DPunctaMap(pForeground, neighborhood):
     returnMat = np.zeros_like(pForeground)
