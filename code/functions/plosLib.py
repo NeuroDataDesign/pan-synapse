@@ -5,7 +5,6 @@ import scipy.misc
 import cv2
 import functools32
 
-
 def pipeline(baseVoxel, neighborhood=1, lowerBound=1, upperBound=1):
     pMap2DVox = generatepMap2D(generateForegroundVoxel(baseVoxel), neighborhood=neighborhood)
     return generate3DPunctaMap(pMap2DVox, lowerBound, upperBound)
