@@ -66,4 +66,6 @@ class LambdaMeans:
         pass
 
     def generateClusters(self, partition):
-        #perform lambda means on the base supervoxel
+        #perform cluster based lambda means on the base supervoxel
+        #TODO waiting on a reply from Marcus Commiter on existing implementations
+        pass
