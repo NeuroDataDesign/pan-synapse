@@ -66,6 +66,7 @@ def getInterVoxelSquaredError(voxel, x, y, z, lowerBound, upperBound):
     return baseProb * np.sum([(baseProb - voxel[i][y][x])**2 for i in range(minZ, maxZ + 1)])
 
 def generate3DPunctaMap(punctaVoxel2D, lowerBound, upperBound):
+    #TODO add violation testing here for neighborhood bounds
     returnVox = np.zeros_like(punctaVoxel2D)
     for z in range(punctaVoxel2D.shape[0]):
         for y in range(punctaVoxel2D.shape[1]):

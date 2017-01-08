@@ -7,6 +7,7 @@ import plosLib as pLib
 synthOnes = pickle.load(open('synthDat/smallOnes.synth', 'r'))
 synthGauss = pickle.load(open('synthDat/smallGaussian.synth', 'r'))
 
+print 'getInterVoxelSquaredError in plosLib.py'
 #if all numbers are the same, and neighborhood on edge of required data
 test1 = pLib.getInterVoxelSquaredError(synthOnes, 2, 2, 2, 2, 2)
 print '\tTest 1: ', test1 == 0.,'\n\t\tExpected: 0\tResult: ', test1
