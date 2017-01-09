@@ -31,14 +31,26 @@ def generateVoxHist(voxel, figName='untitled', figNum=-1, bins=10, axisStart=Non
 
 
 def generateMultiVoxHist(voxelList, figName='untitled', figNum=None, bins=10, axisStart=None, axisEnd=None, normed=False, xTitle='untitled_axis', yTitle='untitled_axis'):
-	fig = None
-	if not figNum is None:
-		fig = plt.figure(figNum)
-	else:
-		fig = plt.figure()
-	plt.title(figName)
-	plt.xlabel(xTitle)
-	plt.ylabel(yTitle)
-        colorIter = ['r', 'c', 'm', 'y', 'k', 'b', 'g']
-        plt.hist(voxelList, bins, normed=normed, histtype='bar', color=colorIter[:len(voxelList)])
-	return fig
+    data = [
+        go.Histogram(
+            x = voxelList.flatten(),
+            histnorm='probability',
+            xbins=dict(
+                start = axisStart,
+                end = axisEnd,
+                size = 0.7
+            )
+        )
+    ]
+    layout = go.Layout(
+        title=figName,
+        xaxis=dict(
+            title=xaxis
+        ),
+        yaxis=dict(
+            title=yaxis
+        ),
+        barmode='overlay'
+    )
+    fig = go.Figure(data=data, layout=layout)
+    py.plot(fig)
