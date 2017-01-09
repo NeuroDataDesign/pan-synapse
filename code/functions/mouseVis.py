@@ -1,18 +1,34 @@
 import tiffIO as tIO
-import matplotlib.pyplot as plt
+import plotly.plotly as py
+import plotly.graph_objs as go
 import numpy as np
+py.sign_in('levinwil', 'zs8MPogNdFIeRkMXi62h')
 
-#TODO convert to plotly
+def generateVoxHist(voxel, figName='untitled', figNum=-1, bins=10, axisStart=None, axisEnd=None, normed=False, xaxis='untitled_axis', yaxis='untitled_axis'):
+    voxel.flatten()
+    data = [
+        go.Histogram(
+            x = voxel,
+            histnorm='probability',
+            xbins=dict(
+                start = axisStart,
+                end = axisEnd,
+                size = 0.7
+            )
+        )
+    ]
+    layout = go.Layout(
+        title=figName,
+        xaxis=dict(
+            title=xaxis
+        ),
+        yaxis=dict(
+            title=yaxis
+        )
+    )
+    fig = go.Figure(data=data, layout=layout)
+    py.plot(fig)
 
-def generateVoxHist(voxel, figName='untitled', figNum=-1, bins=10, axisStart=None, axisEnd=None, normed=False):
-    fig = plt.figure(figNum)
-    plt.title(figName)
-    hist, bins = np.histogram(voxel, bins=bins, normed=normed)
-    width = 0.7 * (bins[1] - bins[0])
-    center = (bins[:-1] + bins[1:]) / 2
-    if not (axisStart is None or axisEnd is None):
-        plt.xlim(axisStart, axisEnd)
-    plt.bar(center, hist, align='center', width=width)
 
 def generateMultiVoxHist(voxelList, figName='untitled', figNum=None, bins=10, axisStart=None, axisEnd=None, normed=False, xTitle='untitled_axis', yTitle='untitled_axis'):
 	fig = None
