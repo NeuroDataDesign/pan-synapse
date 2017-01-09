@@ -66,12 +66,16 @@ def getInterVoxelSquaredError(voxel, x, y, z, lowerBound, upperBound):
     return baseProb * np.sum([(baseProb - voxel[i][y][x])**2 for i in range(minZ, maxZ + 1)])
 
 def generate3DPunctaMap(punctaVoxel2D, lowerBound, upperBound):
-    #TODO add violation testing here for neighborhood bounds
     returnVox = np.zeros_like(punctaVoxel2D)
     for z in range(punctaVoxel2D.shape[0]):
         for y in range(punctaVoxel2D.shape[1]):
             for x in range(punctaVoxel2D.shape[2]):
-                returnVox[z][y][x] = punctaVoxel2D[z][y][x] * np.exp(-1 * getInterVoxelSquaredError(punctaVoxel2D, x, y, z, lowerBound, upperBound))
+                minZ = z - lowerBound
+                maxZ = z + upperBound
+                if minZ < 0 or maxZ > returnVox.shape[0] - 1:
+                    returnVox[z][y][x] = 0.
+                else:
+                    returnVox[z][y][x] = punctaVoxel2D[z][y][x] * np.exp(-1 * getInterVoxelSquaredError(punctaVoxel2D, x, y, z, lowerBound, upperBound))
 
     #Times 65535 for max int value to make probs look good on visualization
     #cv2.imwrite('../data/post_stitch.jpg', returnVox[2]* 65535)
