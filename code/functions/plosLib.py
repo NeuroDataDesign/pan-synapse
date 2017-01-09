@@ -25,8 +25,8 @@ def getBackgroundGaussian(mySlice):
 def cacheCDF(t, dist):
     return dist.cdf(t)
 
-def generateForegroundProbMap(mySlice, mu, sigma):
-    myDist = stats.norm(mu, np.sqrt(sigma))
+def generateForegroundProbMap(mySlice, mu, var):
+    myDist = stats.norm(mu, np.sqrt(var))
     vecCDF = np.vectorize(cacheCDF)
     return vecCDF(mySlice, myDist)
 
