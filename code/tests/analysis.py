@@ -4,6 +4,7 @@ from skimage.filters import threshold_otsu
 import tiffIO as tIO
 import mouseVis as mv
 import plosLib as pLib
+import connectLib as cLib
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
@@ -18,6 +19,8 @@ probVox = pLib.pipeline(data0)
 mv.generateVoxHist(probVox)
 plt.show()
 
-#get the thresholds that minimize inter class variance of the bimodal hist
-threshList = np.stack([threshold_otsu(curSlice) for curSlice in probVox])
-bianVox = np.stack([probVox[i] > thresh for i, thresh in enumerate(threshList)])
+#get the otsu binarization of the supervoxel
+bianVox = pLib.otsuVox(probVox)
+
+#extract the connected components from the bianary voxel
+connectedComponents = cLib.connectedComponents(bianVox)
