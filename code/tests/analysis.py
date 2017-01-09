@@ -20,7 +20,7 @@ mv.generateVoxHist(probVox)
 plt.show()
 
 #get the otsu binarization of the supervoxel
-bianVox = pLib.otsuVox(probVox)
+bianVox = cLib.otsuVox(probVox)
 
 #extract the connected components from the bianary voxel
-connectedComponents = cLib.connectedComponents(bianVox)
+clusters = cLib.cluster(bianVox)

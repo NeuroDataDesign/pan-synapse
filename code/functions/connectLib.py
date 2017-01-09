@@ -17,4 +17,4 @@ def otsuVox(probVox):
     return bianVox
 
 def connectedComponents(voxel):
-    return [label(curSlice) for curSlice in voxel]
+    labelMap = label(voxel)
