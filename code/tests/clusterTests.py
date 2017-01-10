@@ -27,6 +27,6 @@ print '\tTest 2: ', epDiff.epsilonDifference(3.28571429, testCluster2.getCentroi
 print '\tTest 3: ', testCluster3.getCentroid() == [0.5, 0.5, 0.5],'\n\t\tExpected: [0.5, 0.5, 0.5]\tResult: ', testCluster3.getCentroid()
 
 #test the compactness method
-print '\tTest 4: ', testCluster3.getCompactness() == 0,'\n\t\tExpected: 0\tResult: ', testCluster3.getCompactness()
-print "\t Testing adheranceToSphere method with spherical data. Compactness: " + str(testCluster4.adheranceToSphere())
-print "\t Testing getCompactness method with spherical data. Compactness: " + str(testCluster4.getCompactness())
+print '\tTest 4: ', testCluster3.getStdDistance() == 0,'\n\t\tExpected: 0\tResult: ', testCluster3.getStdDistance()
+print "\tTesting probSphere method with spherical data. Probability: " + str(testCluster4.probSphere())
+print "\tTesting getStdDistance method with spherical data. Compactness: " + str(testCluster4.getStdDistance())
