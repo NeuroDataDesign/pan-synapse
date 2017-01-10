@@ -5,9 +5,9 @@ class Cluster:
     def __init__(self, members):
         self.members = members
         self.centroid = self.getCentroid()
-        self.compactness = self.getStdDistance()
+        self.compactness = self.getStdDeviation()
         self.area = self.getArea()
-        self.stdDistance = self.getStdDistance()
+        self.stdDistance = self.getStdDeviation()
 
     def getArea(self):
         return len(self.members)
@@ -19,7 +19,7 @@ class Cluster:
         listX = unzipList[2]
         return [np.average(listZ), np.average(listY), np.average(listX)]
 
-    def getStdDistance(self):
+    def getStdDeviation(self):
         unzipList = zip(*self.members)
         listZ = unzipList[0]
         listY = unzipList[1]
