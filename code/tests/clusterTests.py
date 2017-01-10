@@ -4,22 +4,20 @@ from epsilonDifference import epsilonDifference as floatEq
 from cluster import Cluster
 import epsilonDifference as epDiff
 import matplotlib.pyplot as plt
+import connectLib as cLib
 import pickle
 
 testData1 = [[3,3,3], [3,3,2], [3,3,4], [3,2,3], [3,4,3], [2,3,3], [4,3,3]]
 testData2 = [[3,3,3], [3,3,4], [3,4,4], [3,4,5], [3,5,5], [4,5,5], [4,5,6]]
 testData3 = [[0, 0, 0], [0, 0, 1], [1, 0, 0], [0, 1, 0], [1, 1, 0], [0, 1, 1], [1, 0, 1], [1, 1, 1],]
 testData4 = pickle.load(open('synthDat/exponDecayIndexList.synth', 'r'))
-
-
-
+testData5 = pickle.load(open('synthDat/smallTwoGaussian.synth', 'r'))
 
 print 'Cluster in cluster.py'
 testCluster1 = Cluster(testData1)
 testCluster2 = Cluster(testData2)
 testCluster3 = Cluster(testData3)
 testCluster4 = Cluster(testData4)
-
 
 #test the centroid method
 print '\tTest 1: ', testCluster1.getCentroid() == [3., 3., 3.],'\n\t\tExpected: [3, 3, 3]\tResult: ', testCluster1.getCentroid()
@@ -30,3 +28,10 @@ print '\tTest 3: ', testCluster3.getCentroid() == [0.5, 0.5, 0.5],'\n\t\tExpecte
 print '\tTest 4: ', testCluster3.getStdDistance() == 0,'\n\t\tExpected: 0\tResult: ', testCluster3.getStdDistance()
 print "\tTesting probSphere method with spherical data. Probability: " + str(testCluster4.probSphere())
 print "\tTesting getStdDistance method with spherical data. Compactness: " + str(testCluster4.getStdDistance())
+
+#test the densityOfSlice method
+#NOTE:slicing from 1 to remove background cluster
+clusterList = cLib.connectedComponents(testData5)[1:]
+
+test5 = cLib.densityOfSlice(clusterList, 0, 5, 0, 5, 0, 5)
+print '\tTest 5: ', epDiff.epsilonDifference(test5, 2.22222222),'\n\t\tExpected: 2.22222\tResult: ', test5

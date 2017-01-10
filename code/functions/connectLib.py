@@ -28,5 +28,15 @@ def connectedComponents(voxel):
     return clusterList
 
 #pass in list of clusters
-def densityOfSlice(clusters, maxZ, maxY, maxX, minZ, minY, minX):
-    return str(clusters.length/((maxZ-minZ)*(maxY-minY) * (maxX-minX)*0.12*0.12*0.5 )) + " clusters per squared micron"
+def densityOfSlice(clusters, minZ, maxZ, minY, maxY, minX, maxX):
+    count = 0
+    for cluster in clusters:
+        z, y, x = cluster.centroid
+        #if cluster is in given volume
+        if (z>=minZ) and (z<maxZ) and (y>=minY) and (y<maxY) and (x>=minX) and (x<maxX):
+            count+=1
+
+    clusterPerPixelCubed = float(count)/((maxX - minX) * (maxY - minY) * (maxZ - minZ))
+    #NOTE .12*.12*.5 microns is the resolution of the given data, this may need to be changed
+    #in future implementations for data of different resolutions
+    return clusterPerPixelCubed/(.12*.12*.5)
