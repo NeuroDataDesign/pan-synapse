@@ -22,8 +22,9 @@ def connectedComponents(voxel):
     clusterList = []
     #plus 1 since max label should be included
     for uniqueLabel in range(0, np.max(labelMap)+1):
-        memberList = zip(*np.where(voxel = uniqueLabel))
-        clusterList.append(Cluster(memberList))
+        memberList = [list(elem) for elem in zip(*np.where(labelMap == uniqueLabel))]
+        if not len(memberList) == 0:
+            clusterList.append(Cluster(memberList))
     return clusterList
 
 #pass in list of clusters
