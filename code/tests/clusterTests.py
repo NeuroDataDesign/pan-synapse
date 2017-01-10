@@ -25,17 +25,23 @@ print '\tTest 2: ', epDiff.epsilonDifference(3.28571429, testCluster2.getCentroi
 print '\tTest 3: ', testCluster3.getCentroid() == [0.5, 0.5, 0.5],'\n\t\tExpected: [0.5, 0.5, 0.5]\tResult: ', testCluster3.getCentroid()
 
 #test the std distance method
-print '\tTest 4: ', testCluster3.getStdDistance() == 0,'\n\t\tExpected: 0\tResult: ', testCluster3.getStdDistance()
-print '\tTest 5: ', epDiff.epsilonDifference(testCluster1.getStdDistance(), 0.3499271),'\n\t\tExpected: 0.3499271\tResult: ', testCluster1.getStdDistance()
+print '\tTest 4: ', testCluster3.getStdDeviation() == 0,'\n\t\tExpected: 0\tResult: ', testCluster3.getStdDeviation()
+print '\tTest 5: ', epDiff.epsilonDifference(testCluster1.getStdDeviation(), 0.3499271),'\n\t\tExpected: 0.3499271\tResult: ', testCluster1.getStdDeviation()
 
 #test the getArea method
 print '\tTest 6: ', testCluster1.getArea() == 7,'\n\t\tExpected: 7\tResult: ', testCluster1.getArea()
 print '\tTest 7: ', testCluster2.getArea() == 7,'\n\t\tExpected: 7\tResult: ', testCluster2.getArea()
 print '\tTest 8: ', testCluster3.getArea() == 8,'\n\t\tExpected: 8\tResult: ', testCluster3.getArea()
 
+
 #test the densityOfSlice method
 #NOTE:slicing from 1 to remove background cluster
-clusterList = cLib.connectedComponents(testData5)[1:]
+clusterList = cLib.connectedComponents(cLib.otsuVox(testData5))[1:]
+test10 = cLib.densityOfSlice(clusterList, 0, 5, 0, 5, 0, 5)
+print '\tTest 10: ', epDiff.epsilonDifference(test10, 2.22222222),'\n\t\tExpected: 2.22222\tResult: ', test10
 
-test5 = cLib.densityOfSlice(clusterList, 0, 5, 0, 5, 0, 5)
-print '\tTest 9: ', epDiff.epsilonDifference(test5, 2.22222222),'\n\t\tExpected: 2.22222\tResult: ', test5
+test11 = cLib.densityOfSlice(clusterList, 0, 2, 0, 2, 0, 2)
+print '\tTest 11: ', epDiff.epsilonDifference(test11, 17.3611),'\n\t\tExpected: 17.31111\tResult: ', test11
+
+test12 = cLib.densityOfSlice(clusterList, 2, 3, 2, 3, 2, 3)
+print '\tTest 12: ', test12 == 0.,'\n\t\tExpected: 0.\tResult: ', test12
