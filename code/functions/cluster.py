@@ -20,8 +20,17 @@ class Cluster:
         listY = unzipList[1]
         listX = unzipList[2]
         listOfDistances = []
-        volume = ((max(listZ) - min(listZ))*(max(listY) - min(listY))*(max(listX) - min(listX)))
+        volume = ((max(listZ) - min(listZ) + 1)*(max(listY) - min(listY) + 1)*(max(listX) - min(listX) + 1))
         for location in self.members:
             listOfDistances.append(math.sqrt((location[0]-self.centroid[0])**2 + (location[1]-self.centroid[1])**2 + (location[2]-self.centroid[2])**2))
         stdDevDistance = np.std(listOfDistances)
         return stdDevDistance/volume
+
+    def adheranceToSphere(self):
+        unzipList = zip(*self.members)
+        listZ = unzipList[0]
+        listY = unzipList[1]
+        listX = unzipList[2]
+        volume = ((max(listZ) - min(listZ) + 1)*(max(listY) - min(listY) + 1)*(max(listX) - min(listX) + 1))
+        ratio = len(self.members)*1.0/volume
+        return 1 - abs(ratio/(math.pi/6) - 1)

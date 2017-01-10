@@ -3,15 +3,23 @@ sys.path.insert(0, '../functions/')
 from epsilonDifference import epsilonDifference as floatEq
 from cluster import Cluster
 import epsilonDifference as epDiff
+import matplotlib.pyplot as plt
+import pickle
 
 testData1 = [[3,3,3], [3,3,2], [3,3,4], [3,2,3], [3,4,3], [2,3,3], [4,3,3]]
 testData2 = [[3,3,3], [3,3,4], [3,4,4], [3,4,5], [3,5,5], [4,5,5], [4,5,6]]
 testData3 = [[0, 0, 0], [0, 0, 1], [1, 0, 0], [0, 1, 0], [1, 1, 0], [0, 1, 1], [1, 0, 1], [1, 1, 1],]
+testData4 = pickle.load(open('synthDat/exponDecayIndexList.synth', 'r'))
+
+
+
 
 print 'Cluster in cluster.py'
 testCluster1 = Cluster(testData1)
 testCluster2 = Cluster(testData2)
 testCluster3 = Cluster(testData3)
+testCluster4 = Cluster(testData4)
+
 
 #test the centroid method
 print '\tTest 1: ', testCluster1.getCentroid() == [3., 3., 3.],'\n\t\tExpected: [3, 3, 3]\tResult: ', testCluster1.getCentroid()
@@ -20,3 +28,5 @@ print '\tTest 3: ', testCluster3.getCentroid() == [0.5, 0.5, 0.5],'\n\t\tExpecte
 
 #test the compactness method
 print '\tTest 4: ', testCluster3.getCompactness() == 0,'\n\t\tExpected: 0\tResult: ', testCluster3.getCompactness()
+print "\t Testing adheranceToSphere method with spherical data. Compactness: " + str(testCluster4.adheranceToSphere())
+print "\t Testing getCompactness method with spherical data. Compactness: " + str(testCluster4.getCompactness())
