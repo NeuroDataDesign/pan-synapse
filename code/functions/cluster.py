@@ -5,7 +5,6 @@ class Cluster:
     def __init__(self, members):
         self.members = members
         self.centroid = self.getCentroid()
-        self.compactness = self.getStdDistance()
         self.area = self.getArea()
         self.stdDistance = self.getStdDistance()
 
