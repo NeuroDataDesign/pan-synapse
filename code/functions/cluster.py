@@ -1,4 +1,5 @@
 import numpy as np
+import math
 
 class Cluster:
     def __init__(self, members):
@@ -13,13 +14,14 @@ class Cluster:
         listX = unzipList[2]
         return [np.average(listZ), np.average(listY), np.average(listX)]
 
-    #TODO develop a better compactness metric
     def getCompactness(self):
         unzipList = zip(*self.members)
         listZ = unzipList[0]
         listY = unzipList[1]
         listX = unzipList[2]
-        z_size_of_cluster = max(listZ) - min(listZ)
-        y_size_of_cluster = max(listY) - min(listY)
-        x_size_of_cluster = max(listX) - min(listX)
-        return len(self.members)/(z_size_of_cluster*y_size_of_cluster*x_size_of_cluster)
+        listOfDistances = []
+        volume = ((max(listZ) - min(listZ))*(max(listY) - min(listY))*(max(listX) - min(listX)))
+        for location in self.members:
+            listOfDistances.append(math.sqrt((location[0]-self.centroid[0])**2 + (location[1]-self.centroid[1])**2 + (location[2]-self.centroid[2])**2))
+        stdDevDistance = np.std(listOfDistances)
+        return stdDevDistance/volume
