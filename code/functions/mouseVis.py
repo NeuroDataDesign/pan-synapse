@@ -5,15 +5,13 @@ import numpy as np
 py.sign_in('levinwil', 'zs8MPogNdFIeRkMXi62h')
 
 def generateVoxHist(voxel, figName='untitled', figNum=-1, bins=10, axisStart=None, axisEnd=None, normed=False, xaxis='untitled_axis', yaxis='untitled_axis'):
-    voxel.flatten()
     data = [
         go.Histogram(
             x = voxel,
             histnorm='probability',
             xbins=dict(
                 start = axisStart,
-                end = axisEnd,
-                size = 0.7
+                end = axisEnd
             )
         )
     ]
@@ -31,17 +29,17 @@ def generateVoxHist(voxel, figName='untitled', figNum=-1, bins=10, axisStart=Non
 
 
 def generateMultiVoxHist(voxelList, figName='untitled', figNum=None, bins=10, axisStart=None, axisEnd=None, normed=False, xTitle='untitled_axis', yTitle='untitled_axis'):
-    data = [
-        go.Histogram(
-            x = voxelList.flatten(),
-            histnorm='probability',
-            xbins=dict(
-                start = axisStart,
-                end = axisEnd,
-                size = 0.7
-            )
-        )
-    ]
+    data =[]
+    for i in (len(voxelList) - 1):
+        data.append(go.Histogram(
+                        x = voxelList[i],
+                        histnorm='probability',
+                        xbins=dict(
+                            start = axisStart,
+                            end = axisEnd,
+                            size = 0.7
+                        )
+                    ))
     layout = go.Layout(
         title=figName,
         xaxis=dict(
