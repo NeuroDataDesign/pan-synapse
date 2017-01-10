@@ -28,9 +28,9 @@ def generateVoxHist(voxel, figName='untitled', figNum=-1, bins=10, axisStart=Non
     py.plot(fig)
 
 
-def generateMultiVoxHist(voxelList, figName='untitled', figNum=None, bins=10, axisStart=None, axisEnd=None, normed=False, xTitle='untitled_axis', yTitle='untitled_axis'):
+def generateMultiVoxHist(voxelList, figName='untitled', figNum=None, bins=10, axisStart=None, axisEnd=None, normed=False, xaxis='untitled_axis', yaxis='untitled_axis'):
     data =[]
-    for i in (len(voxelList) - 1):
+    for i in range(len(voxelList)):
         data.append(go.Histogram(
                         x = voxelList[i],
                         histnorm='probability',

@@ -7,6 +7,7 @@ class Cluster:
         self.centroid = self.getCentroid()
         self.compactness = self.getStdDistance()
         self.area = self.getArea()
+        self.stdDistance = self.getStdDistance()
 
     def getArea(self):
         return len(self.members)
