@@ -11,13 +11,13 @@ import pickle
 import epsilonDifference as epDiff
 
 #testing decay map
-data_slice = pickle.load(open('prodConv.synth', 'r'))
+data_slice = pickle.load(open('synthDat/exponDecay.synth', 'r'))
 print "prodConv in plosLib.py"
 print '\tTest 1:  ' + str(epDiff.epsilonDifference(0.000427143453979, pLib.prodConv(data_slice, 50, 50, 1), .0000001))
 print '\t\tExpected: 0.000427143454\tResult: ' + str(pLib.prodConv(data_slice, 50, 50, 1))
 
 #testing matrix of all 1's
-data2 = pickle.load(open('smallOnes.synth', 'r'))
+data2 = pickle.load(open('synthDat/smallOnes.synth', 'r'))
 print '\tTest 2:  ' + str(epDiff.epsilonDifference(1.0, pLib.prodConv(data2, 2, 2, 2), .0000001))
 print '\t\tExpected: 1.0\tResult: ' + str(pLib.prodConv(data2, 2, 2, 2))
 
