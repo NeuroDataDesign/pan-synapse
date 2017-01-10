@@ -1,6 +1,7 @@
 import sys
 sys.path.insert(0, '../functions/')
 from skimage.filters import threshold_otsu
+from cluster import Cluster
 import tiffIO as tIO
 import mouseVis as mv
 import plosLib as pLib
@@ -22,5 +23,5 @@ plt.show()
 #get the otsu binarization of the supervoxel
 bianVox = cLib.otsuVox(probVox)
 
-#extract the connected components from the bianary voxel
+#extract the clusters from the bianary voxel
 clusters = cLib.cluster(bianVox)
