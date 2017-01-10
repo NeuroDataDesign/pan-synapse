@@ -31,7 +31,13 @@ print "\tTesting getStdDistance method with spherical data. Compactness: " + str
 
 #test the densityOfSlice method
 #NOTE:slicing from 1 to remove background cluster
-clusterList = cLib.connectedComponents(testData5)[1:]
+clusterList = cLib.connectedComponents(cLib.otsuVox(testData5))[1:]
 
 test5 = cLib.densityOfSlice(clusterList, 0, 5, 0, 5, 0, 5)
 print '\tTest 5: ', epDiff.epsilonDifference(test5, 2.22222222),'\n\t\tExpected: 2.22222\tResult: ', test5
+
+test6 = cLib.densityOfSlice(clusterList, 0, 2, 0, 2, 0, 2)
+print '\tTest 6: ', epDiff.epsilonDifference(test6, 17.3611),'\n\t\tExpected: 17.3611\tResult: ', test6
+
+test7 = cLib.densityOfSlice(clusterList, 2, 3, 2, 3, 2, 3)
+print '\tTest 7: ', 0.,'\n\t\tExpected: 0.\tResult: ', test7
