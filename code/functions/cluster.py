@@ -6,6 +6,11 @@ class Cluster:
         self.members = members
         self.centroid = self.getCentroid()
         self.compactness = self.getStdDistance()
+        self.area = self.getArea()
+        self.stdDistance = self.getStdDistance()
+
+    def getArea(self):
+        return len(self.members)
 
     def getCentroid(self):
         unzipList = zip(*self.members)
