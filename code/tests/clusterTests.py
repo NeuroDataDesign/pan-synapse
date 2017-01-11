@@ -28,10 +28,10 @@ print '\tTest 3: ', testCluster3.getCentroid() == [0.5, 0.5, 0.5],'\n\t\tExpecte
 print '\tTest 4: ', testCluster3.getStdDeviation() == 0,'\n\t\tExpected: 0\tResult: ', testCluster3.getStdDeviation()
 print '\tTest 5: ', epDiff.epsilonDifference(testCluster1.getStdDeviation(), 0.3499271),'\n\t\tExpected: 0.3499271\tResult: ', testCluster1.getStdDeviation()
 
-#test the getArea method
-print '\tTest 6: ', testCluster1.getArea() == 7,'\n\t\tExpected: 7\tResult: ', testCluster1.getArea()
-print '\tTest 7: ', testCluster2.getArea() == 7,'\n\t\tExpected: 7\tResult: ', testCluster2.getArea()
-print '\tTest 8: ', testCluster3.getArea() == 8,'\n\t\tExpected: 8\tResult: ', testCluster3.getArea()
+#test the getVolume method
+print '\tTest 6: ', testCluster1.getVolume() == 7,'\n\t\tExpected: 7\tResult: ', testCluster1.getVolume()
+print '\tTest 7: ', testCluster2.getVolume() == 7,'\n\t\tExpected: 7\tResult: ', testCluster2.getVolume()
+print '\tTest 8: ', testCluster3.getVolume() == 8,'\n\t\tExpected: 8\tResult: ', testCluster3.getVolume()
 
 
 #test the densityOfSlice method
