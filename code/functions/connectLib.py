@@ -44,7 +44,7 @@ def densityOfSlice(clusters, minZ, maxZ, minY, maxY, minX, maxX):
 #pass in list of clusters, return a list of thresholded clusters
 def thresholdByVolume(clusterList, minVol, maxVol):
     thresholdedList = []
-    for cluster in len(clusterList):
-        if cluster.getVolume > minVol and cluster.getVolume < maxVol:
-            thresholdedList.append(cluster)
+    for cluster in range(len(clusterList)):
+        if clusterList[cluster].getVolume() >= minVol and clusterList[cluster].getVolume() < maxVol:
+            thresholdedList.append(clusterList[cluster])
     return thresholdedList

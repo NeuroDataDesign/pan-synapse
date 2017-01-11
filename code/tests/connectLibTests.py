@@ -4,7 +4,7 @@ import numpy as np
 sys.path.insert(0, '../functions/')
 from epsilonDifference import epsilonDifference as floatEq
 from cluster import Cluster
-from connectLib import otsuVox, connectedComponents
+from connectLib import otsuVox, connectedComponents, thresholdByVolume
 from sets import Set
 
 synthGauss = pickle.load(open('synthDat/smallGaussian.synth', 'r'))
@@ -42,3 +42,14 @@ if len(memberList) == 3:
 print '\tTest 1: ', test1
 print '\tTest 2: ', test2
 print '\tTest 3: ', test3
+
+testData1 = [[10, 10, 10], [11, 10, 11], [11, 11, 11], [10, 11, 10], [11, 10, 10], [10, 10, 11]]
+testData2 = [[3,3,3], [3,3,4], [3,4,4], [3,4,5], [3,5,5], [4,5,5], [4,5,6]]
+testData3 = [[0, 0, 0], [0, 0, 1], [1, 0, 0], [0, 1, 0], [1, 1, 0], [0, 1, 1], [1, 0, 1], [1, 1, 1]]
+testCluster1 = Cluster(testData1)
+testCluster2 = Cluster(testData2)
+testCluster3 = Cluster(testData3)
+testClusterList = [testCluster1, testCluster2, testCluster3]
+
+print '\n\nthresholdByVolume in connectLib.py'
+print '\tTest 1: ', thresholdByVolume(testClusterList, 7, 8)[0].members == [[3,3,3], [3,3,4], [3,4,4], [3,4,5], [3,5,5], [4,5,5], [4,5,6]], '\n\t\tExpected: ', [[3,3,3], [3,3,4], [3,4,4], [3,4,5], [3,5,5], [4,5,5], [4,5,6]], '\n\t\tResult: ', str(thresholdByVolume(testClusterList, 7, 8)[0].members)
