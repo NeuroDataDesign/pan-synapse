@@ -40,3 +40,11 @@ def densityOfSlice(clusters, minZ, maxZ, minY, maxY, minX, maxX):
     #NOTE .12*.12*.5 microns is the resolution of the given data, this may need to be changed
     #in future implementations for data of different resolutions
     return clusterPerPixelCubed/(.12*.12*.5)
+
+#pass in list of clusters, return a list of thresholded clusters
+def thresholdByVolume(clusterList, minVol, maxVol):
+    thresholdedList = []
+    for cluster in len(clusterList):
+        if cluster.getVolume > minVol && cluster.getVolume < maxVol:
+            thresholdedList.append(cluster)
+    return thresholdedList
