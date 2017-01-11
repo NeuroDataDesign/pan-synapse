@@ -11,7 +11,7 @@ import numpy as np
 import cv2
 
 #load the data
-data0 = tIO.unzipChannels(tIO.loadTiff('../../data/SEP-GluA1-KI_tp1.tif'))[0][0:5]
+data0 = tIO.unzipChannels(tIO.loadTiff('../../data/SEP-GluA1-KI_tp1.tif'))[0][0:1]
 
 #generate a foreground probability map for the data
 probVox = pLib.pipeline(data0)
@@ -20,8 +20,9 @@ probVox = pLib.pipeline(data0)
 mv.generateVoxHist(probVox)
 plt.show()
 
+
 #get the otsu binarization of the supervoxel
 bianVox = cLib.otsuVox(probVox)
 
 #extract the clusters from the bianary voxel
-clusters = cLib.cluster(bianVox)
+clusters = cLib.connectedComponents(bianVox)

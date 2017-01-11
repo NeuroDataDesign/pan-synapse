@@ -5,6 +5,9 @@ import numpy as np
 py.sign_in('levinwil', 'zs8MPogNdFIeRkMXi62h')
 
 def generateVoxHist(voxel, figName='untitled', figNum=-1, bins=10, axisStart=None, axisEnd=None, normed=False, xaxis='untitled_axis', yaxis='untitled_axis'):
+    for i in range(len(voxel.shape)-1):
+        voxel = voxel.flatten()
+    print voxel.shape
     data = [
         go.Histogram(
             x = voxel,

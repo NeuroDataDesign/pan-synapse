@@ -12,10 +12,11 @@ def unzipChannels(image):
 
 def normVoxel(range = (0, 255)):
     pass
-
+'''
 if __name__ == '__main__':
     #DEBUG
     multiChanDat = unzipChannels(loadTiff('SEP-GluA1-KI_tp1.tif'))
     cv2.imshow('chan0', multiChanDat[0][0])
     cv2.imshow('chan1', multiChanDat[1][0])
     cv2.waitKey()
+'''
