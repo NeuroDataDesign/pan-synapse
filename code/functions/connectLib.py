@@ -6,7 +6,8 @@ from cluster import Cluster
 import numpy as np
 import cv2
 
-def otsuVox(probVox):
+def otsuVox(argVox):
+    probVox = np.nan_to_num(argVox)
     bianVox = np.zeros_like(probVox)
     for zIndex, curSlice in enumerate(probVox):
         #if the array contains all the same values
