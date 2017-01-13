@@ -9,6 +9,7 @@ import connectLib as cLib
 import matplotlib.pyplot as plt
 import numpy as np
 import cv2
+import cPickle as pickle
 
 #load the data
 data0 = tIO.unzipChannels(tIO.loadTiff('../../data/SEP-GluA1-KI_tp1.tif'))[0][0:5]
@@ -16,11 +17,14 @@ data0 = tIO.unzipChannels(tIO.loadTiff('../../data/SEP-GluA1-KI_tp1.tif'))[0][0:
 #generate a foreground probability map for the data
 probVox = pLib.pipeline(data0)
 
-#generate a histogram to show bimodlity of the foreground probs
-mv.generateVoxHistogram(probVox)
-
 #get the otsu binarization of the supervoxel
 bianVox = cLib.otsuVox(probVox)
 
 #extract the clusters from the bianary voxel
 clusters = cLib.connectedComponents(bianVox)
+
+#generate a histogram to show distribution of cluster volumes
+clusterVols = []
+for i in range(len(clusters)):
+    clusterVols.append(clusters[i].getVolume())
+mv.generateHist(clusterVols, title = 'Cluster Volumes', bins = 100, axisStart = 0, axisEnd = 50)

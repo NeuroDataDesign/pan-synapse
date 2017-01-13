@@ -33,13 +33,21 @@ def generateVoxHist(voxel, figName='untitled', figNum=-1, bins=10, axisStart=Non
     py.plot(fig)
 '''
 #matplotlib method for histogram
-def generateVoxHist(voxel, title = 'Untitled', bins = 50, xaxis = 'untitled_axis', yaxis = 'untitled_axis', normed = True):
+def generateHist(voxel, title = 'Untitled', bins = 50, xaxis = 'untitled_axis', yaxis = 'untitled_axis', axisStart = None, axisEnd = None, normed = True, pickle = False):
     voxel = np.array(voxel)
     voxel = voxel.flatten()
-    plt.hist(voxel, bins= bins, normed= normed)
-    plt.title = title
-    plt.xlabel = xaxis
-    plt.ylabel = yaxis
+    if (type(axisStart) == type(1) or type(axisStart) == type(1.0)):
+        start = axisStart
+    else:
+        start = np.min(voxel)
+    if (type(axisEnd) == type(1) or type(axisEnd) == type(1.0)):
+        end = axisEnd
+    else:
+        end = np.max(voxel)
+    plt.hist(voxel, bins= bins,  range = (start, end), normed= normed)
+    plt.title(title)
+    plt.xlabel(xaxis)
+    plt.ylabel(yaxis)
     plt.show()
 #plotly method for generating stacked histograms
 '''
@@ -69,12 +77,20 @@ def generateMultiVoxHist(voxelList, figName='untitled', figNum=None, bins=10, ax
     py.plot(fig)
 '''
 #matplotlib method for plotting mutliple histograms
-def generateMultiVoxHist(voxelList, title = 'Untitled', bins=10, xaxis = 'untitled_axis', yaxis = 'untitled_axis', normed = True, stacked = True):
+def generateMultiHist(voxelList, title = 'Untitled', bins=10, xaxis = 'untitled_axis', yaxis = 'untitled_axis', axisStart = None, axisEnd = None, normed = True, stacked = True, pickle = False):
     for i in range(len(voxelList)):
         voxelList[i] = np.array(voxelList[i])
         voxelList[i] = voxelList[i].flatten()
-    plt.hist(voxelList, bins=bins, normed= normed, stacked = stacked)
-    plt.title = title
-    plt.xlabel = xaxis
-    plt.ylabel = yaxis
+    if (type(axisStart) == type(1) or type(axisStart) == type(1.0)):
+        start = axisStart
+    else:
+        start = np.min(voxel)
+    if (type(axisEnd) == type(1) or type(axisEnd) == type(1.0)):
+        end = axisEnd
+    else:
+        end = np.max(voxel)
+    plt.hist(voxelList, bins = bins, range = (start, end), normed = normed, stacked = stacked)
+    plt.title(title)
+    plt.xlabel(xaxis)
+    plt.ylabel(yaxis)
     plt.show()
