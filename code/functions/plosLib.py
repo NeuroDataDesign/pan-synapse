@@ -79,5 +79,5 @@ def generate3DPunctaMap(punctaVoxel2D, lowerBound, upperBound):
 
     #Times 65535 for max int value to make probs look good on visualization
     #cv2.imwrite('../data/post_stitch.jpg', returnVox[2]* 65535)
-    print returnVox.shape
+    returnVox.shape
     return returnVox
