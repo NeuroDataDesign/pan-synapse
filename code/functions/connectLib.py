@@ -43,9 +43,34 @@ def densityOfSlice(clusters, minZ, maxZ, minY, maxY, minX, maxX):
     return clusterPerPixelCubed/(.12*.12*.5)
 
 #pass in list of clusters, return a list of thresholded clusters
-def thresholdByVolume(clusterList, minVol, maxVol):
-    thresholdedList = []
-    for cluster in range(len(clusterList)):
-        if clusterList[cluster].getVolume() >= minVol and clusterList[cluster].getVolume() < maxVol:
-            thresholdedList.append(clusterList[cluster])
-    return thresholdedList
+def thresholdByVolumePercentile(clusterList):
+    #putting the clusters volumes in a list
+    plosClusterVolList =[]
+    for cluster in (range(len(clusterList))):
+        plosClusterVolList.append(clusterList[cluster].getVolume())
+
+    #finding the upper outlier fence
+    upperThreshFence = 1.5*np.percentile(plosClusterVolList, 75)
+
+    #filtering out the background cluster
+    upperThreshClusterList = []
+    for cluster in (range(len(clusterList))):
+        if clusterList[cluster].getVolume() < upperThreshFence:
+            upperThreshClusterList.append(clusterList[cluster])
+
+    return upperThreshClusterList
+
+def clusterCoregister(plosClusterList, rawClusterList):
+    #creating a list of all the member indices of the plos plosClusterList
+    plosClusterMemberList = []
+    for cluster in range(len(plosClusterList)):
+        plosClusterMemberList.extend(plosClusterList[cluster].members)
+
+    #creating a list of all the clusters without any decay
+    completeClusterMemberList =[]
+    for rawCluster in range(len(rawClusterList)):
+        for index in range(len(plosClusterMemberList)):
+            if plosClusterMemberList[index] in rawClusterList[rawCluster].members:
+                completeClusterMemberList.append(rawClusterList[rawCluster])
+
+    return completeClusterMemberList
