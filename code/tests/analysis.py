@@ -12,7 +12,7 @@ import cv2
 import cPickle as pickle
 
 #load the data
-data0 = tIO.unzipChannels(tIO.loadTiff('../../data/SEP-GluA1-KI_tp1.tif'))[0][0:5]
+data0 = tIO.unzipChannels(tIO.loadTiff('../../data/SEP-GluA1-KI_tp1.tif'))[0][5:10]
 
 #generate a foreground probability map for the data
 probVox = pLib.pipeline(data0)
@@ -20,7 +20,7 @@ probVox = pLib.pipeline(data0)
 #get the otsu binarization of the supervoxel
 bianVox = cLib.otsuVox(probVox)
 
-#extract the clusters from the bianary voxel
+#extract the clusters from the binary voxel
 clusters = cLib.connectedComponents(bianVox)
 
 #generate a histogram to show distribution of cluster volumes
