@@ -44,33 +44,54 @@ def densityOfSlice(clusters, minZ, maxZ, minY, maxY, minX, maxX):
 
 #pass in list of clusters, return a list of thresholded clusters
 def thresholdByVolumePercentile(clusterList):
-    #putting the clusters volumes in a list
+    #putting the plosPipeline clusters volumes in a list
     plosClusterVolList =[]
     for cluster in (range(len(clusterList))):
         plosClusterVolList.append(clusterList[cluster].getVolume())
 
     #finding the upper outlier fence
-    upperThreshFence = 1.5*np.percentile(plosClusterVolList, 75)
+    Q3 = np.percentile(plosClusterVolList, 75)
+    Q1 = np.percentile(plosClusterVolList, 25)
+    IQR = Q3 - Q1
+    upperThreshFence = Q3 + 1.5*IQR
+    lowerThreshFence = Q1 - 1.5*IQR
 
     #filtering out the background cluster
     upperThreshClusterList = []
     for cluster in (range(len(clusterList))):
-        if clusterList[cluster].getVolume() < upperThreshFence:
+        if clusterList[cluster].getVolume() < upperThreshFence and clusterList[cluster].getVolume() > lowerThreshFence:
             upperThreshClusterList.append(clusterList[cluster])
 
     return upperThreshClusterList
 
+#pass in the list of clusters that have gone through the plos pipeline, and the list that hasn't
 def clusterCoregister(plosClusterList, rawClusterList):
-    #creating a list of all the member indices of the plos plosClusterList
+    #creating a list of all the member indices of the plos cluster list
     plosClusterMemberList = []
     for cluster in range(len(plosClusterList)):
         plosClusterMemberList.extend(plosClusterList[cluster].members)
 
     #creating a list of all the clusters without any decay
-    completeClusterMemberList =[]
+    finalClusterList =[]
     for rawCluster in range(len(rawClusterList)):
         for index in range(len(plosClusterMemberList)):
-            if plosClusterMemberList[index] in rawClusterList[rawCluster].members:
-                completeClusterMemberList.append(rawClusterList[rawCluster])
+            if ((plosClusterMemberList[index] in rawClusterList[rawCluster].members) and (not(rawClusterList[rawCluster] in finalClusterList))):
+                finalClusterList.append(rawClusterList[rawCluster])
+
+    return completeClusterMemberList
+
+def completePipeline(combinedIm, neighborhood = 1):
+    #finding the clusters after plosPipeline - list the decayed clusters
+    plosOut = pLib.pipeline(combinedIm, neighborhood = neighborhood)
+    bianOut = otsuVox(plosOut)
+    connectList = connectedComponents(bianOut)
+
+    threshClusterList = thresholdByVolumePercentile(connectList)
+
+    #finding the clusters without plosPipeline - lists the entire clusters
+    bianRawOut = otsuVox(combinedIm)
+    clusterRawList = connectedComponents(bianRawOut)
+
+    completeClusterMemberList = clusterCoregister(threshClusterList, clusterRawList)
 
     return completeClusterMemberList

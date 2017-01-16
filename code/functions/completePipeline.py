@@ -14,12 +14,12 @@ def completePipeline(combinedIm, neighborhood = 1):
     bianOut = cLib.otsuVox(plosOut)
     connectList = cLib.connectedComponents(bianOut)
 
-    upperThreshClusterList = cLib.thresholdByVolumePercentile(connectList)
+    threshClusterList = cLib.thresholdByVolumePercentile(connectList)
 
     #finding the clusters without plosPipeline - lists the entire clusters
     bianRawOut = cLib.otsuVox(combinedIm)
     connectRawList = cLib.connectedComponents(bianRawOut)
 
-    completeClusterMemberList = cLib.clusterCoregister(connectList, connectRawList)
+    completeClusterMemberList = cLib.clusterCoregister(threshClusterList, connectRawList)
 
     return completeClusterMemberList
