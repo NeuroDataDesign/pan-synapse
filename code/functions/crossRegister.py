@@ -11,8 +11,11 @@ import numpy as np
 import cv2
 import cPickle as pickle
 
-#load the data
-data0 = tIO.unzipChannels(tIO.loadTiff('../../data/SEP-GluA1-KI_tp1.tif'))[0][5:10]
-
-clusters = cLib.completePipeline(data0)
-pickle.dump(clusters, open('./synthDat/pipeline.clusters', 'w'))
+def getSynapseClusters(rawClusters, PlosClusters):
+    synpaseClusters = []
+    for cluster in rawClusters:
+        for pCluster in PlosClusters:
+            if(pCluster.members in cluster.members):
+                 synapseClusters.append(cluster)
+                 break
+    return synapseClusters
