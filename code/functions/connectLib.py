@@ -5,6 +5,7 @@ from skimage.measure import label
 from cluster import Cluster
 import numpy as np
 import cv2
+import plosLib as pLib
 
 def otsuVox(argVox):
     probVox = np.nan_to_num(argVox)
@@ -78,7 +79,7 @@ def clusterCoregister(plosClusterList, rawClusterList):
             if ((plosClusterMemberList[index] in rawClusterList[rawCluster].members) and (not(rawClusterList[rawCluster] in finalClusterList))):
                 finalClusterList.append(rawClusterList[rawCluster])
 
-    return completeClusterMemberList
+    return finalClusterList
 
 def completePipeline(combinedIm, neighborhood = 1):
     #finding the clusters after plosPipeline - list the decayed clusters
