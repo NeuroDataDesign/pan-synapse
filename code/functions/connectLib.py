@@ -56,12 +56,11 @@ def thresholdByVolume(clusterList):
     Q1 = np.percentile(plosClusterVolList, 25)
     IQR = Q3 - Q1
     upperThreshFence = Q3 + 1.5*IQR
-    lowerThreshFence = Q1 - 1.5*IQR
 
     #filtering out the background cluster
     upperThreshClusterList = []
     for cluster in (range(len(clusterList))):
-        if clusterList[cluster].getVolume() < upperThreshFence and clusterList[cluster].getVolume() > lowerThreshFence:
+        if clusterList[cluster].getVolume() < upperThreshFence:
             upperThreshClusterList.append(clusterList[cluster])
 
     return upperThreshClusterList
@@ -81,19 +80,3 @@ def clusterCoregister(plosClusterList, rawClusterList):
                 finalClusterList.append(rawClusterList[rawCluster])
 
     return finalClusterList
-
-def completePipeline(combinedIm, neighborhood = 1):
-    #finding the clusters after plosPipeline - list the decayed clusters
-    plosOut = pLib.pipeline(combinedIm, neighborhood = neighborhood)
-    bianOut = otsuVox(plosOut)
-    connectList = connectedComponents(bianOut)
-
-    threshClusterList = thresholdByVolume(connectList)
-
-    #finding the clusters without plosPipeline - lists the entire clusters
-    bianRawOut = otsuVox(combinedIm)
-    clusterRawList = connectedComponents(bianRawOut)
-
-    completeClusterMemberList = clusterCoregister(threshClusterList, clusterRawList)
-
-    return completeClusterMemberList

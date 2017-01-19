@@ -14,5 +14,7 @@ import cPickle as pickle
 #load the data
 data0 = tIO.unzipChannels(tIO.loadTiff('../../data/SEP-GluA1-KI_tp1.tif'))[0][5:10]
 
-clusters = cLib.completePipeline(data0)
+#Outdated TODO: change this to pipelineTest.py
+
+#clusters = cLib.completePipeline(data0)
 pickle.dump(clusters, open('./synthDat/pipeline.clusters', 'w'))

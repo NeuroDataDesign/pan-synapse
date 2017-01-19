@@ -37,3 +37,6 @@ class Cluster:
         volume = ((max(listZ) - min(listZ) + 1)*(max(listY) - min(listY) + 1)*(max(listX) - min(listX) + 1))
         ratio = len(self.members)*1.0/volume
         return 1 - abs(ratio/(math.pi/6) - 1)
+
+    def getMembers(self):
+        return self.members
