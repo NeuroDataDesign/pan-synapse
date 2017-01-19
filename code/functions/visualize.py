@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from cluster import Cluster
-
+import cPickle as pickle
 ##### y, x coordinates are based off of opencv image coordinate system
 ##### (z,y,x)
 
@@ -28,9 +28,9 @@ def getBoundary(zslice, clusterMemberList):
             boundaryPixels.append([pixel[0], pixel[1]+1])
         #lower boundary case
         if (pixel[0]-1 not in visY and pixel[0]-1 >=0): #for  y
-            boundaryPixels.append([pixel[0]+1, pixel[1]])
-        if (pixel[1]-1 not in visX and pixel[1]-1 <=0): #for x
-            boundaryPixels.append([pixel[0], pixel[1]+1])
+            boundaryPixels.append([pixel[0]-1, pixel[1]])
+        if (pixel[1]-1 not in visX and pixel[1]-1 >=0): #for x
+            boundaryPixels.append([pixel[0], pixel[1]-1])
 
     #removing duplicates
     boundaryPixels = list(set(boundaryPixels))
@@ -46,4 +46,8 @@ def visualize(zslice, image3D, clusters):
         imgRGB[pixe[0]][pixel[1]][0] = 255
         imgRGB[pixe[0]][pixel[1]][1] = 255
         imgRGB[pixe[0]][pixel[1]][2] = 0
+    #pickle
+    pickle.dump(imageRGB, open('final.image', 'w'))
+
     cv2.imshow('Image slice at z = ' + str(zslice), imageRGB)
+    cv2.waitKey()

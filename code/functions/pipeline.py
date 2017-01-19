@@ -26,4 +26,7 @@ clusterRawList = cLib.connectedComponents(bianRawOut)
 
 #Coregistering clusters with raw data
 completeClusterList = cLib.clusterCoregister(threshClusterList, clusterRawList)
+
+print 'done finding clusters'
+#visualize
 vis.visualize(3, data0, completeClusterList)
