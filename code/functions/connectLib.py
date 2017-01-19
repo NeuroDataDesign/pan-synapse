@@ -44,11 +44,12 @@ def densityOfSlice(clusters, minZ, maxZ, minY, maxY, minX, maxX):
     return clusterPerPixelCubed/(.12*.12*.5)
 
 #pass in list of clusters, return a list of thresholded clusters
-def thresholdByVolumePercentile(clusterList):
+def thresholdByVolume(clusterList):
     #putting the plosPipeline clusters volumes in a list
     plosClusterVolList =[]
     for cluster in (range(len(clusterList))):
-        plosClusterVolList.append(clusterList[cluster].getVolume())
+        if clusterList[cluster].getVolume() > 5 and clusterList[cluster].getVolume() < 104:
+            plosClusterVolList.append(clusterList[cluster].getVolume())
 
     #finding the upper outlier fence
     Q3 = np.percentile(plosClusterVolList, 75)
@@ -87,7 +88,7 @@ def completePipeline(combinedIm, neighborhood = 1):
     bianOut = otsuVox(plosOut)
     connectList = connectedComponents(bianOut)
 
-    threshClusterList = thresholdByVolumePercentile(connectList)
+    threshClusterList = thresholdByVolume(connectList)
 
     #finding the clusters without plosPipeline - lists the entire clusters
     bianRawOut = otsuVox(combinedIm)
