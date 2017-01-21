@@ -44,16 +44,17 @@ def densityOfSlice(clusters, minZ, maxZ, minY, maxY, minX, maxX):
     return clusterPerPixelCubed/(.12*.12*.5)
 
 #pass in list of clusters, return a list of thresholded clusters
-def thresholdByVolume(clusterList):
-    #putting the plosPipeline clusters volumes in a list
-    plosClusterVolList =[]
+def naiveThreshold(clusterList):
+    #putting the finalclusters volumes in a list
+    finalClusterList =[]
     for cluster in (range(len(clusterList))):
-        if clusterList[cluster].getVolume() > 5 and clusterList[cluster].getVolume() < 104:
-            plosClusterVolList.append(clusterList[cluster].getVolume())
+        if clusterList[cluster].getVolume() > 3 and clusterList[cluster].getVolume() < 104:
+            finalClusterList.append(cluster)
 
     #finding the upper outlier fence
-    Q3 = np.percentile(plosClusterVolList, 75)
-    Q1 = np.percentile(plosClusterVolList, 25)
+    '''
+    Q3 = np.percentile(finalClusterVolList, 75)
+    Q1 = np.percentile(finalClusterVolList, 25)
     IQR = Q3 - Q1
     upperThreshFence = Q3 + 1.5*IQR
 
@@ -62,8 +63,24 @@ def thresholdByVolume(clusterList):
     for cluster in (range(len(clusterList))):
         if clusterList[cluster].getVolume() < upperThreshFence:
             upperThreshClusterList.append(clusterList[cluster])
+            '''
+    return finalClusterList
 
-    return upperThreshClusterList
+def thresholdBackground(plosClusterList):
+    finalPlosList = []
+    #finding the upper outlier fence
+    Q3 = np.percentile(plosClusterList, 75)
+    Q1 = np.percentile(plosClusterList, 25)
+    IQR = Q3 - Q1
+    upperThreshFence = Q3 + 1.5*IQR
+
+    #filtering out the background cluster
+    finalPlosList = []
+    for i in (range(len(plosClusterList))):
+        if plosClusterList[i].getVolume() < upperThreshFence:
+            finalPlosList.append(plosClusterList[i])
+
+    return finalPlostList
 
 #pass in the list of clusters that have gone through the plos pipeline, and the list that hasn't
 def clusterCoregister(plosClusterList, rawClusterList):

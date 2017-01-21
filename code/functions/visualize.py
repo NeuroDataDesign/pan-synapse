@@ -9,15 +9,19 @@ def getAllClusterMembers(clusterList):
     #complete cluster member list
     clusterMemberList = []
     for cluster in clusterList:
-        clusterMemberList.append(cluster.getMembers())
+        for member in cluster.getMembers():
+            clusterMemberList.append(member)
     return clusterMemberList
 
 def getBoundary(zslice, clusterMemberList):
     boundaryPixels = []
     visClusters = []
     for elem in clusterMemberList:
-        if elem[0]==zlice:
-            visClusters.append([elem[0], elem[1]])
+        if elem[0]==zslice:
+            visClusters.append([elem[1], elem[2]])
+    print visClusters
+    if (len(visClusters)==0):
+        return []
     visY = zip(*visClusters)[0]
     visX = zip(*visClusters)[1]
     for pixel in visClusters:
@@ -32,20 +36,21 @@ def getBoundary(zslice, clusterMemberList):
         if (pixel[1]-1 not in visX and pixel[1]-1 >=0): #for x
             boundaryPixels.append([pixel[0], pixel[1]-1])
 
-    #removing duplicates
-    boundaryPixels = list(set(boundaryPixels))
     return boundaryPixels
 
 def visualize(zslice, image3D, clusters):
-    image = image3d[zslice]
+    image = image3D[zslice]
     #convert image to RGB
     imageRGB = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
+    print 'done converting'
     boundaryPixels = getBoundary(zslice, getAllClusterMembers(clusters))
+    print 'done getting boundaries'
     for pixel in boundaryPixels:
     #chaning boundary pixel color to yellow
-        imgRGB[pixe[0]][pixel[1]][0] = 255
-        imgRGB[pixe[0]][pixel[1]][1] = 255
-        imgRGB[pixe[0]][pixel[1]][2] = 0
+        imageRGB[pixe[0]][pixel[1]][0] = 255
+        imageRGB[pixe[0]][pixel[1]][1] = 255
+        imageRGB[pixe[0]][pixel[1]][2] = 0
+    print 'done drawing boundaries'
     #pickle
     pickle.dump(imageRGB, open('final.image', 'w'))
 
