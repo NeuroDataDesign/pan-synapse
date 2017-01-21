@@ -25,13 +25,13 @@ print 'done finding plos clusters'
 #finding the clusters without plosPipeline - lists the entire clusters
 bianRawOut = cLib.otsuVox(data0)
 clusterRawList = cLib.connectedComponents(bianRawOut)
-threshClusterList = cLib.naiveThreshold(clusterRawList)
+threshRawClusterList = cLib.naiveThreshold(clusterRawList)
 print 'done finding raw clusters'
 #Coregistering clusters with raw data
-completeClusterList = cLib.clusterCoregister(connectList, clusterRawList)
+completeClusterList = cLib.clusterCoregister(connectList, threshRawClusterList)
 print 'done finding final clusters'
 
-pickle.dump(threshClusterList, open('coregistered.clusters', 'w'))
+pickle.dump(completeClusterList, open('coregistered.clusters', 'w'))
 print 'done pickling clusters'
 
 #visualize
