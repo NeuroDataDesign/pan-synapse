@@ -47,8 +47,8 @@ def densityOfSlice(clusters, minZ, maxZ, minY, maxY, minX, maxX):
 def naiveThreshold(clusterList):
     #putting the finalclusters volumes in a list
     finalClusterList =[]
-    for cluster in (range(len(clusterList))):
-        if clusterList[cluster].getVolume() > 3 and clusterList[cluster].getVolume() < 104:
+    for cluster in clusterList:
+        if cluster.getVolume() > 3 and cluster.getVolume() < 104:
             finalClusterList.append(cluster)
 
     #finding the upper outlier fence
@@ -66,34 +66,34 @@ def naiveThreshold(clusterList):
             '''
     return finalClusterList
 
+def getClusterVolumes(clusterList):
+    clusterVols = []
+    for cluster in clusterList:
+        clusterVols.append(cluster.getVolume())
+    return clusterVols
+
 def thresholdBackground(plosClusterList):
-    finalPlosList = []
+    plosClusterVolumes = getClusterVolumes(plosClusterList)
     #finding the upper outlier fence
-    Q3 = np.percentile(plosClusterList, 75)
-    Q1 = np.percentile(plosClusterList, 25)
+    Q3 = np.percentile(plosClusterVolumes, 75)
+    Q1 = np.percentile(plosClusterVolumes, 25)
     IQR = Q3 - Q1
     upperThreshFence = Q3 + 1.5*IQR
-
-    #filtering out the background cluster
     finalPlosList = []
-    for i in (range(len(plosClusterList))):
+    #filtering out the background cluster
+    for i in range(len(plosClusterList)):
         if plosClusterList[i].getVolume() < upperThreshFence:
             finalPlosList.append(plosClusterList[i])
 
-    return finalPlostList
+    return finalPlosList
 
 #pass in the list of clusters that have gone through the plos pipeline, and the list that hasn't
 def clusterCoregister(plosClusterList, rawClusterList):
-    #creating a list of all the member indices of the plos cluster list
-    plosClusterMemberList = []
-    for cluster in range(len(plosClusterList)):
-        plosClusterMemberList.extend(plosClusterList[cluster].members)
-
     #creating a list of all the clusters without any decay
     finalClusterList =[]
-    for rawCluster in range(len(rawClusterList)):
-        for index in range(len(plosClusterMemberList)):
-            if ((plosClusterMemberList[index] in rawClusterList[rawCluster].members) and (not(rawClusterList[rawCluster] in finalClusterList))):
-                finalClusterList.append(rawClusterList[rawCluster])
+    for rawCluster in rawClusterList:
+        for cluster in plosClusterList:
+            if any(member in rawCluster.getMembers() for member in cluster.getMembers()):
+                finalClusterList.append(rawCluster)
 
     return finalClusterList

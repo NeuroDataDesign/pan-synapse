@@ -21,24 +21,32 @@ connectList = cLib.connectedComponents(bianOut)
 #Removing outlier clusters (background, noise)
 connectList = cLib.thresholdBackground(connectList)
 
-print 'done finding plos clusters'
+#pickle.dump(connectList, open('plos.clusters', 'w'))
+#connectList = pickle.load(open('plos.clusters', 'rb'))
+
 #finding the clusters without plosPipeline - lists the entire clusters
+
 bianRawOut = cLib.otsuVox(data0)
 clusterRawList = cLib.connectedComponents(bianRawOut)
 threshRawClusterList = cLib.naiveThreshold(clusterRawList)
-print 'done finding raw clusters'
+
+#pickle.dump(threshRawClusterList, open('raw.clusters', 'w'))
+#threshRawClusterList = pickle.load(open('raw.clusters', 'rb'))
+
 #Coregistering clusters with raw data
 completeClusterList = cLib.clusterCoregister(connectList, threshRawClusterList)
-print 'done finding final clusters'
 
-pickle.dump(completeClusterList, open('coregistered.clusters', 'w'))
-print 'done pickling clusters'
+#pickle.dump(completeClusterList, open('coregistered.clusters', 'w'))
+#completeClusterList = pickle.load(open('coregistered.clusters', 'rb'))
 
 #visualize
-completeClusterList = pickle.load(open('coregistered.clusters', 'r'))
-completeClusterVolumes = []
-for cluster in completeClusterList:
-    completeClusterVolumes.append(cluster.getVolume())
-print completeClusterVolumes
-print completeClusterList
-vis.visualize(1, data0, completeClusterList)
+#completeClusterList = pickle.load(open('coregistered.clusters', 'r'))
+
+#####Checking Volumes
+#completeClusterVolumes = []
+#for cluster in completeClusterList:
+    #completeClusterVolumes.append(cluster.getVolume())
+#print completeClusterVolumes
+#print completeClusterList
+
+vis.visualize(1, data0, connectList)
