@@ -90,3 +90,4 @@ ENV/
 *.pyc
 *.tif
 synapse-paper.pdf
+/data/PickleData/
