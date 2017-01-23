@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 volumeList = []
-clusters = pickle.load(open('afterPipeline.cluster'))
+clusters = pickle.load(open('complete.clusters'))
 print 'volumes: '
 for cluster in range(len(clusters)):
     volumeList.append(clusters[cluster].getVolume())
@@ -24,6 +24,6 @@ synapseImage = np.zeros((5, 1024, 1024))
 for index in range(len(indexList)):
     z, y, x = indexList[index]
     synapseImage[z][y][x] = 100
-
+print synapseImage[2]
 plt.imshow(synapseImage[2], cmap = 'gray')
 plt.show()

@@ -106,22 +106,3 @@ def binaryThreshold(img):
     for i in range(len(img)):
         threshImg[i] = cv2.threshold(img[i], percentile, 255, cv2.THRESH_BINARY)[1]
     return threshImg
-
-def completePipeline(combinedIm):
-    #finding the clusters after plosPipeline - list the decayed clusters
-    plosOut = pLib.pipeline(combinedIm)
-    bianOut = otsuVox(plosOut)
-    connectList = connectedComponents(bianOut)
-
-    threshClusterList = thresholdByVolumeNaive(connectList)
-    pickle.dump(threshClusterList, open('plosListAfterThresh.cluster', 'w'))
-
-    #finding the clusters without plosPipeline - lists the entire clusters
-    bianRawOut = binaryThreshold(combinedIm)
-    clusterRawList = connectedComponents(bianRawOut)
-    clusterRawThreshList = thresholdByVolumeNaive(clusterRawList)
-    pickle.dump(clusterRawThreshList, open('rawList.cluster', 'w'))
-
-    completeClusterMemberList = clusterCoregister(threshClusterList, clusterRawThreshList)
-
-    return completeClusterMemberList

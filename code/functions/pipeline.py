@@ -1,6 +1,6 @@
 import sys
 sys.path.insert(0, '../functions/')
-import plosLib as plos
+import plosLib as pLib
 import connectLib as cLib
 from cluster import Cluster
 import mouseVis as mv
@@ -11,42 +11,28 @@ import visualize as vis
 import cPickle as pickle
 
 data0 = tIO.unzipChannels(tIO.loadTiff('../../data/SEP-GluA1-KI_tp1.tif'))[0][5:10]
-
-#PLOS pipeline
-plosOut = plos.pipeline(data0, neighborhood = 1)
-#Otsu's Method
+#finding the clusters after plosPipeline - list the decayed clusters
+plosOut = pLib.pipeline(data0)
 bianOut = cLib.otsuVox(plosOut)
-#Connected Components
 connectList = cLib.connectedComponents(bianOut)
-#Removing outlier clusters (background, noise)
-connectList = cLib.thresholdBackground(connectList)
+#threshold decayed clusters (get rid of background)
+threshClusterList = cLib.thresholdByVolumeNaive(connectList)
 
-#pickle.dump(connectList, open('plos.clusters', 'w'))
-#connectList = pickle.load(open('plos.clusters', 'rb'))
+
+#pickle.dump(threshClusterList, open('plos.clusters', 'w'))
 
 #finding the clusters without plosPipeline - lists the entire clusters
-
-bianRawOut = cLib.otsuVox(data0)
+bianRawOut = cLib.binaryThreshold(data0)
 clusterRawList = cLib.connectedComponents(bianRawOut)
-threshRawClusterList = cLib.naiveThreshold(clusterRawList)
+clusterRawThreshList = cLib.thresholdByVolumeNaive(clusterRawList)
 
-#pickle.dump(threshRawClusterList, open('raw.clusters', 'w'))
-#threshRawClusterList = pickle.load(open('raw.clusters', 'rb'))
 
-#Coregistering clusters with raw data
-completeClusterList = cLib.clusterCoregister(connectList, threshRawClusterList)
+#pickle.dump(clusterRawThreshList, open('raw.clusters', 'w'))
 
-#pickle.dump(completeClusterList, open('coregistered.clusters', 'w'))
-#completeClusterList = pickle.load(open('coregistered.clusters', 'rb'))
+#final clusters
+completeClusterList = cLib.clusterCoregister(threshClusterList, clusterRawThreshList)
+#pickle.dump(completeClusterList, open('complete.clusters', 'w'))
 
+#completeClusterList = pickle.load(open('complete.clusters', 'rb'))
 #visualize
-#completeClusterList = pickle.load(open('coregistered.clusters', 'r'))
-
-#####Checking Volumes
-#completeClusterVolumes = []
-#for cluster in completeClusterList:
-    #completeClusterVolumes.append(cluster.getVolume())
-#print completeClusterVolumes
-#print completeClusterList
-
-vis.visualize(1, data0, connectList)
+vis.visualize(2, data0, completeClusterList)
