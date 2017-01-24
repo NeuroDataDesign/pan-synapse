@@ -2,12 +2,17 @@ import sys
 sys.path.insert(0, '../functions/')
 import mouseVis
 import random
+import numpy as np
 
-data1 = [random.random() for i in range(100)]
-mouseVis.generateHist(data1, title= 'random data 1', yaxis='proportion of data', axisStart=0, axisEnd = .5)
+data1 = np.zeros([100])
+for i in range(len(data1)):
+    data1[i] = random.random()*100
+mouseVis.generateHist(data1, figName= 'random data 1', yaxis='proportion of data')
 
-data2 = [random.random() for i in range(100)]
-mouseVis.generateHist(data2, title = 'random data 2', yaxis='proportion of data')
+data2 = np.zeros([100])
+for i in range(len(data1)):
+    data2[i] = random.random()*100
+mouseVis.generateHist(data2, figName = 'random data 2', yaxis='proportion of data')
 
 data3 = [data1, data2]
-mouseVis.generateMultiHist(data3, title = 'random data multiVoxHist', yaxis='proportion of data', axisStart = 0, axisEnd = .5)
+mouseVis.generateMultiHist(data3, figName = 'random data multiVoxHist', yaxis='proportion of data')

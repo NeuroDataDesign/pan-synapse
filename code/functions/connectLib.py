@@ -67,12 +67,12 @@ def thresholdByVolumePercentile(clusterList):
     return upperThreshClusterList
 
 #pass in list of clusters, return a list of thresholded clusters
-def thresholdByVolumeNaive(clusterList):
+def thresholdByVolumeNaive(clusterList, limit=200):
 
     #filtering out the background cluster
     naiveThreshClusterList = []
     for cluster in (range(len(clusterList))):
-        if clusterList[cluster].getVolume() < 200:
+        if clusterList[cluster].getVolume() < limit:
             naiveThreshClusterList.append(clusterList[cluster])
 
     return naiveThreshClusterList

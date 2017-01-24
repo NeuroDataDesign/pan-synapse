@@ -16,7 +16,7 @@ plosOut = pLib.pipeline(data0)
 bianOut = cLib.otsuVox(plosOut)
 connectList = cLib.connectedComponents(bianOut)
 #threshold decayed clusters (get rid of background)
-threshClusterList = cLib.thresholdByVolumeNaive(connectList)
+threshClusterList = cLib.thresholdByVolumeNaive(connectList, 200)
 
 
 #pickle.dump(threshClusterList, open('plos.clusters', 'w'))
@@ -24,14 +24,14 @@ threshClusterList = cLib.thresholdByVolumeNaive(connectList)
 #finding the clusters without plosPipeline - lists the entire clusters
 bianRawOut = cLib.binaryThreshold(data0)
 clusterRawList = cLib.connectedComponents(bianRawOut)
-clusterRawThreshList = cLib.thresholdByVolumeNaive(clusterRawList)
+clusterRawThreshList = cLib.thresholdByVolumeNaive(clusterRawList, 200)
 
 
 #pickle.dump(clusterRawThreshList, open('raw.clusters', 'w'))
 
 #final clusters
 completeClusterList = cLib.clusterCoregister(threshClusterList, clusterRawThreshList)
-#pickle.dump(completeClusterList, open('complete.clusters', 'w'))
+pickle.dump(completeClusterList, open('complete.clusters', 'w'))
 
 #completeClusterList = pickle.load(open('complete.clusters', 'rb'))
 #visualize
