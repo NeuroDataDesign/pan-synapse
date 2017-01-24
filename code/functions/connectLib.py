@@ -42,7 +42,7 @@ def densityOfSlice(clusters, minZ, maxZ, minY, maxY, minX, maxX):
     clusterPerPixelCubed = float(count)/((maxX - minX) * (maxY - minY) * (maxZ - minZ))
     #NOTE .12*.12*.5 microns is the resolution of the given data, this may need to be changed
     #in future implementations for data of different resolutions
-    return clusterPerPixelCubed/(.12*.12*.5)
+    return str(clusterPerPixelCubed/(.12*.12*.5)) + 'clusters per cubic microns'
 
 #pass in list of clusters, return a list of thresholded clusters
 def thresholdByVolumePercentile(clusterList):
