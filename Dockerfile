@@ -1,26 +1,19 @@
 # existing image build
-FROM ubuntu
-RUN rm /bin/sh && ln -s /bin/bash /bin/sh
+FROM ubuntu:16.04
 
-#installing pip
+#installing pip and essentials
 RUN apt-get update
-RUN apt-get -y install python-pip
+RUN apt-get -y install python-setuptools python-dev python-pip python-tk libglib2.0-0
 
 #installing necessary modules
-#general dependencies
-RUN pip install numpy
-RUN pip install matplotlib
-RUN pip install opencv-python
-RUN pip install scipy
-RUN pip install plotly
-RUN pip install scikit-image
-#tiffIO dependencies
-RUN pip install functools32
-RUN pip install Pillow
-RUN pip install libtiff
+#dependencies
+RUN cd /
+RUN apt-get -y install python-libtiff
+RUN pip install numpy scipy matplotlib plotly scikit-image functools32 Pillow
+RUN apt-get -y install libopencv-dev python-opencv
 
+RUN mkdir data
+RUN mkdir code
+RUN mkdir code/functions
 #necessary code files
-ADD ./code/functions/tiffIO.py
-ADD ./code/functions/plosLib.py
-ADD ./code/functions/cluster.py
-ADD ./code/functions/
+ADD ./code/functions ./code/functions

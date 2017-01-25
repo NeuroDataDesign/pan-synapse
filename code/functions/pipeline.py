@@ -11,6 +11,7 @@ import cPickle as pickle
 def pipeline(tiffImage, visSlice=0):
     data0 = tIO.unzipChannels(tIO.loadTiff(tiffImage))[0][5:10]
     #finding the clusters after plosPipeline - list the decayed clusters
+    print "Finding clusters"
     plosOut = pLib.pipeline(data0)
     bianOut = cLib.otsuVox(plosOut)
     connectList = cLib.connectedComponents(bianOut)
@@ -29,7 +30,8 @@ def pipeline(tiffImage, visSlice=0):
     #final clusters
     completeClusterList = cLib.clusterCoregister(threshClusterList, clusterRawThreshList)
     #pickle.dump(completeClusterList, open('complete.clusters', 'w'))
-
+    print "Done finding clusters"
+    print "Visualizing Results At z=" + str(visSlice)
     #completeClusterList = pickle.load(open('complete.clusters', 'rb'))
     #visualize
     vis.visualize(visSlice, data0, completeClusterList)

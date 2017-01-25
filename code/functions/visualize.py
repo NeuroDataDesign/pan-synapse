@@ -45,7 +45,7 @@ def visualize(zslice, image3D, clusters):
         #changing boundary pixel color to yellow
         imageRGB[pixel[0],pixel[1]] = [65535, 65535, 0]
     #pickle
-    #pickle.dump(imageRGB, open('final.image', 'w'))
-    cv2.imshow('Image slice at z = ' + str(zslice), imageRGB)
-    #cv2.imwrite('PipelineResults.png', imageRGB)
+    pickle.dump(imageRGB, open('final.image', 'w'))
+    #cv2.imshow('Image slice at z = ' + str(zslice), imageRGB)
+    cv2.imwrite('DockerResults.png', imageRGB)
     cv2.waitKey()
