@@ -1,10 +1,11 @@
-from flask import Flask, redirect, url_for, request
+from flask import Flask, redirect, url_for, request, render_template
 
 app = Flask(__name__)
 
-@app.route('/homepage', methods = ['GET', 'POST'])
-def test():
-    return 'Hello World!'
+@app.route('/', methods = ['GET'])
+def index():
+    if request.method == 'GET':
+        return render_template('index.html')
 
 
 
