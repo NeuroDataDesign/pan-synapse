@@ -67,12 +67,12 @@ def thresholdByVolumePercentile(clusterList):
     return upperThreshClusterList
 
 #pass in list of clusters, return a list of thresholded clusters
-def thresholdByVolumeNaive(clusterList, limit=200):
+def thresholdByVolumeNaive(clusterList, lowerLimit = 0, upperLimit=200):
 
     #filtering out the background cluster
     naiveThreshClusterList = []
     for cluster in (range(len(clusterList))):
-        if clusterList[cluster].getVolume() < limit:
+        if clusterList[cluster].getVolume() > lowerLimit and clusterList[cluster].getVolume() < upperLimit:
             naiveThreshClusterList.append(clusterList[cluster])
 
     return naiveThreshClusterList
@@ -92,11 +92,11 @@ def clusterCoregister(plosClusterList, rawClusterList):
 
     return finalClusterList
 
-def adaptiveThreshold(img):
+def adaptiveThreshold(img, blockSize=61, C=6):
     img = (img/256).astype('uint8')
     threshImg = np.zeros_like(img)
     for i in range(len(img)):
-        threshImg[i] = cv2.adaptiveThreshold(img[i], 255, adaptiveMethod=cv2.ADAPTIVE_THRESH_MEAN_C, thresholdType=cv2.THRESH_BINARY, blockSize=61, C=6)
+        threshImg[i] = cv2.adaptiveThreshold(img[i], 255, adaptiveMethod=cv2.ADAPTIVE_THRESH_MEAN_C, thresholdType=cv2.THRESH_BINARY, blockSize=blockSize, C=C)
     return threshImg
 
 def binaryThreshold(img):

@@ -15,26 +15,18 @@ def pipeline(tiffImage, visSlice=0):
     plosOut = pLib.pipeline(data0)
     bianOut = cLib.otsuVox(plosOut)
     connectList = cLib.connectedComponents(bianOut)
-    #threshold decayed clusters (get rid of background)
-    threshClusterList = cLib.thresholdByVolumeNaive(connectList)
+    #threshold decayed clusters (get rid of background and glia cells)
+    threshClusterList = cLib.thresholdByVolumeNaive(connectList, lowerLimit = 0, upperLimit = 50)
+    #NOTE: add in cluster dilation here
 
     #pickle.dump(threshClusterList, open('plos.clusters', 'w'))
 
-    #finding the clusters without plosPipeline - lists the entire clusters
-    bianRawOut = cLib.binaryThreshold(data0)
-    clusterRawList = cLib.connectedComponents(bianRawOut)
-    clusterRawThreshList = cLib.thresholdByVolumeNaive(clusterRawList)
-
-    #pickle.dump(clusterRawThreshList, open('raw.clusters', 'w'))
-
-    #final clusters
-    completeClusterList = cLib.clusterCoregister(threshClusterList, clusterRawThreshList)
     #pickle.dump(completeClusterList, open('complete.clusters', 'w'))
     print "Done finding clusters"
     print "Visualizing Results At z=" + str(visSlice)
     #completeClusterList = pickle.load(open('complete.clusters', 'rb'))
     #visualize
-    vis.visualize(visSlice, data0, completeClusterList)
+    vis.visualize(visSlice, data0, threshClusterList)
 
 
 ####Testing Code
