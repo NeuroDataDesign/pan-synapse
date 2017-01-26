@@ -177,6 +177,19 @@ html,body {
   transition-delay: 0.2s;
 }
 
+.analyze {
+  margin-top: 2.25vh;
+  background: white;
+  border-style: solid;
+  border-color: black
+}
+.analyze:hover {
+  background-color: #F60;
+  border-color: white;
+  color: white;
+  border-radius: 0%;
+}
+
 .group:before,
 .group:after {
   content:"";
@@ -298,6 +311,24 @@ html,body {
   .hideme {
     opacity: 0;
     position: absolute;
-    width: 60%;
-    margin-left: 28.5%
+    width: 10%;
+    margin-left: 27%
+  }
+
+  @media only screen and (max-width: 900px) {
+    .hideme {
+      margin-left: 15%;
+    }
+  }
+
+  @media only screen and (max-width: 648px) {
+    .hideme {
+      margin-left: 5%;
+    }
+  }
+
+  @media only screen and (max-width: 600px) {
+    .hideme {
+      margin-left: 2%;
+    }
   }
