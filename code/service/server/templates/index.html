@@ -27,15 +27,15 @@
 <body>
     <div id="top"></div>
     <nav class="menu fadeIn">
-      <input type="checkbox" href="#" class="menu-open" name="menu-open" id="menu-open"/>
-      <label class="menu-open-button" for="menu-open">
+        <input type="checkbox" href="#" class="menu-open" name="menu-open" id="menu-open" />
+        <label class="menu-open-button" for="menu-open">
         <span class="hamburger hamburger-1"></span>
         <span class="hamburger hamburger-2"></span>
         <span class="hamburger hamburger-3"></span>
       </label>
 
-      <a href="#top" class="menu-item"> <i class="fa fa-home"></i> </a>
-      <a href="#blueSection" class="menu-item"> <i class="fa fa-calculator"></i> </a>
+        <a href="#top" class="menu-item"> <i class="fa fa-home"></i> </a>
+        <a href="#blueSection" class="menu-item"> <i class="fa fa-calculator"></i> </a>
 
 
     </nav>
@@ -44,31 +44,31 @@
 
     <!-- Return to Top -->
     <a href="javascript:" id="return-to-top" class="circle">
-      <span id="arrow-high" class="glyphicon glyphicon-menu-up"></span>
-      <span id="arrow-low" class="glyphicon glyphicon-menu-up"></span>
+        <span id="arrow-high" class="glyphicon glyphicon-menu-up"></span>
+        <span id="arrow-low" class="glyphicon glyphicon-menu-up"></span>
     </a>
     <div class="parallax">
-    <div class="header-text center fadeIn">Some welcome message.</div>
+        <div class="header-text center fadeIn">Some welcome message.</div>
     </div>
     <div class="panel">
-    <a href='#blueSection'>
-      <div class="circle-center circle fadeIn">
-          <span id="arrow-high" class="glyphicon glyphicon-menu-down"></span>
-          <span id="arrow-low" class="glyphicon glyphicon-menu-down"></span>
-      </div>
-    </a>
-    <form><div class="section-menu group hideme" id="blueSection">
-      <div class="menuCol icon-text">
-        <form action="upload.php" method="post" enctype="multipart/form-data">
-            Select data <br> to analyze:
-            <input type="file" name="fileToUpload" id="fileToUpload" style="margin-top: 2.5vh; font-size: 22px">
-            <a href=""><input type="submit" value="Analyze Data" name="submit" class="analyze"></a>
+        <a href='#blueSection'>
+            <div class="circle-center circle fadeIn">
+                <span id="arrow-high" class="glyphicon glyphicon-menu-down"></span>
+                <span id="arrow-low" class="glyphicon glyphicon-menu-down"></span>
+            </div>
+        </a>
+        <form method="POST">
+            <div class="section-menu group hideme" id="blueSection">
+                <div class="menuCol icon-text">
+                    <form action="upload.php" method="Post" enctype="multipart/form-data" id="form1">
+                        Select data <br> to analyze:
+                        <input type="file" name="fileToUpload" id="fileToUpload" style="margin-top: 2.5vh; font-size: 22px">
+
+                    </form>
+                </div>
+                <input type="submit" name="submit" value="Analyze Data" class="analyze">
+            </div>
         </form>
-      </div>
-
-
-
-    </div></form>
 
 
         <script src="static/js/main.js"></script>
