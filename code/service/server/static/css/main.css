@@ -232,7 +232,7 @@ html,body {
 .link:hover::after {width: 100%; transition: width .3s;}
 
 .parallax {
-    background-image: url("https://www.jhu.edu/theme/images/divisions-section-background-desk-9f3b03d3b9.jpg");
+    background-image: url("https://neurodata.io/static/assets/img/tools/default_header.jpg");
     height: 100vh;
     background-attachment: fixed;
     background-position: center;
