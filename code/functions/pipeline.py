@@ -7,7 +7,9 @@ import mouseVis as mv
 import tiffIO as tIO
 import visualize as vis
 import cPickle as pickle
+import cv2
 #Takes in tiffimage file and z slice that you want to visualize
+
 def pipeline(tiffImage, visSlice=0):
     data0 = tIO.unzipChannels(tIO.loadTiff(tiffImage))[0][5:10]
     #finding the clusters after plosPipeline - list the decayed clusters
@@ -26,8 +28,8 @@ def pipeline(tiffImage, visSlice=0):
     print "Visualizing Results At z=" + str(visSlice)
     #completeClusterList = pickle.load(open('complete.clusters', 'rb'))
     #visualize
-    vis.visualize(visSlice, data0, threshClusterList)
-
+    image = vis.visualize(visSlice, data0, threshClusterList)
+    cv2.imwrite("../../results/PipelineImg.png", image)
 
 ####Testing Code
 #    pipeline('../../data/SEP-GluA1-KI_tp1.tif')

@@ -91,3 +91,4 @@ ENV/
 *.tif
 synapse-paper.pdf
 /data/PickleData/
+/results

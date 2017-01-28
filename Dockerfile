@@ -9,11 +9,13 @@ RUN apt-get -y install python-setuptools python-dev python-pip python-tk libglib
 #dependencies
 RUN cd /
 RUN apt-get -y install python-libtiff
-RUN pip install numpy scipy matplotlib plotly scikit-image functools32 Pillow
+RUN pip install numpy scipy matplotlib plotly scikit-image functools32 Pillow Flask
 RUN apt-get -y install libopencv-dev python-opencv
 
 RUN mkdir data
 RUN mkdir code
+RUN mkdir results
 RUN mkdir code/functions
 #necessary code files
 ADD ./code/functions ./code/functions
+ADD ./code/service ./code/service
