@@ -19,7 +19,7 @@ def index():
 @app.route('/analyze', methods = ['GET', 'POST'])
 def analyze():
     if request.method == 'GET':
-        return render_template('brain.html')
+        return "Analyzing Data"
 
 if __name__ == '__main__':
     app.run(debug=True)
