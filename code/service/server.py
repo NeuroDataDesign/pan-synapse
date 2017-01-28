@@ -1,9 +1,10 @@
 import sys
 sys.path.insert(0, '../functions/')
-from flask import Flask, redirect, url_for, request, render_template
 import runPipeline as run
+from flask import Flask, redirect, url_for, request, render_template
 import os
 import glob
+
 app = Flask(__name__)
 
 @app.route('/', methods = ['GET', 'POST'])
@@ -19,7 +20,6 @@ def index():
 def analyze():
     if request.method == 'GET':
         return render_template('brain.html')
-
 
 if __name__ == '__main__':
     app.run(debug=True)
