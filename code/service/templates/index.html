@@ -27,6 +27,8 @@
 
 <body>
     <div id="top"></div>
+    <div id="particles-background" class="vertical-centered-box"></div>
+    <div id="particles-foreground" class="vertical-centered-box"></div>
     <nav class="menu fadeIn">
         <input type="checkbox" href="#" class="menu-open" name="menu-open" id="menu-open" />
         <label class="menu-open-button" for="menu-open">
@@ -59,7 +61,7 @@
             </div>
         </a>
 
-        <div class="section-menu menuCol icon-text" id="blueSection">
+        <div class="section-menu menuCol icon-text hideme" id="blueSection">
             <form action="http://localhost:5000/uploader" method="post" enctype="multipart/form-data">
                 Select data <br> to analyze:
                 <input type="file" name="file" id="fileToUpload" style="margin-top: 2.5vh; font-size: 22px">
