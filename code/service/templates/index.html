@@ -31,22 +31,26 @@
 
     <div class="vertical-centered-box">
       <a class="header-text elementToFadeInAndOut" style="position: absolute; margin-top: 40vh; margin-left: -18%;"> Welcome Message </a>
-      <!-- <a class="header-text"> Analyzing Data </a>
-      <div class="content">
-        <div class="loader-circle"></div>
-        <div class="loader-line-mask">
-          <div class="loader-line"></div>
+      <div style="display: none;" id="analyzeText">
+        <a class="header-text" style="position: absolute; margin-top: 40vh; margin-left: -15%;"> Analyzing Data </a>
+        <div class="content" style="position: absolute; margin-top: 63vh;">
+          <div class="loader-circle"></div>
+          <div class="loader-line-mask">
+            <div class="loader-line"></div>
+          </div>
         </div>
       </div>
-    </div> -->
+    </div>
     <form method="POST" class="fadeBox">
-        <div class="section-menu">
+        <div class="section-menu" id="fadeBox">
             <div class="menuCol icon-text">
                 <form action="upload.php" method="Post" enctype="multipart/form-data" id="form1">
                     Select data <br> to analyze:
                     <input type="file" name="fileToUpload" id="fileToUpload" style="margin-top: 2.5vh; font-size: 22px">
                 </form>
-                <input type="submit" name="submit" value="Analyze Data" class="analyze">
+                <div id="submit">
+                  <input type="submit" name="submit" value="Analyze Data" class="analyze">
+                </div>
             </div>
         </div>
     </form>
