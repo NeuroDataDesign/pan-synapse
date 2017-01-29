@@ -10,7 +10,7 @@ import cPickle as pickle
 import cv2
 #Takes in tiffimage file and z slice that you want to visualize
 
-def pipeline(tiffImage, visSlice=0):
+def pipeline(tiffImage, visSlice=1):
     data0 = tIO.unzipChannels(tIO.loadTiff(tiffImage))[0][5:10]
     #finding the clusters after plosPipeline - list the decayed clusters
     print "Finding clusters"
@@ -29,7 +29,7 @@ def pipeline(tiffImage, visSlice=0):
     #completeClusterList = pickle.load(open('complete.clusters', 'rb'))
     #visualize
     image = vis.visualize(visSlice, data0, threshClusterList)
-    cv2.imwrite("../../results/PipelineImg.png", image)
+    cv2.imwrite("../service/static/results/PipelineImg.png", image)
     #return (image, threshClusterList)
 
 ####Testing Code

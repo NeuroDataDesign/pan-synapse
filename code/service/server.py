@@ -1,5 +1,5 @@
 import sys
-sys.path.insert(0, '../functions/')
+sys.path.append('../functions')
 import runPipeline as run
 from flask import Flask, redirect, url_for, request, render_template, flash
 import os
@@ -46,11 +46,15 @@ def analyze():
         run.runPipeline()
         print "Done"
         ## TODO: FLUSH data directory
-        return render_template('results.html')
+        return redirect(url_for('results'))
         ## TODO: Have form on results.html for save file or exit. Should link to finish.
         ## TODO: Have so if close window, automatically flush results.
 
-@app.route('/finish', methods = ['GET', 'POST'])
+@app.route('/results', methods = ['GET', 'POST'])
+def results():
+    return render_template('results.html')
+
+@app.route('/save', methods = ['GET', 'POST'])
 def finish():
     ## TODO: FLUSH results directory
     return 'Here are the results'
