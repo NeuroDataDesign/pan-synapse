@@ -30,6 +30,7 @@ def pipeline(tiffImage, visSlice=0):
     #visualize
     image = vis.visualize(visSlice, data0, threshClusterList)
     cv2.imwrite("../../results/PipelineImg.png", image)
+    #return (image, threshClusterList)
 
 ####Testing Code
 #    pipeline('../../data/SEP-GluA1-KI_tp1.tif')

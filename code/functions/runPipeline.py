@@ -5,7 +5,7 @@ import glob
 import os
 
 ###### FOR DOCKER ######
-def runPipeline():
+def runPipelineAndGetResults():
     if len(glob.glob('../../data/*.tif')) != 0:
         fileName =  glob.glob('../../data/*.tif')[0]
         print 'Image: ' + fileName
@@ -14,4 +14,4 @@ def runPipeline():
 
     print "Starting Pipeline"
     pipe.pipeline(fileName)
-    print "Done"
+    print "Analyzing and storing results"
