@@ -92,3 +92,4 @@ ENV/
 synapse-paper.pdf
 /data/PickleData/
 /results
+/code/service/static/results
