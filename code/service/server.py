@@ -33,7 +33,7 @@ def upload_file():
         f = request.files['file']
         if f and allowedFile(f):
             f.save(os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(f.filename)))
-            return 'file uploaded successfully'
+            return render_template('analyze.html')
         else:
             return 'file not found or not in correct format'
 

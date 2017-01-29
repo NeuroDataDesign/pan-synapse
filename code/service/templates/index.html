@@ -26,33 +26,50 @@
 </head>
 
 <body>
-    <div id="particles-background" class="vertical-centered-box"></div>
-    <div id="particles-foreground" class="vertical-centered-box"></div>
+    <div id="top"></div>
+    <nav class="menu fadeIn">
+        <input type="checkbox" href="#" class="menu-open" name="menu-open" id="menu-open" />
+        <label class="menu-open-button" for="menu-open">
+        <span class="hamburger hamburger-1"></span>
+        <span class="hamburger hamburger-2"></span>
+        <span class="hamburger hamburger-3"></span>
+      </label>
 
-    <div class="vertical-centered-box">
-        <a class="header-text elementToFadeInAndOut" style="position: absolute; margin-top: 40vh; margin-left: -18%;"> Welcome Message </a>
-        <div style="display: none;" id="analyzeText">
-            <a class="header-text" style="position: absolute; margin-top: 40vh; margin-left: -15%;"> Analyzing Data </a>
-            <div class="content" style="position: absolute; margin-top: 63vh;">
-                <div class="loader-circle"></div>
-                <div class="loader-line-mask">
-                    <div class="loader-line"></div>
-                </div>
+        <a href="#top" class="menu-item"> <i class="fa fa-home"></i> </a>
+        <a href="#blueSection" class="menu-item"> <i class="fa fa-calculator"></i> </a>
+
+
+    </nav>
+
+
+
+    <!-- Return to Top -->
+    <a href="javascript:" id="return-to-top" class="circle">
+        <span id="arrow-high" class="glyphicon glyphicon-menu-up"></span>
+        <span id="arrow-low" class="glyphicon glyphicon-menu-up"></span>
+    </a>
+    <div class="parallax">
+        <div class="header-text center fadeIn">Some welcome message.</div>
+    </div>
+    <div class="panel">
+        <a href='#blueSection'>
+            <div class="circle-center circle fadeIn">
+                <span id="arrow-high" class="glyphicon glyphicon-menu-down"></span>
+                <span id="arrow-low" class="glyphicon glyphicon-menu-down"></span>
             </div>
+        </a>
+
+        <div class="section-menu menuCol icon-text" id="blueSection">
+            <form action="http://localhost:5000/uploader" method="post" enctype="multipart/form-data">
+                Select data <br> to analyze:
+                <input type="file" name="file" id="fileToUpload" style="margin-top: 2.5vh; font-size: 22px">
+                <input type="submit" name="submit" value="Analyze Data" class="analyze">
+            </form>
         </div>
-    </div>
-
-    <div class = "fadeBox section-menu menuCol icon-text" >
-        <form action="http://localhost:5000/uploader" method="post" enctype="multipart/form-data" class="fadeBox" id="fadeBox">
-            Select data <br> to analyze:
-            <input type="file" name="file" style="margin-top: 2.5vh; font-size: 22px" id='fileToUpload'>
-            <input type="submit" name="submit" value="Analyze Data" class="analyze" id='submit'>
-        </form>
-    </div>
 
 
 
-    <script src="static/js/main.js"></script>
+        <script src="../static/js/main.js"></script>
 
 </body>
 
