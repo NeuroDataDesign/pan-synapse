@@ -42,7 +42,7 @@
         <a href="#blueSection" class="menu-item"> <i class="fa fa-calculator"></i> </a>
     </nav>
 
-  
+
     <!-- Return to Top -->
     <a href="javascript:" id="return-to-top" class="circle">
         <span id="arrow-high" class="glyphicon glyphicon-menu-up"></span>
@@ -63,8 +63,11 @@
             <form action="http://localhost:5000/uploader" method="post" enctype="multipart/form-data">
                 Select data <br> to analyze:
                 <input type="file" name="file" id="fileToUpload" style="margin-top: 2.5vh; font-size: 22px">
-                <input type="submit" name="submit" value="Analyze Data" class="analyze">
+                <input type="submit" name="submit" value="Analyze Data" class="analyze" id="analyze">
             </form>
+        </div>
+        <div class="section-menu menuCol icon-text" id="upload" style="display:none; margin-left: 35%;">
+          Uploading data...
         </div>
 
 
