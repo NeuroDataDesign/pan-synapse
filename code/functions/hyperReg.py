@@ -122,13 +122,36 @@ def apply3DRigid(initialVolume, transform, verbose=False):
     return rigidMatrix
 
 def align3DCOM(npVolA, npVolB, verbose=False):
+    #get the centers of mass
     comA = center_of_mass(npVolA)
     comB = center_of_mass(npVolB)
+
+    if verbose:
+        print 'comA', comA, '\t', 'comB: ', comB
+
+    #find the disperity
     translationVector = np.subtract(comB, comA)
+
+    #prep the vectorfor apply3DRigid
+    translationVector = np.flipud(translationVector)
     translationVector = np.append(translationVector, 1.)
     transform = np.identity(4)
     transform[:,3]=translationVector
+
+    if verbose:
+        print 'transform: ', transform
+
     return apply3DRigid(npVolA, transform, verbose=verbose)
+
+def simpleRegister(clusters1, clusters2, verbose=False):
+    pairings = []
+    this = len(clusters1)
+    for clusterIdx in range(len(clusters1)):
+        if verbose:
+            print 'Progress: ', clusterIdx/float(this)
+        lossList = [np.sum(abs(np.array(clusters1[clusterIdx].centroid) - np.array(elem.centroid))) for elem in clusters2]
+        pairings.append((clusterIdx, np.argmin(lossList)))
+    return pairings
 
 def get3DPointRadialDensity(z, y, x, volume, radius):
     neighborhood = volume[z-radius: z+radius, y-radius: y+radius, x-radius: x+radius]
@@ -255,7 +278,7 @@ radiusDelta - slack var for divergence in spherical level set
 selectionRatio - ratio of data selected for monte carlo election
 precision - how close two transfrorms can be before one counts as a vote for the other
 '''
-def register(npVolA, npVolB, radius, epsilon, radiusDelta, selectionRatio, precision):
+def custRegister(npVolA, npVolB, radius, epsilon, radiusDelta, selectionRatio, precision):
     centeredVolA = align3DCOM(npVolA, npVolB)
     rdvA = generate3DRadialDensityVolume(centeredVolA, radius)
     rdvB = generate3DRadialDensityVolume(npVolB, radius)
