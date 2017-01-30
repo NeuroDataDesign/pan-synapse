@@ -7,6 +7,7 @@ import mouseVis as mv
 import tiffIO as tIO
 import visualize as vis
 import cPickle as pickle
+from scipy import ndimage
 #Takes in tiffimage file and z slice that you want to visualize
 
 def pipeline(tiffImage, visSlice=1):
@@ -15,7 +16,7 @@ def pipeline(tiffImage, visSlice=1):
     print "Finding clusters"
     plosOut = pLib.pipeline(data0)
     bianOut = cLib.otsuVox(plosOut)
-    connectList = cLib.connectedComponents(bianOut)
+    connectList = cLib.connectedComponents(ndimage.morphology.binary_dilation(bianOut).astype(int))
     #threshold decayed clusters (get rid of background and glia cells)
     threshClusterList = cLib.thresholdByVolumeNaive(connectList, lowerLimit = 0, upperLimit = 50)
     #NOTE: add in cluster dilation here
