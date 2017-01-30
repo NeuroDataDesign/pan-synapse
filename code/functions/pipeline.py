@@ -7,7 +7,6 @@ import mouseVis as mv
 import tiffIO as tIO
 import visualize as vis
 import cPickle as pickle
-import cv2
 #Takes in tiffimage file and z slice that you want to visualize
 
 def pipeline(tiffImage, visSlice=1):
@@ -29,7 +28,7 @@ def pipeline(tiffImage, visSlice=1):
     #completeClusterList = pickle.load(open('complete.clusters', 'rb'))
     #visualize
     image = vis.visualize(visSlice, data0, threshClusterList)
-    cv2.imwrite("../service/static/results/PipelineImg.png", image)
+    return (image, threshClusterList)
     #return (image, threshClusterList)
 
 ####Testing Code

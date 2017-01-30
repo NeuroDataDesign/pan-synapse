@@ -1,6 +1,9 @@
 import sys
 sys.path.insert(0, '../functions/')
 import pipeline as pipe
+import mouseVis as mv
+import plotly.offline as py
+import cv2
 import glob
 import os
 
@@ -13,5 +16,7 @@ def runPipeline():
         sys.exit("FILE NOT FOUND")
 
     print "Starting Pipeline"
-    pipe.pipeline(fileName)
+    results = pipe.pipeline(fileName)
+    cv2.imwrite("../service/static/results/PipelineImg.png", results[0])
+
     print "Analyzing and storing results"
