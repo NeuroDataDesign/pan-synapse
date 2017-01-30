@@ -16,8 +16,9 @@ url("https://db.onlinewebfonts.com/t/a28854e1db150c80e69c915280190573.svg#Genton
 html,body {
     padding:0;
     margin:0;
-    background:black;
+    background:#094074;
     height: 100%;
+    overflow-x: hidden;
 }
 .header {
   padding:1em 0;
@@ -636,7 +637,5 @@ html,body {
   }
   body.noscroll
   {
-      position: fixed;
-      overflow-y: scroll;
-      width: 100%;
+      overflow: hidden;
   }
