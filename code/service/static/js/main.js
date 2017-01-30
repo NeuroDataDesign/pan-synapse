@@ -104,7 +104,10 @@ $(document).ready(function() {
 });
 
 $('#analyze').click(function(e){
-    $('#blueSection').fadeOut('slow', function(){
-        $('#upload').fadeIn('slow');
+    $('#welcome').fadeOut('slow', function(){
+        $('#uploading').fadeIn('slow');
     });
+    $('body,html').animate({
+        scrollTop : 0                       // Scroll to top of body
+    }, 1000);
 });
