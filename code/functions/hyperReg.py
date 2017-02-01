@@ -8,33 +8,6 @@ from scipy.ndimage.measurements import center_of_mass
 from random import randrange as rand
 from random import uniform as floatRand
 
-class accumulator:
-    def __init__(self, tolerance):
-        self.tolerance = tolerance
-        self.voteList = []
-
-    def vote(self, pitchToAdd, yawToAdd, rollToAdd):
-        #TODO this could be way more efficient but its late and im tired
-        inserted = False
-        for index, angleVotePair in self.voteList:
-            angleSet = angleVotePair[0]
-
-            pitch = angleSet[0]
-            yaw = angleSet[1]
-            roll = angleSet[2]
-
-            if abs(pitch-pitchToAdd)<self.tolerance and abs(yaw-yawToAdd)<self.tolerance and abs(roll-rollToAdd)<self.tolerance:
-                self.voteList[index] = [self.voteList[index][0], self.voteList[index][1]+1]
-                inserted = True
-                break
-
-        if not inserted:
-            self.voteList.append([[pitch, yaw, roll], 1])
-
-    def elect(self):
-        self.voteList.sort(key=lambda x:x[1])
-        return voteList[0][0]
-
 def get3DRigid(pitchRange = .1,
                rollRange = .1,
                yawRange = .1,
@@ -153,19 +126,6 @@ def simpleRegister(clusters1, clusters2, verbose=False):
         pairings.append((clusterIdx, np.argmin(lossList)))
     return pairings
 
-def get3DPointRadialDensity(z, y, x, volume, radius):
-    neighborhood = volume[z-radius: z+radius, y-radius: y+radius, x-radius: x+radius]
-    return np.count_nonzero(neighborhood)
-
-def generate3DRadialDensityVolume(volume, radius):
-    rdv = np.zeros_like(volume)
-    for z in range(volume.shape[0]):
-        for y in range(volume.shape[1]):
-            for x in range(volume.shape[2]):
-                density = get3DPointRadialDensity(z, y, x, volume, radius)
-                rdv[z][y][x] = density
-    return rdv
-
 def randomSubset(original, k):
     subset = []
     while len(subset) != k:
@@ -173,120 +133,3 @@ def randomSubset(original, k):
         if not chosen in subset:
             subset.append(chosen)
     return subset
-
-def getRadialOffset(point, pair):
-    '''
-    The following defines the definition convention of this program
-    pitch = c = y axis
-    yaw = a = z axis
-    roll = b = x axis
-    '''
-
-    #get the rotation matrix
-    x = (np.cross(point, pair))/(np.linalg.norm(np.cross(point, pair)))
-    theta = math.acos((np.dot(point, pair))/(np.linalg.norm(np.dot(point, pair))))
-    a = [[0, -x[2], x[1]],
-         [x[2], 0, -x[0]],
-         [-x[1], x[0], 0]]
-    i = np.identity(3)
-    r = i + math.sin(theta)*a + (1-math.cos(theta))*(np.linalg.matrix_power(r, 2))
-
-    #retrieve corresponding euler angles
-    pitch = math.atan2(r[2][1], r[2][2])
-    yaw = math.atan2(r[1][0], r[0][0])
-    roll = -1*math.asin(r[2][0])
-
-    return pitch, yaw, roll
-
-def getRDVAloss(rdvA, rdvB, selected, transform):
-    transformedPoints = []
-    loss = 0.
-    #point order is x, y, z
-    for point in selected:
-        toTransform = np.concatenate(point, [1.])
-        result = np.dot(transform, toTransform)
-        loss = loss + (rdvA[point[2]][point[1]][point[0]] - rdvB[result[2]][result[1]][result[0]])**2
-
-    return loss
-
-def get3DRadialDensityVolumeAlignment(rdvA, rdvB, epsilon, radiusDelta, selectionRatio = .05, precision = .01):
-    #randomly select a subset of points density alignment
-    candidates = zip(*np.nonzero(rdvA)) #assigns points in x, y, z order
-    numPoints = round(selectionRatio * len(candidates))
-    selected = randomSubset(candidates, numPoints)
-
-    #initialize the accumulator
-    myTallyBot = accumulator(precision)
-
-    #DEBUG NOTE NOTE NOTE
-    num = 0
-
-    #begin the voting loop
-    for point in selected:
-
-        #DEBUG NOTE NOTE NOTE
-        num+=1.
-        print 'progress: ', num/float(len(selected))
-
-        #get the radial density of the current point
-        curRD = rdvA[point[0], point[1], point[2]] #0, 1, 2, since RDVA is in zyx orientation
-        #get the radius of the current point
-        pointR = math.sqrt(point[2]**2 + point[1]**2 + point[0]**2)
-
-        #iterate over all radial density matches in the epsilon range
-        for pairRD in range(int(curRD-epsilon), int(curRD+epsilon)):
-            #TODO this may be faster if I check radius, then value
-            #get all pairs where the radial density values are the same
-            firstBatch = zip(*np.where(rdvB==pairRD)) #this returns in x, y, z
-            potentialPairs = []
-
-            #only consider pairs within epsilon of the original point's fixed unit sphere
-            for pair in firstBatch:
-                pairR = math.sqrt(pair[2]**2 + pair[1]**2 + pair[0]**2)
-                if abs(pointR - pairR) < radiusDelta:
-                    #append the projection of the pair point onto the unit sphere
-                    potentialPairs.append([elem/float(np.linalg.norm(pair))*pointR for elem in pair])
-
-            optimalAng = None
-            optimalLoss = None
-            for pair in potentialPairs:
-                #get euler angles associated with radial offset of points
-                pitch, yaw, roll = getRadialOffset(point, pair)
-                #get transform corresponding to required angles
-                transform = get3DRigid(pitch=pitch, yaw=yaw, roll=roll, xT=0., yT=0., zT=0.)
-
-                #get the loss for this transform and point selection
-                loss = getRDVAloss(rdvA, rdvB, selected, transform)
-                if optimalLoss is None or loss < optimalLoss:
-                    optimalLoss = loss
-                    optimalAng = [pitch, yaw, roll]
-
-            #append vote to accumulator
-            if not optimalAng is None:
-                myTallyBot.vote(optimalAng[0], optimalAng[1], optimalAng[2])
-
-    #evaluate the results of the accumulator
-    return myTallyBot.elect()
-
-
-'''
-PARAMS
-------
-radius - size of neigborhood for radial density calculation
-epsilon - slack var for difference in radial density
-radiusDelta - slack var for divergence in spherical level set
-selectionRatio - ratio of data selected for monte carlo election
-precision - how close two transfrorms can be before one counts as a vote for the other
-'''
-def custRegister(npVolA, npVolB, radius, epsilon, radiusDelta, selectionRatio, precision):
-    centeredVolA = align3DCOM(npVolA, npVolB)
-    rdvA = generate3DRadialDensityVolume(centeredVolA, radius)
-    rdvB = generate3DRadialDensityVolume(npVolB, radius)
-    eAng = get3DRadialDensityVolumeAlignment(rdvA, rdvB, epsilon=epsilon, radiusDelta=radiusDelta, selectionRatio=selectionRatio, precision=precision)
-    return apply3DRigid(centeredVolA,
-                        pitch =eAng[0],
-                        yaw=eAng[1],
-                        roll=eAng[2],
-                        zT=0.,
-                        yT=0.,
-                        xT=0.)

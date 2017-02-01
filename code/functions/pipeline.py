@@ -10,27 +10,37 @@ import cPickle as pickle
 from scipy import ndimage
 #Takes in tiffimage file and z slice that you want to visualize
 
-def pipeline(tiffImage, visSlice=1):
+def pipeline(tiffImage,
+             visSlice=1,
+             plosNeighborhood=1,
+             plosLowerZBound=1,
+             plosUpperZBound=1,
+             volThreshLowerBound=0,
+             volThreshUpperBound=50):
+
+    #uplod the data
     data0 = tIO.unzipChannels(tIO.loadTiff(tiffImage))[0][5:10]
-    #finding the clusters after plosPipeline - list the decayed clusters
+
+    #finding the clusters after plosPipeline
     print "Finding clusters"
-    plosOut = pLib.pipeline(data0)
+    plosOut = pLib.pipeline(data0, plosNeighborhood, plosLowerZBound, plosUpperZBound)
+
+    #binarize output of plos lib
     bianOut = cLib.otsuVox(plosOut)
-    connectList = cLib.connectedComponents(ndimage.morphology.binary_dilation(bianOut).astype(int))
+
+
+    #dilate the output based on neigborhood size
+    for i in range(int((plosNeighborhood+plosUpperZBound+plosLowerZBound)/3.)):
+        bianOut = ndimage.morphology.binary_dilation(bianOut).astype(int)
+
+    #run connected component
+    connectList = cLib.connectedComponents()
+
     #threshold decayed clusters (get rid of background and glia cells)
     threshClusterList = cLib.thresholdByVolumeNaive(connectList, lowerLimit = 0, upperLimit = 50)
-    #NOTE: add in cluster dilation here
 
-    #pickle.dump(threshClusterList, open('plos.clusters', 'w'))
-
-    #pickle.dump(completeClusterList, open('complete.clusters', 'w'))
     print "Done finding clusters"
     print "Visualizing Results At z=" + str(visSlice)
-    #completeClusterList = pickle.load(open('complete.clusters', 'rb'))
     #visualize
     image = vis.visualize(visSlice, data0, threshClusterList)
     return (image, threshClusterList)
-    #return (image, threshClusterList)
-
-####Testing Code
-#    pipeline('../../data/SEP-GluA1-KI_tp1.tif')

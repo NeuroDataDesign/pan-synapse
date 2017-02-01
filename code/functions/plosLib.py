@@ -9,7 +9,6 @@ def pipeline(baseVoxel, neighborhood=1, lowerBound=1, upperBound=1):
     pMap2DVox = generatepMap2D(generateForegroundVoxel(baseVoxel), neighborhood=neighborhood)
     return generate3DPunctaMap(pMap2DVox, lowerBound, upperBound)
 
-#NOTE Both of these following functions are fully parallelizable, which would increase speed dramatically
 def generateForegroundVoxel(baseVoxel):
     return np.stack([generateForegroundProbMap(image, *getBackgroundGaussian(image)) for image in baseVoxel])
 
@@ -77,6 +76,4 @@ def generate3DPunctaMap(punctaVoxel2D, lowerBound, upperBound):
                 else:
                     returnVox[z][y][x] = punctaVoxel2D[z][y][x] * np.exp(-1 * getInterVoxelSquaredError(punctaVoxel2D, x, y, z, lowerBound, upperBound))
 
-    #Times 65535 for max int value to make probs look good on visualization
-    #cv2.imwrite('../data/post_stitch.jpg', returnVox[2]* 65535)
     return returnVox
