@@ -1,11 +1,11 @@
 import sys
 sys.path.insert(0, '../functions/')
+import cv2
 import plosLib as pLib
 import connectLib as cLib
 from cluster import Cluster
 import mouseVis as mv
 import tiffIO as tIO
-import visualize as vis
 import cPickle as pickle
 from scipy import ndimage
 #Takes in tiffimage file and z slice that you want to visualize
@@ -28,13 +28,12 @@ def pipeline(tiffImage,
     #binarize output of plos lib
     bianOut = cLib.otsuVox(plosOut)
 
-
     #dilate the output based on neigborhood size
     for i in range(int((plosNeighborhood+plosUpperZBound+plosLowerZBound)/3.)):
         bianOut = ndimage.morphology.binary_dilation(bianOut).astype(int)
 
     #run connected component
-    connectList = cLib.connectedComponents()
+    connectList = cLib.connectedComponents(bianOut)
 
     #threshold decayed clusters (get rid of background and glia cells)
     threshClusterList = cLib.thresholdByVolumeNaive(connectList, lowerLimit = 0, upperLimit = 50)
@@ -42,5 +41,9 @@ def pipeline(tiffImage,
     print "Done finding clusters"
     print "Visualizing Results At z=" + str(visSlice)
     #visualize
-    image = vis.visualize(visSlice, data0, threshClusterList)
+    image = mv.visualize(visSlice, data0, threshClusterList)
+    cv2.imshow('test', image)
+    cv2.waitKey()
     return (image, threshClusterList)
+
+pipeline('../../data/SEP-GluA1-KI_tp1.tif')

@@ -1,7 +1,8 @@
 import sys
 sys.path.append('../functions')
 import runPipeline as run
-from flask import Flask, redirect, url_for, request, render_template, flash
+from flask import Flask, redirect, url_for, request, render_template
+import thread
 import os
 import glob
 
@@ -9,7 +10,6 @@ UPLOAD_FOLDER = '../../data'
 ALLOWED_EXTENSIONS = 'tif'
 
 app = Flask(__name__)
-app.secret_key = 'neurodata'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 def allowedFile(filename):
@@ -19,12 +19,6 @@ def allowedFile(filename):
 def index():
     if request.method == 'GET':
         return render_template('index.html')
-'''
-    if request.method == 'POST':
-        # os.system("docker exec 'docker ps -q' )
-        run.runPipeline()
-        print "Done"
-        return redirect('http://localhost:5000/analyze')'''
 
 @app.route('/uploader', methods = ['GET', 'POST'])
 def upload_file():
@@ -60,4 +54,4 @@ def finish():
     return 'Here are the results'
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, threaded = True)
