@@ -19,6 +19,8 @@ html,body {
     background:#094074;
     height: 100%;
     overflow-x: hidden;
+    font-family: Quadon;
+    font-weight: 500;
 }
 .header {
   padding:1em 0;
@@ -639,3 +641,5 @@ html,body {
   {
       overflow: hidden;
   }
+
+  
