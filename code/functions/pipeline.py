@@ -7,43 +7,58 @@ from cluster import Cluster
 import mouseVis as mv
 import tiffIO as tIO
 import cPickle as pickle
+import hyperReg as hype
 from scipy import ndimage
 #Takes in tiffimage file and z slice that you want to visualize
 
-def pipeline(tiffImage,
-             visSlice=1,
+def pipeline(tiffDict,
              plosNeighborhood=1,
              plosLowerZBound=1,
              plosUpperZBound=1,
              volThreshLowerBound=0,
-             volThreshUpperBound=50):
+             volThreshUpperBound=50,
+             verbose = False):
 
-    #uplod the data
-    data0 = tIO.unzipChannels(tIO.loadTiff(tiffImage))[0][5:10]
+    #initialize a container for the results of each volume
+    resList = []
+    total = len(resDict)
+    for num, tiffImage in enumerate(tiffDict):
 
-    #finding the clusters after plosPipeline
-    print "Finding clusters"
-    plosOut = pLib.pipeline(data0, plosNeighborhood, plosLowerZBound, plosUpperZBound)
+        if verbose:
+            print 'Progress: ', num/float(total)
 
-    #binarize output of plos lib
-    bianOut = cLib.otsuVox(plosOut)
+        #uplod the data
+        data0 = tIO.unzipChannels(tIO.loadTiff(tiffImage))[0][5:10]
 
-    #dilate the output based on neigborhood size
-    for i in range(int((plosNeighborhood+plosUpperZBound+plosLowerZBound)/3.)):
-        bianOut = ndimage.morphology.binary_dilation(bianOut).astype(int)
+        #finding the clusters after plosPipeline
+        plosOut = pLib.pipeline(data0, plosNeighborhood, plosLowerZBound, plosUpperZBound)
 
-    #run connected component
-    connectList = cLib.connectedComponents(bianOut)
+        #binarize output of plos lib
+        bianOut = cLib.otsuVox(plosOut)
 
-    #threshold decayed clusters (get rid of background and glia cells)
-    threshClusterList = cLib.thresholdByVolumeNaive(connectList, lowerLimit = 0, upperLimit = 50)
+        #dilate the output based on neigborhood size
+        for i in range(int((plosNeighborhood+plosUpperZBound+plosLowerZBound)/3.)):
+            bianOut = ndimage.morphology.binary_dilation(bianOut).astype(int)
 
-    print "Done finding clusters"
-    print "Visualizing Results At z=" + str(visSlice)
-    #visualize
-    image = mv.visualize(visSlice, data0, threshClusterList)
-    cv2.imshow('test', image)
-    cv2.waitKey()
-    return (image, threshClusterList)
+        #run connected component
+        connectList = cLib.connectedComponents(bianOut)
 
-pipeline('../../data/SEP-GluA1-KI_tp1.tif')
+        #threshold decayed clusters (get rid of background and glia cells)
+        threshClusterList = cLib.thresholdByVolumeNaive(connectList, lowerLimit = 0, upperLimit = 50)
+
+        #append the current results to the
+        resList.append(threshClusterList)
+
+    #once the full result list is populated, run registration
+    #TODO update this to middle out, if we still use this reg method (depends on Daniel)
+
+    #initialize a container for the pairing
+    regList = []
+
+    #minus 1 since the last cluster cant be registered to anything
+    for num in range(len(resList)-1):
+        regList.append(hype.simpleRegister(resList[num], resList[num+1]))
+
+    #now that the pair list is populated, resolve it to a sequence
+    seq = hype.resolve(regList)
+    

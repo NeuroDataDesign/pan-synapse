@@ -133,3 +133,24 @@ def randomSubset(original, k):
         if not chosen in subset:
             subset.append(chosen)
     return subset
+
+def resolve(regList):
+
+    #NOTE as of current this selects a random subset of 50 nodes to trace
+    print 'here'
+    toTrack = regList[0][:50]
+    #initialize a container for the final sequence
+    seq = []
+
+    #Follow each pairing like a thread
+    for num, elem in enumerate(toTrack):
+        print 'progress: ', num/50.
+        print elem
+        #initialize a container to hold the current thread
+        myThread = [elem[0]]
+        #starts at 1 since 0 seed is already in thread
+        for tp in range(1, len(regList)):
+            myThread.append(regLst[tp-1][myThread[-1]][1])
+        seq.append(myThread)
+
+    return seq
