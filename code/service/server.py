@@ -48,7 +48,7 @@ def analyze(message):
     run.runPipeline(message['myID'])
     socketio.emit('complete',{})
 
-@app.route('/results', methods=['GET'])
+@app.route('/results', methods=['GET']):
     myID = 'static/results/' + str(request.headers['myID']) + '.html'
     return render_template('results.html', myID=myID)
 
