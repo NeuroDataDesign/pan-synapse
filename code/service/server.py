@@ -1,16 +1,24 @@
 import sys
 sys.path.append('../functions')
-import runPipeline as run
-from flask import Flask, redirect, url_for, request, render_template
-import thread
-import os
-import glob
 
+import time
+import base64
+
+from flask import Flask, redirect, url_for, request, render_template
+from flask_socketio import SocketIO, emit
+
+import runPipeline as run
+
+#generate the app object
+app = Flask(__name__)
+
+#configure the upload settings
 UPLOAD_FOLDER = '../../data'
 ALLOWED_EXTENSIONS = 'tif'
-
-app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+#generate the async handler
+socketio = SocketIO(app)
 
 def allowedFile(filename):
     return '.' in filename and filename.split('.')[1].lower() == ALLOWED_EXTENSIONS
@@ -20,38 +28,29 @@ def index():
     if request.method == 'GET':
         return render_template('index.html')
 
-@app.route('/uploader', methods = ['GET', 'POST'])
-def upload_file():
-    if request.method == 'POST':
-        if allowedFile(request.files['file'].filename):
-            f = request.files['file']
-            if f:
-                print os.path.join(app.config['UPLOAD_FOLDER'], f.filename)
-                f.save(os.path.join(app.config['UPLOAD_FOLDER'], f.filename))
-                return render_template('analyze.html')
-            else:
-                return 'File does not exist.'
-        else:
-            return 'File Type Not Allowed'
+@socketio.on('upload', namespace='/')
+def upload(message):
+    #generate a unique id based on time of upload
+    myID = str(time.time())[3:]
 
-@app.route('/analyze', methods = ['GET'])
-def analyze():
-    if request.method == 'GET':
-        run.runPipeline()
-        print "Done"
-        ## TODO: FLUSH data directory
-        return redirect(url_for('results'))
-        ## TODO: Have form on results.html for save file or exit. Should link to finish.
-        ## TODO: Have so if close window, automatically flush results.
+    #save the file
+    rawDatList = message['file']
+    for tp, rawDat in enumerate(rawDatList):
+        fileDat = base64.b64decode(rawDat)
+        with open(myID+'_' + str(tp) + '.tiff', 'wb') as f:
+            f.write(fileDat)
 
-@app.route('/results', methods = ['GET', 'POST'])
-def results():
-    return render_template('results.html')
+    #emit a response on successful completion
+    socketio.emit('response', {myID:myID})
 
-@app.route('/save', methods = ['GET', 'POST'])
-def finish():
-    ## TODO: FLUSH results directory
-    return 'Here are the results'
+@socketio.on('analyze', namespace='/')
+def analyze(message):
+    run.runPipeline(message['myID'])
+    socketio.emit('complete',{})
+
+@app.route('/results', methods=['GET'])
+    myID = 'static/results/' + str(request.headers['myID']) + '.html'
+    return render_template('results.html', myID=myID)
 
 if __name__ == '__main__':
-    app.run(debug=True, threaded = True)
+    socketio.run(app)
