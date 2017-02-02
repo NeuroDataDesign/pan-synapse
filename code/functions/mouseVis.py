@@ -4,6 +4,7 @@ import plotly.offline as py
 import numpy as np
 import matplotlib.pyplot as plt
 import cPickle as pickle
+import cluster
 
 def getAllClusterMembers(clusterList):
     #complete cluster member list
@@ -146,3 +147,29 @@ def generateMultiHist(voxelList, figName='untitled', figNum=None, bins=10, axisS
     fig = go.Figure(data=data, layout=layout, image="png")
     return fig
     '''
+
+def generatePlotlyLineGraph(coregisteredVolumeList, figName="Graph of Cluster Volumes Over Time"):
+    data = []
+    for cluster in range(len(coregisteredVolumeList)):
+        singleVolumeList = []
+        times = []
+        for timePoint in range(len(coregisteredVolumeList[cluster])):
+            singleVolumeList.append(coregisteredVolumeList[cluster][timePoint])
+            times.append(timePoint)
+        data.append(go.Scatter(
+                        y = singleVolumeList,
+                        x = times,
+                        mode = 'lines+markers',
+                        name = "Cluster " + str(cluster)
+                    ))
+    layout = go.Layout(
+        title=figName,
+        xaxis=dict(
+            title='Timepoint'
+        ),
+        yaxis=dict(
+            title='Volume'
+        )
+    )
+    fig = go.Figure(data=data, layout=layout)
+    py.plot(fig)

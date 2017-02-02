@@ -99,6 +99,11 @@
   .btn:nth-of-type(5).active ~ .slides .sld:first-of-type {
     margin-top: -300vh;
       }​
+  iframe[seamless] {
+      border: none;
+      height: 50vh;
+      width: 50vw;
+  }
   </style>
 </head>
 
@@ -106,17 +111,19 @@
   <div id="particles-background" class="vertical-centered-box"></div>
   <div id="particles-foreground" class="vertical-centered-box"></div>
   <div class="wrapper">
-    <a href="#one" class="btn active">Slice Visualization at z=7</a>
-    <a href="#two" class="btn">Graph of Volumes Over Time</a>
+    <a href="#one" class="btn active">Graph of Cluster Volumes Over Time</a>
+    <a href="#two" class="btn">Slice Visualization at z=7</a>
 
 
       <hr/>
 
   <div class="slides">
       <div class="sld" id="#one">
-        <img style="width: 40%; margin-top: 1%;" src = "/static/results/PipelineImg.png" alt = "no image" />
+        <iframe src="temp-plot.html" seamless width="90%" height="80%" frameBorder="0" style="margin-top: 1%"></iframe>
       </div>
-      <div class="sld" id="#two">Slide 2</div>
+      <div class="sld" id="#two">
+        <img style="width: 40%; margin-top: 1%;" src = "../static/results/PipelineImg.png" alt = "no image" />
+      </div>
 
   </div>
 </div>
