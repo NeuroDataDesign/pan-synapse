@@ -59,10 +59,10 @@ def analyze():
 
 @app.route('/results', methods=['GET'])
 def results():
-    print 'results'
-    #myID = 'static/results/' + str(request.headers['myID']) + '.html'
-    #return render_template('results.html', myID=myID)
-    return "please work..."
+
+    myID = 'static/results/' + str(request.headers['myID']) + '.html'
+    print myID
+    return render_template('results.html', myID=myID)
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, port = 8080)

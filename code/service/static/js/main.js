@@ -134,7 +134,19 @@ $(document).ready(function(){
     socket.on('complete', function() {
       console.log('complete event recieved')
       alert(':)');
-      window.location.href = "http://localhost:8080/results";
+      //socket.emit('results', id);
+      $.ajax({
+        type: "GET",
+        beforeSend: function(request){
+          request.setRequestHeader("myID", id);
+        },
+        url: "http://localhost:8080/results",
+        success: function(data){
+          alert(data);
+          window.location.href = data;
+        }
+      });
+
     });
 
     //socket.on('response', function(id) {
