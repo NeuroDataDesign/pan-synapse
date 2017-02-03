@@ -127,10 +127,12 @@ var id = 0;
 $(document).ready(function(){
     namespace = '/';
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
-    socket.on('response', function(id) {
+    //socket.on('response', function(id) {
+    $('form#submit').submit(function(event) {
       socket.emit('analyze', {myID : '1123'});
       id = id.myID
     });
+
 
     socket.on('complete', function() {
       var xmlHttp = new XMLHttpRequest();
