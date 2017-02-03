@@ -127,7 +127,7 @@ $(document).ready(function(){
     namespace = '/';
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
     //socket.on('response', function(id) {
-    $('form#submit').submit(function(event) {
+    $('#analyze').click(function(e) {
       socket.emit('analyze', {myID : '1123'});
       id = "1123";
     });
