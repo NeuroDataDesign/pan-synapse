@@ -113,7 +113,6 @@ document.getElementById('analyze').addEventListener('click', function() {
 function getBase64(file) {
    var data = File.ReadAllBytes(file);
    var result = Convert.ToBase64String(data);
-   alert(result);
 }
 
 
@@ -129,10 +128,8 @@ $(document).ready(function(){
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
     //socket.on('response', function(id) {
     $('form#submit').submit(function(event) {
-      alert('before');
       socket.emit('analyze', {myID : '1123'});
-      alert('after');
-      id = id.myID
+      id = "1123";
     });
 
 

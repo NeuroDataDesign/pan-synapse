@@ -27,7 +27,9 @@ def allowedFile(filename):
 def index():
     if request.method == 'GET':
         return render_template('index.html')
-        
+    if request.method == 'POST':
+        return 'analyzing'
+
 
 @socketio.on('upload', namespace='/')
 def upload(message):
@@ -46,12 +48,12 @@ def upload(message):
 
 @socketio.on('analyze', namespace='/')
 def analyze(message):
-    print 'running pipeline'
     run.runPipeline(message['myID'])
     socketio.emit('complete',{})
 
 @app.route('/results', methods=['GET'])
 def results():
+    print 'here'
     myID = 'static/results/' + str(request.headers['myID']) + '.html'
     return render_template('results.html', myID=myID)
 
