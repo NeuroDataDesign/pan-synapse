@@ -119,7 +119,7 @@
 
   <div class="slides">
       <div class="sld" id="#one">
-        <iframe src="temp-plot.html" seamless width="90%" height="80%" frameBorder="0" style="margin-top: 1%"></iframe>
+        <iframe src= {{ myID }} seamless width="90%" height="80%" frameBorder="0" style="margin-top: 1%"></iframe>
       </div>
       <div class="sld" id="#two">
         <img style="width: 40%; margin-top: 1%;" src = "../static/results/PipelineImg.png" alt = "no image" />
@@ -133,6 +133,23 @@
         $('.active').removeClass('active');
         $(this).addClass("active");
     });
+    document.getElementById('analyze').addEventListener('click', function() {
+      var files = document.getElementById('file').files;
+      if (files.length > 0) {
+        getBase64(files[0]);
+      }
+    });
+
+    function getBase64(file) {
+       var reader = new FileReader();
+       reader.readAsDataURL(file);
+       reader.onload = function () {
+         console.log(reader.result);
+       };
+       reader.onerror = function (error) {
+         console.log('Error: ', error);
+       };
+    }
   </script>
 </body>
 
