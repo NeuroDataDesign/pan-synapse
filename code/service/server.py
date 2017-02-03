@@ -23,10 +23,11 @@ socketio = SocketIO(app)
 def allowedFile(filename):
     return '.' in filename and filename.split('.')[1].lower() == ALLOWED_EXTENSIONS
 
-@app.route('/')
+@app.route('/', methods=['POST', 'GET'])
 def index():
     if request.method == 'GET':
         return render_template('index.html')
+        
 
 @socketio.on('upload', namespace='/')
 def upload(message):
