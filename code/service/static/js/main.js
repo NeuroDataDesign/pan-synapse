@@ -102,3 +102,40 @@ $('#analyze').click(function(e){
         scrollTop : 0                       // Scroll to top of body
     }, 1000);
 });
+
+document.getElementById('analyze').addEventListener('click', function() {
+  var files = document.getElementById('file').files;
+  if (files.length > 0) {
+    getBase64('../../../data/SEP-GluA1-KI_tp1.tif');
+  }
+});
+
+function getBase64(file) {
+   var data = File.ReadAllBytes(file);
+   var result = Convert.ToBase64String(data);
+   alert(result);
+}
+
+
+/*socket.on('fileUpload', function() {
+  $('#uploading').fadeOut('slow', function(){
+      $('#analyzing').fadeIn('slow');
+  });
+});*/
+
+var id = 0;
+$(document).ready(function(){
+    namespace = '/';
+    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
+    socket.on('response', function(id) {
+      socket.emit('analyze', {myID : '1123'});
+      id = id.myID
+    });
+
+    socket.on('complete', function() {
+      var xmlHttp = new XMLHttpRequest();
+      xmlHttp.open("GET",location.protocol + '//' + document.domain + ':' + location.port + '/results', true); // true for asynchronous
+      xmlHttp.setRequestHeader(str(id), id);
+      xmlHttp.send();
+    })
+});
