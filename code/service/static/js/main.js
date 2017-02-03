@@ -134,8 +134,10 @@ $(document).ready(function(){
 
 
     socket.on('complete', function() {
+      alert(':)');
       var xmlHttp = new XMLHttpRequest();
-      xmlHttp.open("GET",location.protocol + '//' + document.domain + ':' + location.port + '/results', true); // true for asynchronous
+      //xmlHttp.open("GET",location.protocol + '//' + document.domain + ':' + location.port + '/results', true); // true for asynchronous
+      xmlHttp.open("GET",'192.168.43.104:5000/results', true); // true for asynchronous
       xmlHttp.setRequestHeader(str(id), id);
       xmlHttp.send();
     })
