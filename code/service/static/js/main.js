@@ -102,7 +102,7 @@ $('#analyze').click(function(e){
         scrollTop : 0                       // Scroll to top of body
     }, 1000);
 });
-
+/**
 document.getElementById('analyze').addEventListener('click', function() {
   var files = document.getElementById('file').files;
   if (files.length > 0) {
@@ -114,7 +114,7 @@ function getBase64(file) {
    var data = File.ReadAllBytes(file);
    var result = Convert.ToBase64String(data);
 }
-
+**/
 
 /*socket.on('fileUpload', function() {
   $('#uploading').fadeOut('slow', function(){
@@ -124,17 +124,25 @@ function getBase64(file) {
 
 var id = 0;
 $(document).ready(function(){
-    namespace = '/';
+    namespace = '/test';
     var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
-    //socket.on('response', function(id) {
-    $('#analyze').click(function(e) {
-      socket.emit('analyze', {myID : '1123'});
-      id = "1123";
+
+    socket.on('connect', function() {
+      console.log('connected');
     });
 
     socket.on('complete', function() {
-      //alert(':)');
-      //$.get('192.168.43.104:5000/results');
-      //alert(':D');
+      console.log('complete event recieved')
+      alert(':)');
+      window.location.href = "http://localhost:8080/results";
     });
+
+    //socket.on('response', function(id) {
+    $('form#test').submit(function(event) {
+      console.log('here');
+      socket.emit('analyze');
+      id = "1123";
+      return false;
+    });
+
 });

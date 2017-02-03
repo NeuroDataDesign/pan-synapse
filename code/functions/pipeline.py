@@ -20,6 +20,7 @@ def pipeline(tiffDict,
              verbose = False):
 
     #initialize a container for the results of each volume
+
     resList = []
     total = len(resDict)
     for num, tiffImage in enumerate(tiffDict):

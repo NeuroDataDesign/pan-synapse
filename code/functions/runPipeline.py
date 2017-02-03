@@ -15,5 +15,6 @@ def runPipeline(myID):
         sys.exit("FILE NOT FOUND")
 
     print "Starting Pipeline"
-    results = pipe.pipeline(fileList, verbose =True)
-    mv.generatePlotlyLineGraph(results)
+    #results = pipe.pipeline(fileList, verbose =True)
+    #mv.generatePlotlyLineGraph(results)
+    print 'good for u'
