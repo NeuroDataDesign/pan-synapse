@@ -45,6 +45,7 @@ def upload(message):
 
 @socketio.on('analyze', namespace='/')
 def analyze(message):
+    print 'running pipeline'
     run.runPipeline(message['myID'])
     socketio.emit('complete',{})
 
@@ -54,4 +55,4 @@ def results():
     return render_template('results.html', myID=myID)
 
 if __name__ == '__main__':
-    socketio.run(app)
+    socketio.run(app, host='0.0.0.0')

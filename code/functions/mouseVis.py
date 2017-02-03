@@ -148,7 +148,7 @@ def generateMultiHist(voxelList, figName='untitled', figNum=None, bins=10, axisS
     return fig
     '''
 
-def generatePlotlyLineGraph(coregisteredVolumeList, figName="Graph of Cluster Volumes Over Time"):
+def generatePlotlyLineGraph(myID, coregisteredVolumeList, figName="Graph of Cluster Volumes Over Time"):
     data = []
     for cluster in range(len(coregisteredVolumeList)):
         singleVolumeList = []
@@ -172,4 +172,4 @@ def generatePlotlyLineGraph(coregisteredVolumeList, figName="Graph of Cluster Vo
         )
     )
     fig = go.Figure(data=data, layout=layout)
-    py.plot(fig)
+    py.plot(fig, filename='static/data/'+str(myID)+'.html')
