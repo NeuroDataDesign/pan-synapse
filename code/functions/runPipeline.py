@@ -7,16 +7,12 @@ import cv2
 import glob
 import os
 
-###### FOR DOCKER ######
-def runPipeline():
+#This library is designed to act as the driver for the docker and the web service
+def runPipeline(myID):
     if len(glob.glob('../../data/*.tif')) != 0:
-        fileName =  glob.glob('../../data/*.tif')[0]
-        print 'Image: ' + fileName
+        fileList =  glob.glob('../service/static/data/' + str(myID) + '_*.tif')
     else:
         sys.exit("FILE NOT FOUND")
 
     print "Starting Pipeline"
-    results = pipe.pipeline(fileName)
-    cv2.imwrite("../service/static/results/PipelineImg.png", results[0])
-
-    print "Analyzing and storing results"
+    results = pipe.pipeline(fileList)

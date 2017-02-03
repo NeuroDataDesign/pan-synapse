@@ -49,9 +49,6 @@ def pipeline(tiffDict,
         #append the current results to the
         resList.append(threshClusterList)
 
-    #once the full result list is populated, run registration
-    #TODO update this to middle out, if we still use this reg method (depends on Daniel)
-
     #initialize a container for the pairing
     regList = []
 
@@ -61,4 +58,13 @@ def pipeline(tiffDict,
 
     #now that the pair list is populated, resolve it to a sequence
     seq = hype.resolve(regList)
-    
+
+    finalList = []
+    #convert the sequence to a set of data points
+    for thread in seq:
+        curVolThread = []
+        for timePoint in range(len(thread)):
+            curCluster = resList[timePoint][thread[timePoint]]
+            curVolThread.append(curCluster.volume)
+        finalList.append(curVolThread)
+    return finalList
