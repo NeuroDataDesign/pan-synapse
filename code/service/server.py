@@ -3,6 +3,7 @@ sys.path.append('../functions')
 
 import time
 import base64
+import thread
 
 from flask import Flask, redirect, url_for, request, render_template, session
 from flask_socketio import SocketIO, emit
@@ -28,12 +29,26 @@ def index():
     if request.method == 'GET':
         return render_template('index.html')
     else:
+        return 403
 
-        return 'shit'
+def busy():
+    while True:
+        time.sleep(1)
+
+@app.route('/blockServer', methods=['GET'])
+def block():
+    if request.method == 'GET':
+        return render_template('block.html')
+
+@socketio.on('blockStart', namespace='/block')
+def blockStart():
+    thread.start_new_thread(busy, ())
+    print '\n\n\nBlocking Server\n\n\n'
+    return
 
 @socketio.on('connect', namespace = '/test')
 def test_connect():
-    print ':DD'
+    print 'Connetion Established'
 
 @socketio.on('upload', namespace='/test')
 def upload(message):
@@ -53,15 +68,15 @@ def upload(message):
 @socketio.on('analyze', namespace = '/test')
 def analyze():
     run.runPipeline('1123')
-    print 'good'
     emit('complete', namespace = '/test')
-    print 'complete event sent'
+    print 'Complete Event Sent'
 
 @app.route('/results', methods=['GET'])
 def results():
+    print 'Result Request Recieved'
     myID = 'static/results/' + str(request.headers['myID']) + '.html'
+    print 'Results File Returned'
     return myID
-    #return render_template('results.html', myID=myID)
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, port = 8080)

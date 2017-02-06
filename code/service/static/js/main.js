@@ -132,21 +132,21 @@ $(document).ready(function(){
     });
 
     socket.on('complete', function() {
-      console.log('complete event recieved')
-      alert(':)');
+      alert('Complete Event Recieved');
       //socket.emit('results', id);
       $.ajax({
         type: "GET",
         beforeSend: function(request){
           request.setRequestHeader("myID", id);
+          alert('Results Request Sent With ID:');
+          alert(id);
         },
-        url: "http://localhost:8080/results",
+        url: 'http://' + document.domain + ':' + location.port + '/results',
         success: function(data){
-          alert(data);
+          alert('Result Data Recieved');
           window.location.href = data;
         }
       });
-
     });
 
     //socket.on('response', function(id) {
