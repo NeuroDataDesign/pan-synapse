@@ -17,10 +17,14 @@ def pipeline(tiffDict,
              plosUpperZBound=1,
              volThreshLowerBound=0,
              volThreshUpperBound=50,
+             meanNormSlices = True,
              verbose = False):
 
-    #initialize a container for the results of each volume
+    #perform normalization pre-processing if requested
+    if meanNormSlices:
+        tiffDict = cLib.meanNorm(tiffDict)
 
+    #initialize a container for the results of each volume
     resList = []
     total = len(resDict)
     for num, tiffImage in enumerate(tiffDict):
@@ -61,7 +65,7 @@ def pipeline(tiffDict,
     seq = hype.resolve(regList)
 
     finalList = []
-    
+
     #convert the sequence to a set of data points
     for thread in seq:
         curVolThread = []
