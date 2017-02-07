@@ -61,6 +61,7 @@ def pipeline(tiffDict,
     seq = hype.resolve(regList)
 
     finalList = []
+    
     #convert the sequence to a set of data points
     for thread in seq:
         curVolThread = []
@@ -68,4 +69,5 @@ def pipeline(tiffDict,
             curCluster = resList[timePoint][thread[timePoint]]
             curVolThread.append(curCluster.volume)
         finalList.append(curVolThread)
+
     return finalList

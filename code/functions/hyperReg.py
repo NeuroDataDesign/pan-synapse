@@ -134,11 +134,11 @@ def randomSubset(original, k):
             subset.append(chosen)
     return subset
 
-def resolve(regList):
+def resolve(regList, toTrack = 50):
 
     #NOTE as of current this selects a random subset of 50 nodes to trace
     print 'here'
-    toTrack = regList[0][:50]
+    toTrack = regList[0][:toTrack]
     #initialize a container for the final sequence
     seq = []
 
