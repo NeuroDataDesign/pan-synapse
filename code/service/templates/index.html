@@ -80,10 +80,20 @@
           </a>
 
           <div class="section-menu menuCol icon-text hideme" id="blueSection">
+            <!--
               <form action = '/' method="POST" id = "test">
                   Select data <br> to analyze:
-                  <!--<input type="file" name="file" id="file" style="margin-top: 2.5vh; font-size: 22px"> -->
+                  <input type="file" name="upload" id="file" style="margin-top: 2.5vh; font-size: 22px">
                   <input type="submit" name="submit" value="Analyze Data" class="analyze">
+              </form>
+            -->
+              <form id = "form" name = "file" action = "/uploader" method = "POST" enctype = "multipart/form-data" >
+                <div id="main">
+                  <input name = "file" id = "file" type = "file" />
+                  <input type="button" name="action" value="Upload" onclick="redirect()"/>
+                  <iframe id='my_iframe' name='my_iframe' src="">
+                  </iframe>
+                </div>
               </form>
           </div>
       </div>
