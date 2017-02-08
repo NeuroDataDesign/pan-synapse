@@ -15,8 +15,8 @@ def pipeline(tiffDict,
              plosNeighborhood=1,
              plosLowerZBound=1,
              plosUpperZBound=1,
-             volThreshLowerBound=0,
-             volThreshUpperBound=50,
+             volThreshLowerBound=111,
+             volThreshUpperBound=158,
              meanNormSlices = True,
              verbose = False):
 
@@ -26,17 +26,14 @@ def pipeline(tiffDict,
 
     #initialize a container for the results of each volume
     resList = []
-    total = len(resDict)
+    total = len(tiffDict)
     for num, tiffImage in enumerate(tiffDict):
 
         if verbose:
             print 'Progress: ', num/float(total)
 
-        #uplod the data
-        data0 = tIO.unzipChannels(tIO.loadTiff(tiffImage))[0][5:10]
-
         #finding the clusters after plosPipeline
-        plosOut = pLib.pipeline(data0, plosNeighborhood, plosLowerZBound, plosUpperZBound)
+        plosOut = pLib.pipeline(tiffImage, plosNeighborhood, plosLowerZBound, plosUpperZBound)
 
         #binarize output of plos lib
         bianOut = cLib.otsuVox(plosOut)
