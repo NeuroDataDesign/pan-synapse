@@ -1,6 +1,6 @@
 import sys
 sys.path.append('../functions')
-
+import os
 import time
 import base64
 import thread
@@ -13,7 +13,7 @@ import runPipeline as run
 app = Flask(__name__)
 
 #configure the upload settings
-UPLOAD_FOLDER = '../../data'
+UPLOAD_FOLDER = './static/data'
 ALLOWED_EXTENSIONS = 'tif'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -77,6 +77,25 @@ def results():
     myID = 'static/results/' + str(request.headers['myID']) + '.html'
     print 'Results File Returned'
     return myID
+
+@app.route('/uploader', methods = ['GET', 'POST'])
+def upload_file():
+    if request.method == 'POST':
+    # check if the post request has the file part
+        if 'file' not in request.files:
+            print "stopped here"
+            return "no file uploaded"
+        file = request.files['file']
+        # if user does not select file, browser also
+        # submit a empty part without filename
+        if file.filename == '':
+            print "shit"
+            return "no file found"
+            return redirect(request.url)
+        if file and allowedFile(file.filename):
+            filename = file.filename
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            return "good shit"
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, port = 8080)

@@ -41,6 +41,11 @@ pickout.to({
     'theme': 'cricket'
 });
 
+function redirect() {
+  document.getElementById('form').target = 'my_iframe';
+  document.getElementById('form').submit();
+}
+
 $(function() {
   $('a[href*="#"]:not([href="#"])').click(function() {
     if (location.pathname.replace(/^\//,'') == this.pathname.replace(/^\//,'') && location.hostname == this.hostname) {
@@ -121,6 +126,7 @@ function getBase64(file) {
       $('#analyzing').fadeIn('slow');
   });
 });*/
+
 
 var id = 0;
 $(document).ready(function(){
