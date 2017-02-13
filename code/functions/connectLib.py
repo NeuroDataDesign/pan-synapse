@@ -8,6 +8,13 @@ import cv2
 import plosLib as pLib
 import pickle
 
+def meanNorm(volume):
+    toStack = []
+    for plane in volume:
+        normFactor = (65535./float(np.max(plane)))
+        toStack.append(normFactor * np.array(plane))
+    return np.stack(toStack)
+
 def otsuVox(argVox):
     probVox = np.nan_to_num(argVox)
     bianVox = np.zeros_like(probVox)

@@ -22,7 +22,7 @@ def runPipeline(myID):
 
     #Generate results form pipeline
     print 'Starting Pipeline'
-    results = pipe.pipeline(fileList, verbose =True)
+    results = pipe.pipeline(fileList, verbose=True)
 
     #generate visualization
     mv.generatePlotlyLineGraph(myID, results)

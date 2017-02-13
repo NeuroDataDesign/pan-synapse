@@ -5,6 +5,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 import cPickle as pickle
 import cluster
+import cv2
+
+def generateAnnotations(clusterList, zBound, yBound, xBound):
+    clusterMemberList = getAllClusterMembers(clusterList)
+    annotations = np.zeros((zBound, yBound, xBound))
+    for elem in clusterMemberList:
+        annotations[elem[0]][elem[1]][elem[2]] = 255
+    return annotations
 
 def getAllClusterMembers(clusterList):
     #complete cluster member list

@@ -9,7 +9,26 @@ import tiffIO as tIO
 import cPickle as pickle
 import hyperReg as hype
 from scipy import ndimage
-#Takes in tiffimage file and z slice that you want to visualize
+import matplotlib.pyplot as plt
+
+def analyzeTimepoint(tiffImage, plosNeighborhood, plosLowerZBound, plosUpperZBound, debug=False):
+    #finding the clusters after plosPipeline
+    plosOut = pLib.pipeline(tiffImage, plosNeighborhood, plosLowerZBound, plosUpperZBound)
+
+    #binarize output of plos lib
+    bianOut = cLib.otsuVox(plosOut)
+
+    #dilate the output based on neigborhood size
+    for i in range(int((plosNeighborhood+plosUpperZBound+plosLowerZBound)/3.)):
+        bianOut = ndimage.morphology.binary_dilation(bianOut).astype(int)
+
+    #run connected component
+    connectList = cLib.connectedComponents(bianOut)
+
+    if debug:
+        return connectList, bianOut
+
+    return connectList
 
 def pipeline(tiffDict,
              plosNeighborhood=1,
@@ -32,21 +51,12 @@ def pipeline(tiffDict,
         if verbose:
             print 'Progress: ', num/float(total)
 
-        #finding the clusters after plosPipeline
-        plosOut = pLib.pipeline(tiffImage, plosNeighborhood, plosLowerZBound, plosUpperZBound)
 
-        #binarize output of plos lib
-        bianOut = cLib.otsuVox(plosOut)
-
-        #dilate the output based on neigborhood size
-        for i in range(int((plosNeighborhood+plosUpperZBound+plosLowerZBound)/3.)):
-            bianOut = ndimage.morphology.binary_dilation(bianOut).astype(int)
-
-        #run connected component
-        connectList = cLib.connectedComponents(bianOut)
+        #get the conneted components from the current time point
+        connectList = analyzeTimepoint(tiffImage, plosNeighborhood, plosLowerZBound, plosUpperZBound)
 
         #threshold decayed clusters (get rid of background and glia cells)
-        threshClusterList = cLib.thresholdByVolumeNaive(connectList, lowerLimit = 0, upperLimit = 50)
+        threshClusterList = cLib.thresholdByVolumeNaive(connectList, lowerLimit = volThreshLowerBound, upperLimit = volThreshUpperBound)
 
         #append the current results to the
         resList.append(threshClusterList)
