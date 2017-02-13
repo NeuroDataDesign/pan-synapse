@@ -20,14 +20,24 @@ def otsuVox(argVox):
         bianVox[zIndex] = curSlice > thresh
     return bianVox
 
-def connectedComponents(voxel):
-    labelMap = label(voxel)
+def connectedComponents(volume):
+    # the connectivity structure matrix
+    s = [[[1 for k in xrange(3)] for j in xrange(3)] for i in xrange(3)]
+
+    # find connected components
+    labeled, nr_objects = ndimage.label(volume, s)
+
+    #change them to object type Cluster
+    if nr_objects == 1:
+        nr_objects += 1
     clusterList = []
-    #plus 1 since max label should be included
-    for uniqueLabel in range(0, np.max(labelMap)+1):
-        memberList = [list(elem) for elem in zip(*np.where(labelMap == uniqueLabel))]
+
+
+    for label in range(0, nr_objects):
+        memberList = np.argwhere(labeled == label)
         if not len(memberList) == 0:
             clusterList.append(Cluster(memberList))
+
     return clusterList
 
 #pass in list of clusters

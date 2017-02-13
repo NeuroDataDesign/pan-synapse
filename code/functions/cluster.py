@@ -4,8 +4,6 @@ import math
 class Cluster:
     def __init__(self, members):
         self.members = members
-        self.centroid = self.getCentroid()
-        self.compactness = self.getStdDeviation()
         self.volume = self.getVolume()
 
     def getVolume(self):
