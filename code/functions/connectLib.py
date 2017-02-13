@@ -7,6 +7,7 @@ import numpy as np
 import cv2
 import plosLib as pLib
 import pickle
+import scipy.ndimage as ndimage
 
 def otsuVox(argVox):
     probVox = np.nan_to_num(argVox)
