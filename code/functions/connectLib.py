@@ -36,11 +36,8 @@ def clusterThresh(volume, threshold=250):
 
     # find connected components
     labeled, nr_objects = ndimage.label(volume, s)
-    #change them to object type Cluster
-    if nr_objects == 1:
-        nr_objects += 1
-    clusterList = []
 
+    #volume thresholding
     mask = labeled > labeled.mean()
     sizes = ndimage.sum(mask, labeled, range(nr_objects + 1))
     mask_size = sizes > threshold
@@ -53,6 +50,9 @@ def clusterThresh(volume, threshold=250):
     for i in range(len(labeled)):
         sparseLabeledIm[i] = sparse.csr_matrix(labeled[i])
 
+    clusterList = []
+
+    #converting to clusterList
     for label in range(1, nr_objects):
 
         memberList = []
@@ -67,7 +67,7 @@ def clusterThresh(volume, threshold=250):
 
     return clusterList
 
-def connectAnalysis(rawData, threshold=250, sliceVis=5):
+def clusterAnalysis(rawData, threshold=250, sliceVis=5):
     start_time = time.time()
     clusterList = clusterThresh(rawData, threshold)
     volumeList = []
