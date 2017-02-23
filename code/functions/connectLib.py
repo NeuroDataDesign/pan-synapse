@@ -8,6 +8,8 @@ import cv2
 import plosLib as pLib
 import pickle
 import scipy.ndimage as ndimage
+import time
+from scipy import sparse
 
 def meanNorm(volume):
     toStack = []
@@ -28,25 +30,60 @@ def otsuVox(argVox):
         bianVox[zIndex] = curSlice > thresh
     return bianVox
 
-def connectedComponents(volume):
+def clusterThresh(volume, threshold=250):
     # the connectivity structure matrix
     s = [[[1 for k in xrange(3)] for j in xrange(3)] for i in xrange(3)]
 
     # find connected components
     labeled, nr_objects = ndimage.label(volume, s)
-
     #change them to object type Cluster
     if nr_objects == 1:
         nr_objects += 1
     clusterList = []
 
+    mask = labeled > labeled.mean()
+    sizes = ndimage.sum(mask, labeled, range(nr_objects + 1))
+    mask_size = sizes > threshold
+    remove_pixel = mask_size[labeled]
+    labeled[remove_pixel] = 0
+    labeled, nr_objects = ndimage.label(labeled, s)
 
-    for label in range(0, nr_objects):
-        memberList = np.argwhere(labeled == label)
+    #convert labeled to Sparse
+    sparseLabeledIm = np.empty(len(labeled), dtype=object)
+    for i in range(len(labeled)):
+        sparseLabeledIm[i] = sparse.csr_matrix(labeled[i])
+
+    for label in range(1, nr_objects):
+
+        memberList = []
+
+        for z in range(len(sparseLabeledIm)):
+            memberListWithoutZ = np.argwhere(sparseLabeledIm[z] == label)
+            memberListWithZ = [[z] + list(tup) for tup in memberListWithoutZ]
+            memberList.extend(memberListWithZ)
+
         if not len(memberList) == 0:
             clusterList.append(Cluster(memberList))
 
     return clusterList
+
+def connectAnalysis(rawData, threshold=250, sliceVis=5):
+    start_time = time.time()
+    clusterList = clusterThresh(rawData, threshold)
+    volumeList = []
+    print "time taken to label: " + str((time.time() - start_time)) + " seconds"
+    print "Number of clusters: " + str(len(clusterList))
+    displayIm = np.zeros_like(rawData)
+    for cluster in range(len(clusterList)):
+        volumeList.append(clusterList[cluster].getVolume())
+        for member in range(len(clusterList[cluster].members)):
+            z, y, x = clusterList[cluster].members[member]
+            displayIm[z][y][x] = cluster
+    print "Average Volume: " + str(np.mean(volumeList))
+
+    plt.imshow(displayIm[sliceVis])
+    plt.axis('off')
+    plt.show()
 
 #pass in list of clusters
 def densityOfSlice(clusters, minZ, maxZ, minY, maxY, minX, maxX):
