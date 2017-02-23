@@ -53,7 +53,7 @@ def clusterThresh(volume, threshold=250):
     clusterList = []
 
     #converting to clusterList
-    for label in range(1, nr_objects):
+    for label in range(1, nr_objects + 1):
 
         memberList = []
 
