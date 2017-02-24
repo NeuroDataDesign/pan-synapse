@@ -30,20 +30,29 @@ def otsuVox(argVox):
         bianVox[zIndex] = curSlice > thresh
     return bianVox
 
-def clusterThresh(volume, threshold=250):
+def clusterThresh(volume, lowerFence=0, upperFence=250):
     # the connectivity structure matrix
     s = [[[1 for k in xrange(3)] for j in xrange(3)] for i in xrange(3)]
 
     # find connected components
     labeled, nr_objects = ndimage.label(volume, s)
 
-    #volume thresholding
+    #volume thresholding with upperFence
     mask = labeled > labeled.mean()
     sizes = ndimage.sum(mask, labeled, range(nr_objects + 1))
-    mask_size = sizes > threshold
+    mask_size = sizes > upperFence
     remove_pixel = mask_size[labeled]
     labeled[remove_pixel] = 0
     labeled, nr_objects = ndimage.label(labeled, s)
+
+    if not lowerFence == 0:
+        #volume thresholding with lowerFence
+        mask = labeled > labeled.mean()
+        sizes = ndimage.sum(mask, labeled, range(nr_objects + 1))
+        mask_size = sizes < lowerFence
+        remove_pixel = mask_size[labeled]
+        labeled[remove_pixel] = 0
+        labeled, nr_objects = ndimage.label(labeled, s)
 
     #convert labeled to Sparse
     sparseLabeledIm = np.empty(len(labeled), dtype=object)
