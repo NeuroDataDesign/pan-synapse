@@ -10,6 +10,8 @@ import pickle
 import scipy.ndimage as ndimage
 import time
 from scipy import sparse
+import matplotlib.pyplot as plt
+import mouseVis as mv
 
 def meanNorm(volume):
     toStack = []
@@ -76,9 +78,9 @@ def clusterThresh(volume, lowerFence=0, upperFence=250):
 
     return clusterList
 
-def clusterAnalysis(rawData, threshold=250, sliceVis=5):
+def clusterAnalysis(rawData, lowerFence = 0, upperFence = 250, sliceVis=5, bins=50):
     start_time = time.time()
-    clusterList = clusterThresh(rawData, threshold)
+    clusterList = clusterThresh(rawData, lowerFence, upperFence)
     volumeList = []
     print "time taken to label: " + str((time.time() - start_time)) + " seconds"
     print "Number of clusters: " + str(len(clusterList))
@@ -89,10 +91,12 @@ def clusterAnalysis(rawData, threshold=250, sliceVis=5):
             z, y, x = clusterList[cluster].members[member]
             displayIm[z][y][x] = cluster
     print "Average Volume: " + str(np.mean(volumeList))
-
+    shape = rawData.shape
+    print "Cluster Density: " + str(1.0*np.sum(volumeList)/(shape[0]*shape[1]*shape[2]))
     plt.imshow(displayIm[sliceVis])
     plt.axis('off')
     plt.show()
+    mv.generateVoxHist(volumeList, figName='Volume Distribution', bins=bins, axisStart=np.min(volumeList), axisEnd=np.max(volumeList), xTitle='Volume', yTitle="Number of Clusters")
 
 #pass in list of clusters
 def densityOfSlice(clusters, minZ, maxZ, minY, maxY, minX, maxX):

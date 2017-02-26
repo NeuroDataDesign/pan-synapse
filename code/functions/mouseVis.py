@@ -57,18 +57,20 @@ def visualize(zslice, image3D, clusters):
     #cv2.imshow('Image slice at z = ' + str(zslice), imageRGB)
     return imageRGB
 
-def generateVoxHist(voxel, figName='untitled', figNum=-1, bins=10, axisStart=None, axisEnd=None, normed=False):
+def generateVoxHist(voxel, figName='untitled', figNum=-1, bins=100, axisStart=None, axisEnd=None, xTitle="untitled axis", yTitle="untitled axis", normed=False):
     fig = plt.figure(figNum)
     plt.title(figName)
+    plt.xlabel(xTitle)
+    plt.ylabel(yTitle)
     hist, bins = np.histogram(voxel, bins=bins, normed=normed)
     width = 0.7 * (bins[1] - bins[0])
     center = (bins[:-1] + bins[1:]) / 2
     if not (axisStart is None or axisEnd is None):
         plt.xlim(axisStart, axisEnd)
     plt.bar(center, hist, align='center', width=width)
-    plt.savefig('../service/static/results/PipelineGraph.png')
+    plt.show()
 
-def generateMultiVoxHist(voxelList, figName='untitled', figNum=None, bins=10, axisStart=None, axisEnd=None, normed=False, xTitle='untitled_axis', yTitle='untitled_axis'):
+def generateMultiVoxHist(voxelList, figName='untitled', figNum=None, bins=100, axisStart=None, axisEnd=None, normed=False, xTitle='untitled_axis', yTitle='untitled_axis'):
 	fig = None
 	if not figNum is None:
 		fig = plt.figure(figNum)
