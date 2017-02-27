@@ -96,7 +96,7 @@ def clusterAnalysis(rawData, lowerFence = 0, upperFence = 250, sliceVis=5, bins=
     plt.imshow(displayIm[sliceVis])
     plt.axis('off')
     plt.show()
-    mv.generateVoxHist(volumeList, figName='Volume Distribution', bins=bins, axisStart=np.min(volumeList), axisEnd=np.max(volumeList), xTitle='Volume', yTitle="Number of Clusters")
+    mv.generateVoxHist(volumeList, figName='Volume Distribution', bins=bins, axisStart=lowerFence, axisEnd=upperFence, xTitle='Volume', yTitle="Number of Clusters")
 
 #pass in list of clusters
 def densityOfSlice(clusters, minZ, maxZ, minY, maxY, minX, maxX):
