@@ -1,1 +1,1 @@
-# pan-synapse
+# SYNAPSYS
