@@ -46,15 +46,16 @@ def getBoundary(zslice, clusterMemberList):
 def visualize(zslice, image3D, clusters):
     image = image3D[zslice]
     #convert image to RGB
+    image = (image/256).astype('uint8')
     imageRGB = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
 
     boundaryPixels = getBoundary(zslice, getAllClusterMembers(clusters))
     for pixel in boundaryPixels:
         #changing boundary pixel color to yellow
-        imageRGB[pixel[0],pixel[1]] = [65535, 65535, 0]
+        imageRGB[pixel[0],pixel[1]] = [255, 255, 0]
     #pickle
     #pickle.dump(imageRGB, open('final.image', 'w'))
-    #cv2.imshow('Image slice at z = ' + str(zslice), imageRGB)
+    #cv2.imwrite('image.png', imageRGB)
     return imageRGB
 
 def generateVoxHist(voxel, figName='untitled', figNum=-1, bins=100, axisStart=None, axisEnd=None, xTitle="untitled axis", yTitle="untitled axis", normed=False):
