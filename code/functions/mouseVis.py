@@ -46,16 +46,15 @@ def getBoundary(zslice, clusterMemberList):
 def visualize(zslice, image3D, clusters):
     image = image3D[zslice]
     #convert image to RGB
-    image = (image/256).astype('uint8')
     imageRGB = cv2.cvtColor(image, cv2.COLOR_GRAY2RGB)
 
     boundaryPixels = getBoundary(zslice, getAllClusterMembers(clusters))
     for pixel in boundaryPixels:
         #changing boundary pixel color to yellow
-        imageRGB[pixel[0],pixel[1]] = [255, 255, 0]
+        imageRGB[pixel[0],pixel[1]] = [65535, 65535, 0]
     #pickle
     #pickle.dump(imageRGB, open('final.image', 'w'))
-    #cv2.imwrite('image.png', imageRGB)
+    #cv2.imshow('Image slice at z = ' + str(zslice), imageRGB)
     return imageRGB
 
 def generateVoxHist(voxel, figName='untitled', figNum=-1, bins=100, axisStart=None, axisEnd=None, xTitle="untitled axis", yTitle="untitled axis", normed=False):
@@ -159,7 +158,7 @@ def generateMultiHist(voxelList, figName='untitled', figNum=None, bins=10, axisS
     return fig
     '''
 
-def generatePlotlyLineGraph(myID, coregisteredVolumeList, figName="Graph of Cluster Volumes Over Time"):
+def generatePlotlyLineGraphAccrosTimes(myID, coregisteredVolumeList, figName="Graph of Cluster Volumes Over Time"):
     data = []
     for cluster in range(len(coregisteredVolumeList)):
         singleVolumeList = []
@@ -184,3 +183,22 @@ def generatePlotlyLineGraph(myID, coregisteredVolumeList, figName="Graph of Clus
     )
     fig = go.Figure(data=data, layout=layout)
     py.plot(fig, filename='static/data/'+str(myID)+'.html')
+
+def generatePlotlyLineForSliceDensities(input, figName="untitled"):
+    x= [i for i in range(len(input))]
+    data = [go.Scatter(
+                    y = input,
+                    x = x,
+                    mode = 'lines'
+                    )]
+    layout = go.Layout(
+        title=figName,
+        xaxis=dict(
+            title='Slice'
+        ),
+        yaxis=dict(
+            title='Density'
+        )
+    )
+    fig = go.Figure(data=data, layout=layout)
+    py.iplot(fig)

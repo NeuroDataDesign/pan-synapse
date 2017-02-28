@@ -78,25 +78,36 @@ def clusterThresh(volume, lowerFence=0, upperFence=250):
 
     return clusterList
 
-def clusterAnalysis(rawData, lowerFence = 0, upperFence = 250, sliceVis=5, bins=50):
-    start_time = time.time()
+def clusterAnalysis(rawData, lowerFence = 20, upperFence = 250, sliceVis=5, bins=50):
     clusterList = clusterThresh(rawData, lowerFence, upperFence)
     volumeList = []
-    print "time taken to label: " + str((time.time() - start_time)) + " seconds"
     print "Number of clusters: " + str(len(clusterList))
     displayIm = np.zeros_like(rawData)
     for cluster in range(len(clusterList)):
         volumeList.append(clusterList[cluster].getVolume())
         for member in range(len(clusterList[cluster].members)):
             z, y, x = clusterList[cluster].members[member]
-            displayIm[z][y][x] = cluster
+            displayIm[z][y][x] = 1
     print "Average Volume: " + str(np.mean(volumeList))
     shape = rawData.shape
     print "Cluster Density: " + str(1.0*np.sum(volumeList)/(shape[0]*shape[1]*shape[2]))
-    plt.imshow(displayIm[sliceVis])
+    plt.imshow(displayIm[sliceVis], cmap='gray')
+    plt.title('Slice at z=' + str(sliceVis))
     plt.axis('off')
     plt.show()
     mv.generateVoxHist(volumeList, figName='Volume Distribution', bins=bins, axisStart=lowerFence, axisEnd=upperFence, xTitle='Volume', yTitle="Number of Clusters")
+    zRelationship = np.zeros(len(displayIm))
+    for z in range(len(displayIm)):
+        zRelationship[z] = np.mean(displayIm[z])
+    mv.generatePlotlyLineForSliceDensities(zRelationship, figName="Z-Slice Densities")
+    yRelationship = np.zeros(len(displayIm[0]))
+    for y in range(len(displayIm[0])):
+        yRelationship[y] = np.mean(displayIm[:, y])
+    mv.generatePlotlyLineForSliceDensities(yRelationship, figName="Y-Slice Densities")
+    xRelationship = np.zeros(len(displayIm[0][0]))
+    for x in range(len(displayIm[0][0])):
+        xRelationship[x] = np.mean(displayIm[:, :, x])
+    mv.generatePlotlyLineForSliceDensities(xRelationship, figName="X-Slice Densities")
 
 #pass in list of clusters
 def densityOfSlice(clusters, minZ, maxZ, minY, maxY, minX, maxX):
