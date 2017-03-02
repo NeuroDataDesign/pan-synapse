@@ -57,11 +57,9 @@ def qualityAssurance(clusterList, zBound=280, yBound=1024, xBound=1024):
     quality.getVolumeHistogram(clusterList, "Volume Distribution")
 
 def pipeline(tiffDict,
-             plosNeighborhood=1,
-             plosLowerZBound=1,
-             plosUpperZBound=1,
-             volThreshLowerBound=111,
-             volThreshUpperBound=158,
+             percentile=80,
+             volThreshLowerBound=10,
+             volThreshUpperBound=250,
              meanNormSlices = True,
              verbose = False):
 
@@ -79,7 +77,10 @@ def pipeline(tiffDict,
 
 
         #get the conneted components from the current time point
-        connectList = analyzeTimepoint(tiffImage)
+        connectList = analyzeTimepoint(tiffImage,
+                                       percentile,
+                                       volThreshLowerBound,
+                                       volThreshUpperBound)
 '''
         #threshold decayed clusters (get rid of background and glia cells)
         threshClusterList = cLib.thresholdByVolumeNaive(connectList, lowerLimit = volThreshLowerBound, upperLimit = volThreshUpperBound)
