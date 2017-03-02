@@ -11,11 +11,11 @@ def getPercentDetected(annotations):
     if len(annotations.shape)==3:
         return np.count_nonzero(annotations)/float(annotations.shape[0] * annotations.shape[1] * annotations.shape[2])
     elif len(annotations.shape)==2:
-        return np.count_nonzero(annotations)/float(annotations.shape[0] * annotations.shape[1])
+        return "Percent Detected: " + str(np.count_nonzero(annotations)/float(annotations.shape[0] * annotations.shape[1]))
 
 def getAverageVolume(annotations):
     numClusters = np.max(label(annotations))
-    return np.count_nonzero(annotations)/float(numClusters)
+    return "Average Volume: " + str(np.count_nonzero(annotations)/float(numClusters))
 
 def getVolumeHistogram(clusterList, title=None):
     fig = plt.figure()
@@ -25,3 +25,6 @@ def getVolumeHistogram(clusterList, title=None):
     plt.hist(volList)
     plt.show()
     return
+
+def getNumClusters(clusterList):
+    return "Number of Clusters: " + str(len(clusterList))

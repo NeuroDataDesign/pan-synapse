@@ -10,25 +10,51 @@ import cPickle as pickle
 import hyperReg as hype
 from scipy import ndimage
 import matplotlib.pyplot as plt
+sys.path.insert(0, '../tests/')
+import quality
 
-def analyzeTimepoint(tiffImage, plosNeighborhood, plosLowerZBound, plosUpperZBound, debug=False):
+#z zBound, xBound, and yBound are for generating annotations (define image size)
+def analyzeTimepoint(tiffImage,
+                     binThresh=80,
+                     lowerVolThresh = 10,
+                     upperVolThresh=250,
+                     debug=False,
+                     QA=False,
+                     vis=False):
     #finding the clusters after plosPipeline
-    plosOut = pLib.pipeline(tiffImage, plosNeighborhood, plosLowerZBound, plosUpperZBound)
+    #plosOut = pLib.pipeline(tiffImage, plosNeighborhood, plosLowerZBound, plosUpperZBound)
 
     #binarize output of plos lib
-    bianOut = cLib.otsuVox(plosOut)
+    #bianOut = cLib.otsuVox(plosOut)
 
     #dilate the output based on neigborhood size
-    for i in range(int((plosNeighborhood+plosUpperZBound+plosLowerZBound)/3.)):
-        bianOut = ndimage.morphology.binary_dilation(bianOut).astype(int)
+    #for i in range(int((plosNeighborhood+plosUpperZBound+plosLowerZBound)/3.)):
+    #    bianOut = ndimage.morphology.binary_dilation(bianOut).astype(int)
 
-    #run connected component
-    connectList = cLib.connectedComponents(bianOut)
+    #binary threshold_otsu
+    binImg = cLib.binaryThreshold(tiffImage,binThresh)
+
+    #run connected components and volume thresholding
+    connectList = cLib.clusterThresh(binImg, lowerVolThresh, upperVolThresh)
 
     if debug:
         return connectList, bianOut
 
+    if QA:
+        qualityAssurance(connectList)
+
+    #displays image at zslice
+    if vis:
+        mv.visualize(2, tiffImage, connectList)
+
     return connectList
+
+def qualityAssurance(clusterList, zBound=280, yBound=1024, xBound=1024):
+    quality.getNumClusters(clusterList)
+    annotations = mv.generateAnnotations(clusterList, zBound, yBound, xBound)
+    quality.getAverageVolume(annotations)
+    quality.getPercentDetected(annotations)
+    quality.getVolumeHistogram(clusterList, "Volume Distribution")
 
 def pipeline(tiffDict,
              plosNeighborhood=1,
@@ -53,11 +79,11 @@ def pipeline(tiffDict,
 
 
         #get the conneted components from the current time point
-        connectList = analyzeTimepoint(tiffImage, plosNeighborhood, plosLowerZBound, plosUpperZBound)
-
+        connectList = analyzeTimepoint(tiffImage)
+'''
         #threshold decayed clusters (get rid of background and glia cells)
         threshClusterList = cLib.thresholdByVolumeNaive(connectList, lowerLimit = volThreshLowerBound, upperLimit = volThreshUpperBound)
-
+'''
         #append the current results to the
         resList.append(threshClusterList)
 
