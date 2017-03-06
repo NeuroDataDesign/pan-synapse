@@ -20,6 +20,23 @@ def meanNorm(volume):
         toStack.append(normFactor * np.array(plane))
     return np.stack(toStack)
 
+def windowMeanShiftNorm(volume, window):
+    retStack = []
+    rem = volume.shape[0]%window
+    for i in range(int(volume.shape[0])/int(window)):
+        idealMean = np.average(volume[i])
+        retStack.append(volume[i])
+        #starts at 1 since ideal mean volume is normed to itself already
+        for j in range(1, window):
+            retStack.append(volume[i+j]+(idealMean-np.average(volume[i+j])))
+
+    #deal with remainders
+    idealRemMean = np.average(volume[-rem])
+    for i in range(rem):
+        retStack.append(volume[-rem+i]+(idealRemMean-np.average(volume[-rem+i])))
+
+    return np.stack(retStack)
+
 def otsuVox(argVox):
     probVox = np.nan_to_num(argVox)
     bianVox = np.zeros_like(probVox)

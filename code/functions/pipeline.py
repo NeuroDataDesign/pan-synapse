@@ -1,51 +1,46 @@
 import sys
 sys.path.insert(0, '../functions/')
+sys.path.insert(0, '../tests/')
+
 import cv2
-import plosLib as pLib
-import connectLib as cLib
+import quality
+
 from cluster import Cluster
+from scipy import ndimage
+from neighborhoodLib import neighborhoodDensity
+
+import connectLib as cLib
 import mouseVis as mv
 import tiffIO as tIO
 import cPickle as pickle
 import hyperReg as hype
-from scipy import ndimage
 import matplotlib.pyplot as plt
-sys.path.insert(0, '../tests/')
-import quality
 
 #z zBound, xBound, and yBound are for generating annotations (define image size)
 def analyzeTimepoint(tiffImage,
-                     binThresh=80,
-                     lowerVolThresh = 10,
+                     interPlane=3,
+                     intraPlane=3,
+                     lowerVolThresh = 100,
                      upperVolThresh=250,
                      debug=False,
                      QA=False,
-                     vis=False):
-    #finding the clusters after plosPipeline
-    #plosOut = pLib.pipeline(tiffImage, plosNeighborhood, plosLowerZBound, plosUpperZBound)
+                     vis=False,
+                     returnBinary=False):
 
-    #binarize output of plos lib
-    #bianOut = cLib.otsuVox(plosOut)
+    #run through the neigborhood density filter
+    neighborhoodOut = neighborhoodDensity(tiffImage, interPlane=interPlane, intraPlane=3)
 
-    #dilate the output based on neigborhood size
-    #for i in range(int((plosNeighborhood+plosUpperZBound+plosLowerZBound)/3.)):
-    #    bianOut = ndimage.morphology.binary_dilation(bianOut).astype(int)
+    #binarize output of neighborhood pipeline
+    bianOut = cLib.otsuVox(neighborhoodOut)
 
-    #binary threshold_otsu
-    binImg = cLib.binaryThreshold(tiffImage,binThresh)
-
-    #run connected components and volume thresholding
-    connectList = cLib.clusterThresh(binImg, lowerVolThresh, upperVolThresh)
-
-    if debug:
-        return connectList, bianOut
+    #perform volume thresholding
+    connectList = cLib.clusterThresh(bianOut, lowerVolThresh, upperVolThresh)
 
     if QA:
         qualityAssurance(connectList)
 
-    #displays image at zslice
-    if vis:
-        mv.visualize(2, tiffImage, connectList)
+    if returnBinary:
+        return connectList, bianOut
 
     return connectList
 
@@ -57,16 +52,42 @@ def qualityAssurance(clusterList, zBound=280, yBound=1024, xBound=1024):
     quality.getVolumeHistogram(clusterList, "Volume Distribution")
 
 def pipeline(tiffDict,
-             percentile=80,
+             interPlane=3,
+             intraPlane=3,
              volThreshLowerBound=10,
              volThreshUpperBound=250,
              meanNormSlices = True,
-             verbose = False):
+             verbose = False,
+             returnBinary = False):
 
     #perform normalization pre-processing if requested
     if meanNormSlices:
-        tiffDict = cLib.meanNorm(tiffDict)
+        tiffDict = cLib.windowMeanShiftNorm(tiffDict, 4)
 
+    #Generate the Cluster Lists
+    if not returnBinary:
+        connectList = analyzeTimepoint(tiffDict,
+                                       interPlane,
+                                       intraPlane,
+                                       volThreshLowerBound,
+                                       volThreshUpperBound,
+                                       QA=verbose,
+                                       returnBinary=False)
+        return connectList
+
+    else:
+        connectList, binary = analyzeTimepoint(tiffDict,
+                                               interPlane,
+                                               intraPlane,
+                                               volThreshLowerBound,
+                                               volThreshUpperBound,
+                                               QA=verbose,
+                                               returnBinary=True)
+        return connectList, binary
+
+
+
+    '''
     #initialize a container for the results of each volume
     resList = []
     total = len(tiffDict)
@@ -81,15 +102,12 @@ def pipeline(tiffDict,
                                        percentile,
                                        volThreshLowerBound,
                                        volThreshUpperBound)
-'''
-        #threshold decayed clusters (get rid of background and glia cells)
-        threshClusterList = cLib.thresholdByVolumeNaive(connectList, lowerLimit = volThreshLowerBound, upperLimit = volThreshUpperBound)
-'''
         #append the current results to the
         resList.append(threshClusterList)
 
     #initialize a container for the pairing
     regList = []
+
 
     #minus 1 since the last cluster cant be registered to anything
     for num in range(len(resList)-1):
@@ -107,5 +125,5 @@ def pipeline(tiffDict,
             curCluster = resList[timePoint][thread[timePoint]]
             curVolThread.append(curCluster.volume)
         finalList.append(curVolThread)
-
     return finalList
+    '''

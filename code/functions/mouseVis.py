@@ -54,14 +54,8 @@ def visualize(zslice, image3D, clusters):
         imageRGB[pixel[0],pixel[1]] = [65535, 65535, 0]
     #pickle
     #pickle.dump(imageRGB, open('final.image', 'w'))
-<<<<<<< Updated upstream
     #cv2.imshow('Image slice at z = ' + str(zslice), imageRGB)
     return imageRGB
-=======
-    #cv2.imwrite('image.png', imageRGB)
-    #return imageRGB
-    cv2.imshow("Image at slice=" + str(zslice), imageRGB))
->>>>>>> Stashed changes
 
 def generateVoxHist(voxel, figName='untitled', figNum=-1, bins=100, axisStart=None, axisEnd=None, xTitle="untitled axis", yTitle="untitled axis", normed=False):
     fig = plt.figure(figNum)
