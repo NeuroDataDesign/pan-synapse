@@ -188,17 +188,24 @@ def clusterCoregister(plosClusterList, rawClusterList):
 
     return finalClusterList
 
-def adaptiveThreshold(img, blockSize=61, C=6):
-    img = (img/256).astype('uint8')
-    threshImg = np.zeros_like(img)
-    for i in range(len(img)):
-        threshImg[i] = cv2.adaptiveThreshold(img[i], 255, adaptiveMethod=cv2.ADAPTIVE_THRESH_MEAN_C, thresholdType=cv2.THRESH_BINARY, blockSize=blockSize, C=C)
-    return threshImg
+def adaptiveThreshold(inImg, sx, sy, sz, p):
+    outImg = np.zeros_like(inImg)
+    shape = outImg.shape
+    subXLen = shape[0]/sx
+    subYLen = shape[1]/sy
+    subZLen = shape[2]/sz
+    for xInc in range(1, sx + 1):
+        for yInc in range(1, sy + 1):
+            for zInc in range(1, sz + 1):
+                sub = inImg[(xInc-1)*subXLen: xInc*subXLen, (yInc-1)*subYLen: yInc*subYLen, (zInc-1)*subZLen: zInc*subZLen]
+                subThresh = binaryThreshold(sub, p)
+                outImg[(xInc-1)*subXLen: xInc*subXLen, (yInc-1)*subYLen: yInc*subYLen, (zInc-1)*subZLen: zInc*subZLen] = subThresh
+    return outImg
 
 def binaryThreshold(img, percentile=90):
     img = (img/256).astype('uint8')
     threshImg = np.zeros_like(img)
-    percentile = np.percentile(img[i], percentile)
+    percentile = np.percentile(img, percentile)
     for i in range(len(img)):
         threshImg[i] = cv2.threshold(img[i], percentile, 255, cv2.THRESH_BINARY)[1]
     return threshImg
