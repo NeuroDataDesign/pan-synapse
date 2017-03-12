@@ -2,6 +2,10 @@ language: python
 python:
   - "2.7"
 install:
+  # build tools
+  - sudo apt-get update
+  - sudo apt-get install python-setuptools python-dev python-pip python-tk libglib2.0-0
+  # packages
   - pip install flask
   - pip install flask_socketio
   - pip install numpy
