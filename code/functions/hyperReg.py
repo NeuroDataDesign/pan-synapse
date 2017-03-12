@@ -1,7 +1,6 @@
 import math
 
 import numpy as np
-import SimpleITK as itk
 
 from scipy.ndimage.measurements import center_of_mass
 
