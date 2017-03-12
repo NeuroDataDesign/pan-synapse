@@ -1,6 +1,5 @@
 import sys
 sys.path.insert(0, '../functions/')
-sys.path.insert(0, '../tests/')
 
 import cv2
 import quality
