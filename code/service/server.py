@@ -89,13 +89,12 @@ def upload_file():
         # if user does not select file, browser also
         # submit a empty part without filename
         if file.filename == '':
-            print "shit"
             return "no file found"
             return redirect(request.url)
         if file and allowedFile(file.filename):
             filename = file.filename
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return "good shit"
+            return "File saved"
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, port = 8080)
