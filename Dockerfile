@@ -16,11 +16,9 @@ RUN mkdir data
 RUN mkdir code
 RUN mkdir code/functions
 RUN mkdir code/service
-RUN mkdir code/tests
 #necessary code files
 ADD ./code/functions ./code/functions
 ADD ./code/service ./code/service
-ADD ./code/tests/quality.py ./code/tests
 
 RUN useradd -ms /bin/bash user
 USER user
