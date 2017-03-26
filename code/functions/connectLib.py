@@ -188,9 +188,13 @@ def clusterCoregister(plosClusterList, rawClusterList):
 
     return finalClusterList
 
-def adaptiveThreshold(inImg, sx, sy, sz, p):
+def adaptiveThreshold(inImg):
     outImg = np.zeros_like(inImg)
     shape = outImg.shape
+    sz = 64
+    sy = 64
+    sx = 5
+    p = 93
     subXLen = shape[0]/sx
     subYLen = shape[1]/sy
     subZLen = shape[2]/sz
