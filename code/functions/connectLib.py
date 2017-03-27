@@ -188,9 +188,13 @@ def clusterCoregister(plosClusterList, rawClusterList):
 
     return finalClusterList
 
-def adaptiveThreshold(inImg, sx, sy, sz, p):
+def adaptiveThreshold(inImg):
     outImg = np.zeros_like(inImg)
     shape = outImg.shape
+    sz = 64
+    sy = 64
+    sx = 5
+    p = 93
     subXLen = shape[0]/sx
     subYLen = shape[1]/sy
     subZLen = shape[2]/sz
@@ -207,5 +211,5 @@ def binaryThreshold(img, percentile=90):
     threshImg = np.zeros_like(img)
     percentile = np.percentile(img, percentile)
     for i in range(len(img)):
-        threshImg[i] = cv2.threshold(img[i], percentile, 255, cv2.THRESH_BINARY)[1]
+        threshImg[i] = cv2.threshold(img[i], percentile, 255, cv2.THRESH_TOZERO)[1]
     return threshImg
