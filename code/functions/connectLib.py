@@ -96,6 +96,10 @@ def clusterThresh(volume, lowerFence=0, upperFence=250):
     return clusterList
 
 def clusterAnalysis(rawData, lowerFence = 20, upperFence = 250, sliceVis=5, bins=50):
+    plt.imshow(rawData[sliceVis])
+    plt.title('Slice of Clusters Without Uniform Intensities at z=' + str(sliceVis))
+    plt.axis('off')
+    plt.show()
     clusterList = clusterThresh(rawData, lowerFence, upperFence)
     volumeList = []
     print "Number of clusters: " + str(len(clusterList))
@@ -109,7 +113,7 @@ def clusterAnalysis(rawData, lowerFence = 20, upperFence = 250, sliceVis=5, bins
     shape = rawData.shape
     print "Cluster Density: " + str(1.0*np.sum(volumeList)/(shape[0]*shape[1]*shape[2]))
     plt.imshow(displayIm[sliceVis], cmap='gray')
-    plt.title('Slice at z=' + str(sliceVis))
+    plt.title('Slice of Clusters With Uniform Intensities at z=' + str(sliceVis))
     plt.axis('off')
     plt.show()
     mv.generateVoxHist(volumeList, figName='Volume Distribution', bins=bins, axisStart=lowerFence, axisEnd=upperFence, xTitle='Volume', yTitle="Number of Clusters")
@@ -188,22 +192,22 @@ def clusterCoregister(plosClusterList, rawClusterList):
 
     return finalClusterList
 
-def adaptiveThreshold(inImg):
+def adaptiveThreshold(inImg, sx, sy):
+    max = np.max(inImg)
     outImg = np.zeros_like(inImg)
     shape = outImg.shape
-    sz = 64
-    sy = 64
-    sx = 5
-    p = 93
-    subXLen = shape[0]/sx
+    sz = shape[0]
+    subzLen = shape[0]/sz
     subYLen = shape[1]/sy
-    subZLen = shape[2]/sz
-    for xInc in range(1, sx + 1):
+    subxLen = shape[2]/sx
+    for zInc in range(1, sz + 1):
         for yInc in range(1, sy + 1):
-            for zInc in range(1, sz + 1):
-                sub = inImg[(xInc-1)*subXLen: xInc*subXLen, (yInc-1)*subYLen: yInc*subYLen, (zInc-1)*subZLen: zInc*subZLen]
+            for xInc in range(1, sx + 1):
+                sub = inImg[(zInc-1)*subzLen: zInc*subzLen, (yInc-1)*subYLen: yInc*subYLen, (xInc-1)*subxLen: xInc*subxLen]
+                std = np.std(sub)/max
+                p = 90 + 10*std
                 subThresh = binaryThreshold(sub, p)
-                outImg[(xInc-1)*subXLen: xInc*subXLen, (yInc-1)*subYLen: yInc*subYLen, (zInc-1)*subZLen: zInc*subZLen] = subThresh
+                outImg[(zInc-1)*subzLen: zInc*subzLen, (yInc-1)*subYLen: yInc*subYLen, (xInc-1)*subxLen: xInc*subxLen] = subThresh
     return outImg
 
 def binaryThreshold(img, percentile=90):
