@@ -19,10 +19,41 @@ import scipy.misc
 
 import scipy.ndimage as ndimage
 
+def knn_filter(volume, n):
+    #neighborList = []
+    outVolume = np.zeros_like(volume)
+    #for all voxels in volume
+    for z in range(volume.shape[0]):
+        for y in range(volume.shape[1]):
+            for x in range(volume.shape[2]):
+                #get all valid neighbors
+                neighbors = []
+                for a in (-1, 1):
+                    try:
+                        neighbors.append(volume[z][y+a][x])
+                        neighbors.append(volume[z][y][x+a])
+
+                    #just keep going and append nothing if on edge
+                    except IndexError:
+                        continue
+
+                #if at least half of your neighbors are true, be true
+                #neighborList.append(np.count_nonzero(neighbors))
+                if np.count_nonzero(neighbors) >= n:
+                    outVolume[z][y][x] = 1
+                else:
+                    outVolume[z][y][x] = 0
+
+    return outVolume
+
 def pipeline(fixedImg, movingImg, lowerFence = 0, upperFence = 180):
     fixedImg = cLib.adaptiveThreshold(fixedImg, 64, 64, 30)
     movingImg = cLib.adaptiveThreshold(movingImg, 64, 64, 30)
     ##Volume Thresholding Fixed Img
+
+    #perform knn filtering
+    fixedImg = knn_filter(fixedImg, 2)
+    movingImg= knn_filter(movingImg, 2)
 
     # the connectivity structure matrix
     s = [[[1 for k in xrange(3)] for j in xrange(3)] for i in xrange(3)]
