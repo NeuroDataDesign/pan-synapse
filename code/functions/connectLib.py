@@ -204,9 +204,7 @@ def adaptiveThreshold(inImg, sx, sy):
         for yInc in range(1, sy + 1):
             for xInc in range(1, sx + 1):
                 sub = inImg[(zInc-1)*subzLen: zInc*subzLen, (yInc-1)*subYLen: yInc*subYLen, (xInc-1)*subxLen: xInc*subxLen]
-                std = np.std(sub)/max
-                p = 90 + 10*std
-                subThresh = binaryThreshold(sub, p)
+                subThresh = binaryThreshold(sub, 90)
                 outImg[(zInc-1)*subzLen: zInc*subzLen, (yInc-1)*subYLen: yInc*subYLen, (xInc-1)*subxLen: xInc*subxLen] = subThresh
     return outImg
 
