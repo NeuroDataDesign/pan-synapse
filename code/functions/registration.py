@@ -21,6 +21,9 @@ from medpy.io import save
 from PIL import Image
 import nibabel as nb
 import operator
+import connectLib as cLib
+import scipy.sparse as sparse
+from cluster import Cluster
 
 def ANTs(fixedImg, movingImg, lowerFence, upperFence):
     img2 = nib.Nifti1Image(fixedImg, np.eye(4))
@@ -82,7 +85,7 @@ def ANTs(fixedImg, movingImg, lowerFence, upperFence):
 
         #convert labeled to Sparse
         sparseLabeledMoving = np.empty(len(movingImg), dtype=object)
-        for i in range(len(simEasyMoving)):
+        for i in range(len(movingImg)):
             sparseLabeledMoving[i] = sparse.csr_matrix(movingImg[i])
 
         memberList = []

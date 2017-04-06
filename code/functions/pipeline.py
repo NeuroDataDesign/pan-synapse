@@ -47,13 +47,13 @@ def knn_filter(volume, n):
     return outVolume
 
 def pipeline(fixedImg, movingImg, lowerFence = 0, upperFence = 180):
-    fixedImg = cLib.adaptiveThreshold(fixedImg, 64, 64, 30)
-    movingImg = cLib.adaptiveThreshold(movingImg, 64, 64, 30)
+    fixedImg = cLib.adaptiveThreshold(fixedImg, 64, 64)
+    movingImg = cLib.adaptiveThreshold(movingImg, 64, 64)
     ##Volume Thresholding Fixed Img
 
     #perform knn filtering
-    fixedImg = knn_filter(fixedImg, 2)
-    movingImg= knn_filter(movingImg, 2)
+    fixedImg = knn_filter(fixedImg, 1)
+    movingImg= knn_filter(movingImg, 1)
 
     # the connectivity structure matrix
     s = [[[1 for k in xrange(3)] for j in xrange(3)] for i in xrange(3)]
