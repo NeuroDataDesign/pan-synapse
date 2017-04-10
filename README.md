@@ -109,7 +109,7 @@ To centroid match, we iterate through the clusters in the fixed image, find its 
 
 ### 6. For each cluster in (1), note the label of its L2 centroid registered pair, then find which cluster in (3) has that color. Set this cluster to the "timeRegistration" datamember of its corresponding cluster in (1).
 
-For each cluster in the filtered moving image, make note of its L2 centroid distance match's centroid. Then evaluate the registered moving image at that centroid. That is the value of that filtered moving image clusters' L2 centroid distance match. Then search through the connected components + filtered fixed image for which indices have that value. Call the cluster class's constructor on this list of indices, and name this "registered cluster". Say that the moving image clusters's "timeRegistration" data member is this new object of type cluster, "registered cluster." 
+For each cluster in the filtered moving image, make note of its L2 centroid distance match's centroid. Then find the value of the registered moving image at that centroid. That is the label of that filtered moving image clusters' L2 centroid distance match. Then search through the connected components + filtered fixed image for which indices have that label. Call the cluster class's constructor on this list of indices, and name this "registered cluster". Say that the moving image clusters's "timeRegistration" data member is this new object of type cluster, "registered cluster." 
 
 To search through the connected components + filtered fixed image, we first convert it to sparse using [Scipy's sparse function](https://docs.scipy.org/doc/scipy/reference/sparse.html), and then search. 
 
