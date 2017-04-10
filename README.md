@@ -52,6 +52,8 @@ Our adaptive thresholding method is unique. We split the image into a certain am
 
 We use sX =64 and sY = 64 for our data modality.
 
+![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/exampleImg.png?raw=true)
+
 **K-nearest Neighbors Filter:**
 
 Function: 
