@@ -25,7 +25,7 @@ _____________________________________________________________________________
 3. Give each synapse in moving image a unique label - (i.e. Connected Components)
 3. ANTs registration on (3) with (1) as the fixed image.
 4. L2 centroid distance match of clusters in (3) w/ those in (1) 
-5. For each clusters in (1), note the label of its time registered pair, then find which cluster in (3) have that color. Set this cluster to the "timeRegistration" datamember of its corresponding cluster in (1).
+5. For each cluster in (1), note the label of its L2 centroid registered pair, then find which cluster in (3) has that color. Set this cluster to the "timeRegistration" datamember of its corresponding cluster in (1).
 _____________________________________________________________________________
 
 ### 1/2. Identifying Clusters:
@@ -105,7 +105,11 @@ For ANTs registration, we used Translational, Rigid, and Affine linear registrat
 
 ### 5. L2 centroid distance match 
 
-To centroid match, we iterate through the clusters in the fixed image, find its centroid, then iterate through the clusters in the moving image, then find its centroid and the distance between the moving clusters' centroid and the fixed clusters' centroid. We store this distance in an array. We then find which distance was the smallest and say that the cluster in the moving image that corresponds to that distance is the L2 centroid distance match of the fixed cluster.
+To centroid match, we iterate through the clusters in the fixed image, find its centroid, then iterate through the clusters in the moving image, then find its centroid, as well as the distance between the moving clusters' centroid and the fixed clusters' centroid. We store this distance in an array. We then find which distance was the smallest and say that the cluster in the moving image that corresponds to that distance is the L2 centroid distance match of the fixed cluster.
 
-### 6. For each clusters in (1), note the label of its time registered pair, then find which cluster in (3) have that color. Set this cluster to the "timeRegistration" datamember of its corresponding cluster in (1).
+### 6. For each cluster in (1), note the label of its L2 centroid registered pair, then find which cluster in (3) has that color. Set this cluster to the "timeRegistration" datamember of its corresponding cluster in (1).
+
+For each cluster in the filtered moving image, make note of its L2 centroid distance match's centroid. Then evaluate the registered moving image at that centroid. That is the value of that filtered moving image clusters' L2 centroid distance match. Then search through the connected components + filtered fixed image for which indices have that value. Call the cluster class's constructor on this list of indices, and name this "registered cluster". Say that the moving image clusters's "timeRegistration" data member is this new object of type cluster, "registered cluster." 
+
+To search through the connected components + filtered fixed image, we first convert it to sparse using [Scipy's sparse function](https://docs.scipy.org/doc/scipy/reference/sparse.html), and then search. 
 
