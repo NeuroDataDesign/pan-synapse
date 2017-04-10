@@ -5,6 +5,7 @@ import cv2
 import glob
 import os
 import csv
+from tiffIO  import loadTiff
 from cluster import Cluster
 
 def generateCSV(results):
@@ -23,20 +24,23 @@ def generateCSV(results):
 
 
 #This library is designed to act as the driver for the docker and the web service
-def runPipeline(myID):
-    if len(glob.glob('../../data/*.tif')) != 0:
-        fileList =  sorted(glob.glob('../../data/*.tif'))
+def runPipeline():
+    if len(glob.glob('../../data/*_.tif')) != 0:
+        fileList =  sorted(glob.glob('../../data/*_.tif'))
     else:
         sys.exit("FILE NOT FOUND")
 
     #Generate results form pipeline
     print 'Starting Pipeline'
-    results = pipe.pipeline(fileList[0], fileList[1], verbose=False)
+    results = pipe.pipeline(loadTiff(fileList[0]), loadTiff(fileList[1]))
 
     #generate visualization
     #mv.generatePlotlyLineGraph(myID, results)
 
     #generate csv
-    generateCSV(myID, results)
+    generateCSV(results)
 
     return
+
+if __name__ == '__main__':
+    runPipeline()

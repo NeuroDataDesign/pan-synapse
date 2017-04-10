@@ -5,6 +5,7 @@ class Cluster:
     def __init__(self, members):
         self.members = members
         self.volume = self.getVolume()
+        self.timeRegistration = None
 
     def getVolume(self):
         return len(self.members)

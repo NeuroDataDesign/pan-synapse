@@ -2,10 +2,12 @@ import libtiff
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+import pickle
 from PIL import Image, ImageSequence
 
 def loadTiff(location):
-    return libtiff.TiffFile(str(location)).get_tiff_array()
+    return pickle.load(open(location, 'r'))
+    #return libtiff.TiffFile(str(location)).get_tiff_array()
 
 def unzipChannels(image):
     return np.stack([image[::2],image[1::2]])

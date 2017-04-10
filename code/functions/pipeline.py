@@ -7,7 +7,7 @@ import quality
 from cluster import Cluster
 from scipy import ndimage
 from neighborhoodLib import neighborhoodDensity
-
+from tiffIO  import unzipChannels
 import connectLib as cLib
 import mouseVis as mv
 import registration as rLib
@@ -47,10 +47,13 @@ def knn_filter(volume, n):
     return outVolume
 
 def pipeline(fixedImg, movingImg, lowerFence = 0, upperFence = 180):
+
+    print 'running adaptive threshold'
     fixedImg = cLib.adaptiveThreshold(fixedImg, 64, 64)
     movingImg = cLib.adaptiveThreshold(movingImg, 64, 64)
     ##Volume Thresholding Fixed Img
 
+    print 'performing knn filtering'
     #perform knn filtering
     fixedImg = knn_filter(fixedImg, 1)
     movingImg= knn_filter(movingImg, 1)
@@ -58,10 +61,12 @@ def pipeline(fixedImg, movingImg, lowerFence = 0, upperFence = 180):
     # the connectivity structure matrix
     s = [[[1 for k in xrange(3)] for j in xrange(3)] for i in xrange(3)]
 
+    print 'extracting connected components'
     # find connected components
     fixedImg, nr_objects = ndimage.label(fixedImg, s)
 
 
+    print 'thresholding by volume'
     #volume thresholding with upperFence
     mask = fixedImg > fixedImg.mean()
     sizes = ndimage.sum(mask, fixedImg, range(nr_objects + 1))
@@ -69,7 +74,6 @@ def pipeline(fixedImg, movingImg, lowerFence = 0, upperFence = 180):
     remove_pixel = mask_size[fixedImg]
     fixedImg[remove_pixel] = 0
     fixedImg, nr_objects = ndimage.label(fixedImg, s)
-
 
 
     if not lowerFence == 0:
@@ -103,6 +107,7 @@ def pipeline(fixedImg, movingImg, lowerFence = 0, upperFence = 180):
         labeled[remove_pixel] = 0
         labeled, nr_objects = ndimage.label(labeled, s)
 
+    print 'registering clusters'
     realFixedClusters = rLib.ANTs(fixedImg, labeled, lowerFence, upperFence)
 
     #filtering wrong ones
