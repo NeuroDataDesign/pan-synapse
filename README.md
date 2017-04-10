@@ -24,12 +24,11 @@ _____________________________________________________________________________
 2. Identify clusters in moving image - (i.e. Volume threshold + Adaptive threshold + knn filter)
 3. Give each synapse in moving image a unique label - (i.e. Connected Components)
 3. ANTs registration on (3) with (1) as the fixed image.
-4. Find the centroids of the clusters in (3) and (1)
-5. L2 centroid distance match of clusters in (3) w/ those in (1) 
-6. For each clusters in (1), note the label of its time registered pair, then find which cluster in (3) have that color. Set this cluster to the "timeRegistration" datamember of its corresponding cluster in (1).
+4. L2 centroid distance match of clusters in (3) w/ those in (1) 
+5. For each clusters in (1), note the label of its time registered pair, then find which cluster in (3) have that color. Set this cluster to the "timeRegistration" datamember of its corresponding cluster in (1).
 _____________________________________________________________________________
 
-## 1/2. Identifying Clusters:
+### 1/2. Identifying Clusters:
 
 To identify clusters in the fixed image, we run adaptive thresholding, a k nearest neighbors filter, and volume thresholding. 
 
@@ -78,12 +77,23 @@ For volume thresholding, we used [Scipy's ndimage.label function](https://docs.s
 
 	
 
-## 3. Give each synapse in moving image a unique label 
+### 3. Give each synapse in moving image a unique label 
 
 To do so, we simply use connected components. Specifically, we use [Scipy's ndimage.label function](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.measurements.label.html).
 
-## 4. ANTs registration
+### 4. ANTs registration
 
+For ANTs registration, we used Translational, Rigid, and Affine linear registration with MeanSquares as our similarity metric. For more information on ANTs, click [here](http://stnava.github.io/ANTs/_). Specifically, we used the following parameters: 
+* transform parameters: 0.1
+* number of iterations: [10000, 111110, 11110]
+* metric: MeanSquares
+* convergence threshold: 1 * 10^(-8)
+* convergence window size: 20
+* smoothing sigmas: [4, 2, 1]
+* shrink factors: [6, 4, 2]
 
+### 6. L2 centroid distance match 
+
+To centroid match, we iterate through the clusters in the fixed image, find its centroid, then iterate through the clusters in the moving image, then find its centroid and the distance between the moving clusters' centroid and the fixed clusters' centroid. We store this distance in an array. We then find which distance was the smallest and say that the cluster in the moving image that corresponds to that distance is the L2 centroid distance match of the fixed cluster.
 
 
