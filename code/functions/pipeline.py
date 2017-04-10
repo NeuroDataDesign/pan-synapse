@@ -103,4 +103,15 @@ def pipeline(fixedImg, movingImg, lowerFence = 0, upperFence = 180):
         labeled[remove_pixel] = 0
         labeled, nr_objects = ndimage.label(labeled, s)
 
-    return rLib.ANTs(fixedImg, labeled, lowerFence, upperFence)
+    realFixedClusters = rLib.ANTs(fixedImg, labeled, lowerFence, upperFence)
+
+    #filtering wrong ones
+    finalFixedClusters = []
+    for i in range(len(realFixedClusters)):
+        distance = np.linalg.norm([x1 - x2 for (x1, x2) in zip(realFixedClusters[i].getCentroid(), realFixedClusters[i].timeRegistration.getCentroid())])
+        volumeChangeForwards = np.abs(realFixedClusters[i].volume - realFixedClusters[i].timeRegistration.volume)/np.abs(realFixedClusters[i].volume)
+        volumeChangeBackwards = np.abs(realFixedClusters[i].volume - realFixedClusters[i].timeRegistration.volume)/np.abs(realFixedClusters[i].timeRegistration.volume)
+        if(distance < 400 and volumeChangeForwards < 1.2 and volumeChangeBackwards < 1.2):
+            finalFixedClusters.append(realFixedClusters[i])
+
+    return finalFixedClusters
