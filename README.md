@@ -27,9 +27,9 @@ _____________________________________________________________________________
 4. Find the centroids of the clusters in (3) and (1)
 5. L2 centroid distance match of clusters in (3) w/ those in (1) 
 6. For each clusters in (1), note the label of its time registered pair, then find which cluster in (3) have that color. Set this cluster to the "timeRegistration" datamember of its corresponding cluster in (1).
+_____________________________________________________________________________
 
-
-#### 1/2. Identifying Clusters:
+## 1/2. Identifying Clusters:
 
 To identify clusters in the fixed image, we run adaptive thresholding, a k nearest neighbors filter, and volume thresholding. 
 
@@ -78,11 +78,11 @@ For volume thresholding, we used [Scipy's ndimage.label function](https://docs.s
 
 	
 
-### 3. Give each synapse in moving image a unique label 
+## 3. Give each synapse in moving image a unique label 
 
 To do so, we simply use connected components. Specifically, we use [Scipy's ndimage.label function](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.measurements.label.html).
 
-### 4. ANTs registration
+## 4. ANTs registration
 
 
 
