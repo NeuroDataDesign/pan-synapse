@@ -18,6 +18,7 @@ RUN apt-get -y install zlib1g-dev
 RUN git clone git://github.com/stnava/ANTs.git /ANTs && cd /ANTs
 RUN mkdir antsbin && cd antsbin
 RUN cmake -D SuperBuild_ANTS_USE_GIT_PROTOC=OFF ../ANTs
+RUN rm antsbin/ITKv4-build/CMakeCache.txt
 RUN make -j 4
 
 RUN cp /ANTs/Scripts/* /antsbin/bin/
