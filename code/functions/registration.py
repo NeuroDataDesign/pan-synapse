@@ -3,9 +3,6 @@ import nibabel
 import nibabel as nib
 
 import os
-import urllib.request
-import urllib.error
-import urllib.parse
 from nipype.interfaces.ants import Registration
 
 import numpy as np
