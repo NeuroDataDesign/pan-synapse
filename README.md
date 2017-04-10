@@ -30,7 +30,7 @@ _____________________________________________________________________________
 
 ### 1/2. Identifying Clusters:
 
-To identify clusters in the fixed image, we run adaptive thresholding, a k nearest neighbors filter, and volume thresholding. 
+To identify clusters in the fixed image, we run adaptive thresholding, a k nearest neighbors filter, and volume thresholding. We then run a custom algorithm called clusterThresh.
 
 **Adaptive Thresholding:**
 
@@ -75,6 +75,17 @@ We use n = 1 for our data modality.
 
 For volume thresholding, we used [Scipy's ndimage.label function](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.measurements.label.html) (which runs connected components). Then, for each unique label in the image, we find how many indices in the connected components image contain that value. If the number of indices is fewer than 10 or greater than 100, we set the values at those indices of the original image equal to 0 (i.e. say it isn't synapse).
 
+**ClusterThresh**
+
+Function: 
+
+ClusterThresh identifies clusters from an image and keeps track of statistics.
+
+Inputs: an input image
+
+Outputs: an array of Class cluster
+
+To do so, we first run [Scipy's ndimage.label function](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.measurements.label.html). We then convert this matrix to sparse using [Scipy's sparse function](https://docs.scipy.org/doc/scipy/reference/sparse.html). Then, for each label, we search through this sparse matrix for which indices have value of that label and call these "members." We then call the construtor for a cluster class with "members" as the input. Doing so keeps track of these indices, the volume (number of indices), and the centroid (average of the indices). We then append this object of type cluster to a variable called clusterList. After we've iterated through each label, we return the clusterList.
 	
 
 ### 3. Give each synapse in moving image a unique label 
@@ -92,8 +103,9 @@ For ANTs registration, we used Translational, Rigid, and Affine linear registrat
 * smoothing sigmas: [4, 2, 1]
 * shrink factors: [6, 4, 2]
 
-### 6. L2 centroid distance match 
+### 5. L2 centroid distance match 
 
 To centroid match, we iterate through the clusters in the fixed image, find its centroid, then iterate through the clusters in the moving image, then find its centroid and the distance between the moving clusters' centroid and the fixed clusters' centroid. We store this distance in an array. We then find which distance was the smallest and say that the cluster in the moving image that corresponds to that distance is the L2 centroid distance match of the fixed cluster.
 
+### 6. For each clusters in (1), note the label of its time registered pair, then find which cluster in (3) have that color. Set this cluster to the "timeRegistration" datamember of its corresponding cluster in (1).
 
