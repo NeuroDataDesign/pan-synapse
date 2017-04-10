@@ -22,14 +22,14 @@ _____________________________________________________________________________
 
 1. Identify clusters in fixed image (i.e. Volume Threshold + Adaptive Threshold + knn filter)
 2. Identify clusters in moving image - (i.e. Volume threshold + Adaptive threshold + knn filter)
-3. Label different synapses in moving image - (i.e. Connected Components)
+3. Give each synapse in moving image a unique label - (i.e. Connected Components)
 3. ANTs registration on (3) with (1) as the fixed image.
 4. Find the centroids of the clusters in (3) and (1)
-5. L2 centroid distance match of clusters in (3) w/ those in (1). 
+5. L2 centroid distance match of clusters in (3) w/ those in (1) 
 6. For each clusters in (1), note the label of its time registered pair, then find which cluster in (3) have that color. Set this cluster to the "timeRegistration" datamember of its corresponding cluster in (1).
 
 
-#### 1. Identifying Clusters in the fixed image:
+#### 1/2. Identifying Clusters:
 
 To identify clusters in the fixed image, we run adaptive thresholding, a k nearest neighbors filter, and volume thresholding. 
 
@@ -71,6 +71,18 @@ Notes:
 The KNN filter simply goes through each index, appends its neighbors to a temporary array, and checks how many of those neighbors are nonzero. If there are at least n neighbors that are considered synapse, don't change anything. Otherwise, set the value at that index it to 0 (i.e. say it isn't synapse) 
 
 We use n = 1 for our data modality.
+
+**Volume Thresholding** 
+
+For volume thresholding, we used [Scipy's ndimage.label function](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.measurements.label.html) (which runs connected components). Then, for each unique label in the image, we find how many indices in the connected components image contain that value. If the number of indices is fewer than 10 or greater than 100, we set the values at those indices of the original image equal to 0 (i.e. say it isn't synapse).
+
+	
+
+### 3. Give each synapse in moving image a unique label 
+
+To do so, we simply use connected components. Specifically, we use [Scipy's ndimage.label function](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.measurements.label.html).
+
+### 4. ANTs registration
 
 
 
