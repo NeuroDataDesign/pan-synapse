@@ -4,8 +4,8 @@
 Synapsys detects synapses from two-fluorescent microscope images and tracks their volumes and centroids over time.
 
 ### Inputs:
-1. An input tiff image at first timepoint
-2. An input tiff image at second timepoint
+1. A tiff image at first timepoint
+2. A tiff image at second timepoint
 
 ### Output:
 1. A csv file annotating volume changes and centroids changes over time in the form of a table. Example: 
