@@ -113,3 +113,4 @@ For each cluster in the filtered moving image, make note of its L2 centroid dist
 
 To search through the connected components + filtered fixed image, we first convert it to sparse using [Scipy's sparse function](https://docs.scipy.org/doc/scipy/reference/sparse.html), and then search. 
 
+![Cloud Figure](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/Screen%20Shot%202017-04-10%20at%205.11.16%20PM.png)
