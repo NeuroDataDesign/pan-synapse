@@ -6,8 +6,7 @@ import pickle
 from PIL import Image, ImageSequence
 
 def loadTiff(location):
-    return pickle.load(open(location, 'r'))
-    #return libtiff.TiffFile(str(location)).get_tiff_array()
+    return libtiff.TiffFile(str(location)).get_tiff_array()
 
 def unzipChannels(image):
     return np.stack([image[::2],image[1::2]])
