@@ -54,6 +54,10 @@ We use sX =64 and sY = 64 for our data modality.
 
 ![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/exampleAdaptive.png?raw=true)
 
+Here is an example of the slice-wise average intensity across the x and y axes. We do thresholding within z slice, meaning the average is the same across every slice: 
+![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/xplot.png?raw=true)
+![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/yplot.png?raw=true)
+
 **K-nearest Neighbors Filter:**
 
 Function: 
@@ -73,9 +77,22 @@ The KNN filter simply goes through each index, appends its neighbors to a tempor
 
 We use n = 1 for our data modality.
 
+![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/exampleKNN.png?raw=true)
+
 **Volume Thresholding** 
 
 For volume thresholding, we used [Scipy's ndimage.label function](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.measurements.label.html) (which runs connected components). Then, for each unique label in the image, we find how many indices in the connected components image contain that value. If the number of indices is fewer than 10 or greater than 100, we set the values at those indices of the original image equal to 0 (i.e. say it isn't synapse).
+
+Here is an example of a distribution of volumes before and after volume thresholding: 
+
+![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/BeforeThresholding.png?raw=true)
+Note that all of those ticks look small because there is a very high amount of clusters with volume around 1, 2, or 3. We don't want those. 
+
+![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/AfterThresholding.png?raw=true)
+Note that all of those small ticks are now larger ticks. This means that we got rid of all of the volumes (around 1, 2, or 3) that we didn't want. 
+
+Furthermore, our average volume is 27 voxels. This corroborates the anatomical statistics we were given concerning the average volume of a synapse. Furthermore, our average synapse-to-total volume ratio ranges from 2-4% on average, which is also the biological range we are looking for.
+
 
 **ClusterThresh**
 
