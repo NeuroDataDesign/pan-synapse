@@ -86,9 +86,11 @@ For volume thresholding, we used [Scipy's ndimage.label function](https://docs.s
 Here is an example of a distribution of volumes before and after volume thresholding: 
 
 ![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/BeforeThresholding.png?raw=true)
+
 Note that all of those ticks look small because there is a very high amount of clusters with volume around 1, 2, or 3. We don't want those. 
 
 ![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/AfterThresholding.png?raw=true)
+
 Note that all of those small ticks are now larger ticks. This means that we got rid of all of the volumes (around 1, 2, or 3) that we didn't want. 
 
 Furthermore, our average volume is 27 voxels. This corroborates the anatomical statistics we were given concerning the average volume of a synapse. Furthermore, our average synapse-to-total volume ratio ranges from 2-4% on average, which is also the biological range we are looking for.
@@ -110,6 +112,12 @@ To do so, we first run [Scipy's ndimage.label function](https://docs.scipy.org/d
 ### 3. Give each synapse in moving image a unique label 
 
 To do so, we simply use connected components. Specifically, we use [Scipy's ndimage.label function](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.measurements.label.html).
+
+Example Connected Components Output: 
+
+![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/Connected.png?raw=true)
+
+Note that each cluster has its own label. It appears to be a gradient because there are so many clusters and synapses that are close to each other will have similarly valued labels, and thus appear to be similar colors - the rainbow simply ran out of colors.
 
 ### 4. ANTs registration
 
