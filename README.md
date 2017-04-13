@@ -20,7 +20,7 @@ Synapsys detects synapses from two-fluorescent microscope images and tracks thei
 _____________________________________________________________________________
 ### Overall Steps
 
-1. Identify clusters in fixed image (i.e. Volume Threshold + Adaptive Threshold + knn filter)
+1. Identify clusters in fixed image - (i.e. Volume Threshold + Adaptive Threshold + knn filter)
 2. Identify clusters in moving image - (i.e. Volume threshold + Adaptive threshold + knn filter)
 3. Give each synapse in moving image a unique label - (i.e. Connected Components)
 3. ANTs registration on (3) with (1) as the fixed image.
