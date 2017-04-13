@@ -6,8 +6,12 @@ RUN apt-get -y install python-setuptools python-dev python-pip build-essential
 
 #installing necessary modules
 #dependencies
+RUN apt-get -y install python-tk
 RUN apt-get -y install python-libtiff
+RUN apt-get -y install python-nipype
+
 RUN pip install numpy scipy matplotlib plotly scikit-image functools32 Pillow nibabel nipype medpy
+RUN pip install pandas
 RUN apt-get -y install libopencv-dev python-opencv
 
 RUN apt-get -y install git
@@ -23,7 +27,7 @@ RUN git clone git://github.com/stnava/ANTs.git
 RUN mkdir antsbin
 WORKDIR /ANTS/antsbin
 RUN cmake ../ANTs
-RUN make -j 7
+RUN make -j 6
 
 RUN cp /ANTS/ANTs/Scripts/* /ANTS/antsbin/bin/
 ENV ANTSPATH ANTS/antsbin/bin
@@ -41,4 +45,4 @@ ADD ./code/functions ./code/functions
 RUN useradd -ms /bin/bash user
 USER user
 
-#CMD ["python", "server.py"]
+#CMD ["python", "runPipeline.py"]
