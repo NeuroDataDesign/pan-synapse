@@ -48,12 +48,15 @@ def knn_filter(volume, n):
 
 def pipeline(fixedImg, movingImg, lowerFence = 0, upperFence = 180):
 
-    print 'running adaptive threshold'
-    fixedImg = cLib.adaptiveThreshold(fixedImg, 64, 64)
-    movingImg = cLib.adaptiveThreshold(movingImg, 64, 64)
+    fixedImgLandmarks = fixedImg[1]
+    movingImgLandmarks = movingImg[1]
+
+    print('running adaptive threshold')
+    fixedImg = cLib.adaptiveThreshold(fixedImg[0], 64, 64)
+    movingImg = cLib.adaptiveThreshold(movingImg[0], 64, 64)
     ##Volume Thresholding Fixed Img
 
-    print 'performing knn filtering'
+    print('performing knn filtering')
     #perform knn filtering
     fixedImg = knn_filter(fixedImg, 1)
     movingImg= knn_filter(movingImg, 1)
@@ -61,12 +64,12 @@ def pipeline(fixedImg, movingImg, lowerFence = 0, upperFence = 180):
     # the connectivity structure matrix
     s = [[[1 for k in xrange(3)] for j in xrange(3)] for i in xrange(3)]
 
-    print 'extracting connected components'
+    print('extracting connected components')
     # find connected components
     fixedImg, nr_objects = ndimage.label(fixedImg, s)
 
 
-    print 'thresholding by volume'
+    print('thresholding by volume')
     #volume thresholding with upperFence
     mask = fixedImg > fixedImg.mean()
     sizes = ndimage.sum(mask, fixedImg, range(nr_objects + 1))
@@ -107,15 +110,15 @@ def pipeline(fixedImg, movingImg, lowerFence = 0, upperFence = 180):
         labeled[remove_pixel] = 0
         labeled, nr_objects = ndimage.label(labeled, s)
 
-    print 'registering clusters'
-    realFixedClusters = rLib.ANTs(fixedImg, labeled, lowerFence, upperFence)
+    print('ANTs transformation')
+    realFixedClusters = rLib.ANTs(fixedImg, labeled, fixedImgLandmarks, movingImgLandmarks, lowerFence, upperFence)
 
+    print('correcting mismatches')
     #filtering wrong ones
     for i in range(len(realFixedClusters)):
-        distance = np.linalg.norm([x1 - x2 for (x1, x2) in zip(realFixedClusters[i].getCentroid(), realFixedClusters[i].timeRegistration.getCentroid())])
         volumeChangeForwards = np.abs(realFixedClusters[i].volume - realFixedClusters[i].timeRegistration.volume)/np.abs(realFixedClusters[i].volume)
         volumeChangeBackwards = np.abs(realFixedClusters[i].volume - realFixedClusters[i].timeRegistration.volume)/np.abs(realFixedClusters[i].timeRegistration.volume)
-        if not (distance < 500 and volumeChangeForwards < 2 and volumeChangeBackwards < 2):
+        if not (volumeChangeForwards < 2 and volumeChangeBackwards < 2):
             realFixedClusters[i].timeRegistration.members = (-1, -1, -1)
             realFixedClusters[i].timeRegistration.volume = -1
 

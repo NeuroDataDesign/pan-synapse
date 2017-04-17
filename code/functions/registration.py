@@ -17,10 +17,10 @@ import connectLib as cLib
 import scipy.sparse as sparse
 from cluster import Cluster
 
-def ANTs(fixedImg, movingImg, lowerFence, upperFence, r = 5000):
-    img2 = nib.Nifti1Image(fixedImg, np.eye(4))
+def ANTs(fixedImg, movingImg, fixedImgLandmarks, movingImgLandmarks, lowerFence, upperFence, r = 5000):
+    img2 = nib.Nifti1Image(fixedImgLandmarks, np.eye(4))
     nb.save(img2, 'fixed.nii')
-    img3 = nib.Nifti1Image(fixedImg, np.eye(4))
+    img3 = nib.Nifti1Image(movingImgLandmarks, np.eye(4))
     nb.save(img3, 'moving.nii')
     reg = Registration()
     reg.inputs.fixed_image = 'fixed.nii'
@@ -48,6 +48,16 @@ def ANTs(fixedImg, movingImg, lowerFence, upperFence, r = 5000):
     reg.inputs.use_histogram_matching = [False] * 3
     reg.inputs.initial_moving_transform_com = True
     reg.run()
+
+    img2 = nib.Nifti1Image(fixedImg, np.eye(4))
+    nb.save(img2, 'fixed.nii')
+    img3 = nib.Nifti1Image(movingImg, np.eye(4))
+    nb.save(img3, 'moving.nii')
+    reg.inputs.fixed_image = 'fixed.nii'
+    reg.inputs.moving_image = 'moving.nii'
+    reg.initial_moving_transform = 'transform0DerivedInitialMovingTranslation.mat'
+    reg.run()
+
     real_registered = os.path.join('registered.nii.gz')
     img = nib.load(real_registered)
     real_registered_img = img.get_data()
@@ -56,6 +66,7 @@ def ANTs(fixedImg, movingImg, lowerFence, upperFence, r = 5000):
     fixedClusters = cLib.clusterThresh(fixedImg, lowerFence, upperFence)
     movingClusters = cLib.clusterThresh(movingImg, lowerFence, upperFence)
 
+    print 'registering clusters'
     #l2 centroid match, capped at r
     A = [elem.getCentroid() for elem in fixedClusters]
     B = [elem.getCentroid() for elem in movingClusters]
@@ -67,42 +78,5 @@ def ANTs(fixedImg, movingImg, lowerFence, upperFence, r = 5000):
             fixedClusters[baseIdx].timeRegistration=Cluster([[-1, -1, -1]])
         else:
             fixedClusters[baseIdx].timeRegistration=movingClusters[idx]
-
-    '''
-    for i in range(len(fixedClusters)):
-        fixedCluster = fixedClusters[i]
-        distances = []
-        for j in range(len(registeredClusters)):
-            registeredCluster = registeredClusters[j]
-            distances.append(np.linalg.norm([x1 - x2 for (x1, x2) in zip(registeredCluster.getCentroid(), fixedCluster.getCentroid())]))
-        min_index, _ = min(enumerate(distances), key=operator.itemgetter(1))
-        centroid = registeredClusters[min_index].getCentroid()
-        members = [np.ceil(i) for i in centroid]
-        value = np.floor(real_registered_img[members[0], members[1], members[2]])
-        i = 0
-        while value == 0:
-            if i < len(registeredClusters[min_index].members):
-                newMembers = registeredClusters[min_index].members[i]
-                value = np.floor(real_registered_img[newMembers[0], newMembers[1], newMembers[2]])
-                i = i + 1
-            if i >= len(registeredClusters[min_index].members):
-                value = 2000
-
-        #convert labeled to Sparse
-        sparseLabeledMoving = np.empty(len(movingImg), dtype=object)
-        for i in range(len(movingImg)):
-            sparseLabeledMoving[i] = sparse.csr_matrix(movingImg[i])
-
-        memberList = []
-        memberListWithZ = []
-        while(len(memberListWithZ) == 0):
-            for z in range(len(sparseLabeledMoving)):
-                memberListWithoutZ = np.argwhere(sparseLabeledMoving[z] == value)
-                memberListWithZ = [[z] + list(tup) for tup in memberListWithoutZ]
-                memberList.extend(memberListWithZ)
-            value = value - 1
-
-        fixedCluster.timeRegistration = Cluster(memberList)
-    '''
 
     return fixedClusters
