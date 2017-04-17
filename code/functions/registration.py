@@ -6,9 +6,9 @@ import os
 from nipype.interfaces.ants import Registration
 
 import numpy as np
+from scipy.spatial import KDTree
 from nibabel.testing import data_path
 import pandas as pd
-from libtiff import TIFF
 from medpy.io import save
 from PIL import Image
 import nibabel as nb
@@ -17,7 +17,7 @@ import connectLib as cLib
 import scipy.sparse as sparse
 from cluster import Cluster
 
-def ANTs(fixedImg, movingImg, lowerFence, upperFence):
+def ANTs(fixedImg, movingImg, lowerFence, upperFence, r = 5000):
     img2 = nib.Nifti1Image(fixedImg, np.eye(4))
     nb.save(img2, 'fixed.nii')
     img3 = nib.Nifti1Image(fixedImg, np.eye(4))
@@ -56,6 +56,19 @@ def ANTs(fixedImg, movingImg, lowerFence, upperFence):
     fixedClusters = cLib.clusterThresh(fixedImg, lowerFence, upperFence)
     movingClusters = cLib.clusterThresh(movingImg, lowerFence, upperFence)
 
+    #l2 centroid match, capped at r
+    A = [elem.getCentroid() for elem in fixedClusters]
+    B = [elem.getCentroid() for elem in movingClusters]
+
+    tree = KDTree(B)
+    for baseIdx, a in enumerate(A):
+        dist, idx = tree.query(a, k=1, distance_upper_bound = r)
+        if dist == float('Inf'):
+            fixedClusters[baseIdx].timeRegistration=Cluster([[-1, -1, -1]])
+        else:
+            fixedClusters[baseIdx].timeRegistration=movingClusters[idx]
+
+    '''
     for i in range(len(fixedClusters)):
         fixedCluster = fixedClusters[i]
         distances = []
@@ -90,5 +103,6 @@ def ANTs(fixedImg, movingImg, lowerFence, upperFence):
             value = value - 1
 
         fixedCluster.timeRegistration = Cluster(memberList)
+    '''
 
     return fixedClusters
