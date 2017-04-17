@@ -49,15 +49,6 @@ def ANTs(fixedImg, movingImg, fixedImgLandmarks, movingImgLandmarks, lowerFence,
     reg.inputs.initial_moving_transform_com = True
     reg.run()
 
-    img2 = nib.Nifti1Image(fixedImg, np.eye(4))
-    nb.save(img2, 'fixed.nii')
-    img3 = nib.Nifti1Image(movingImg, np.eye(4))
-    nb.save(img3, 'moving.nii')
-    reg.inputs.fixed_image = 'fixed.nii'
-    reg.inputs.moving_image = 'moving.nii'
-    reg.initial_moving_transform = 'transform0DerivedInitialMovingTranslation.mat'
-    reg.run()
-
     real_registered = os.path.join('registered.nii.gz')
     img = nib.load(real_registered)
     real_registered_img = img.get_data()
