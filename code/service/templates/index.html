@@ -51,15 +51,7 @@
     </div>
     <div id="welcome">
       <nav class="menu fadeIn">
-          <input type="checkbox" href="#" class="menu-open" name="menu-open" id="menu-open" />
-          <label class="menu-open-button" for="menu-open">
-          <span class="hamburger hamburger-1"></span>
-          <span class="hamburger hamburger-2"></span>
-          <span class="hamburger hamburger-3"></span>
-        </label>
 
-          <a href="#top" class="menu-item"> <i class="fa fa-home"></i> </a>
-          <a href="#blueSection" class="menu-item"> <i class="fa fa-calculator"></i> </a>
       </nav>
 
 
@@ -69,32 +61,27 @@
           <span id="arrow-low" class="glyphicon glyphicon-menu-up"></span>
       </a>
       <div class="parallax">
-          <div class="header-text center fadeIn">Some welcome message.</div>
+          <div class="header-text center fadeIn">Synapsys</div>
       </div>
       <div class="panel">
           <a href='#blueSection'>
-              <div class="circle-center circle fadeIn">
+              <div class="circle-center circle">
                   <span id="arrow-high" class="glyphicon glyphicon-menu-down"></span>
                   <span id="arrow-low" class="glyphicon glyphicon-menu-down"></span>
               </div>
           </a>
 
-          <div class="section-menu menuCol icon-text hideme" id="blueSection">
-            <!--
-              <form action = '/' method="POST" id = "test">
-                  Select data <br> to analyze:
-                  <input type="file" name="upload" id="file" style="margin-top: 2.5vh; font-size: 22px">
-                  <input type="submit" name="submit" value="Analyze Data" class="analyze">
-              </form>
-            -->
-              <form id = "form" name = "file" action = "/uploader" method = "POST" enctype = "multipart/form-data" >
-                <div id="main">
-                  <input name = "file" id = "file" type = "file" />
-                  <input type="button" name="action" value="Upload" onclick="redirect()"/>
-                  <iframe id='my_iframe' name='my_iframe' src="">
-                  </iframe>
-                </div>
-              </form>
+          <div class="opaque-wrapper intro-text icon-text hideme" id="blueSection">
+            <h2 class="service"> SERVICE </h2>
+            <hr width = "15%" >
+            <form id="form" class="topBefore" action="/uploader">
+              <input id="name" type="text" placeholder="Name">
+              <input id="s3" type="text" placeholder="S3 Directory"> ?
+              <input id="tp1" type="text" placeholder="Time Point 1"> ?
+              <input id="tp2" type="text" placeholder="Time Point 2">
+              <input id ="submit" type="button" name="action" value="Upload" onclick="redirect()"/>
+
+            </form>
           </div>
       </div>
     </div>
