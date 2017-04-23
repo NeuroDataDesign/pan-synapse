@@ -74,20 +74,16 @@
           <div class="opaque-wrapper intro-text icon-text hideme" id="blueSection">
             <h2 class="service"> SERVICE </h2>
             <hr width = "15%" >
-            <form id="form" class="topBefore" action="/uploader">
-              <input id="name" type="text" placeholder="Name">
-              <input id="s3" type="text" placeholder="S3 Directory"> ?
-              <input id="tp1" type="text" placeholder="Time Point 1"> ?
-              <input id="tp2" type="text" placeholder="Time Point 2">
-              <input id ="submit" type="button" name="action" value="Upload" onclick="redirect()"/>
-
+            <form id="form" name = "form" method = 'post' class="topBefore" action="http://localhost:8000/submitJob">
+              <input id="name" type="text" name = "name" placeholder="Name">
+              <input id="s3" type="text" name = 's3' placeholder="S3 Bucket"> ?
+              <input id="tp1" type="text" name = 'tp1' placeholder="Time Point 1"> ?
+              <input id="tp2" type="text" name = 'tp2' placeholder="Time Point 2">
+              <input id ="submit" type="submit" name="action"/>
             </form>
           </div>
       </div>
     </div>
-
-
-
         <script src="../static/js/main.js"></script>
 
 </body>

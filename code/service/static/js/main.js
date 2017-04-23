@@ -127,7 +127,7 @@ function getBase64(file) {
   });
 });*/
 
-
+/**
 var id = 0;
 $(document).ready(function(){
     namespace = '/test';
@@ -164,3 +164,4 @@ $(document).ready(function(){
     });
 
 });
+**/
