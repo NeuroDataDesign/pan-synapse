@@ -13,7 +13,7 @@ def submitJob(name, tp1, tp2):
         jobQueue = 'testqueue',
         jobDefinition = 'synapsys_pipeline:3',
         containerOverrides = {
-            'command': ['python', 'testjob.py', tp1, tp2]
+            'command': ['python', 'runPipeline.py', tp1, tp2]
         }
     )
 
