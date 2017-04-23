@@ -74,12 +74,3 @@ $(window).scroll(function() {
         scrollTop : 0                       // Scroll to top of body
     }, 1000);
 });
-
-$('#submit').click(function(e){
-    $('#welcome').fadeOut('slow', function(){
-        $('#uploading').fadeIn('slow');
-    });
-    $('body,html').animate({
-        scrollTop : 0                       // Scroll to top of body
-    }, 1000);
-});

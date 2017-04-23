@@ -49,6 +49,16 @@ html,body {
   margin-top: 10vh;
 }
 
+.error{
+  font-family: Quadon;
+  font-weight: bold;
+  letter-spacing: 2px;
+  color: red;
+  font-size: 2vw;
+  text-align: center;
+  word-wrap: normal;
+}
+
 
 .center {
   background: transparent;
