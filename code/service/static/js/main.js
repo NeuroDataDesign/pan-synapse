@@ -75,31 +75,7 @@ $(window).scroll(function() {
     }, 1000);
 });
 
-// for fading on scroll
-$(document).ready(function() {
-
-    /* Every time the window is scrolled ... */
-    $(window).scroll( function(){
-
-        /* Check the location of each desired element */
-        $('.hideme').each( function(i){
-
-            var bottom_of_object = $(this).offset().top + $(this).outerHeight();
-            var bottom_of_window = $(window).scrollTop() + $(window).height();
-
-            /* If the object is completely visible in the window, fade it it */
-            if( bottom_of_window > bottom_of_object ){
-
-                $(this).animate({'opacity':'1'},100);
-
-            }
-        });
-
-    });
-
-});
-
-$('#analyze').click(function(e){
+$('#submit').click(function(e){
     $('#welcome').fadeOut('slow', function(){
         $('#uploading').fadeIn('slow');
     });
@@ -107,61 +83,3 @@ $('#analyze').click(function(e){
         scrollTop : 0                       // Scroll to top of body
     }, 1000);
 });
-/**
-document.getElementById('analyze').addEventListener('click', function() {
-  var files = document.getElementById('file').files;
-  if (files.length > 0) {
-    getBase64('../../../data/SEP-GluA1-KI_tp1.tif');
-  }
-});
-
-function getBase64(file) {
-   var data = File.ReadAllBytes(file);
-   var result = Convert.ToBase64String(data);
-}
-**/
-
-/*socket.on('fileUpload', function() {
-  $('#uploading').fadeOut('slow', function(){
-      $('#analyzing').fadeIn('slow');
-  });
-});*/
-
-/**
-var id = 0;
-$(document).ready(function(){
-    namespace = '/test';
-    var socket = io.connect(location.protocol + '//' + document.domain + ':' + location.port + namespace);
-
-    socket.on('connect', function() {
-      console.log('connected');
-    });
-
-    socket.on('complete', function() {
-      alert('Complete Event Recieved');
-      //socket.emit('results', id);
-      $.ajax({
-        type: "GET",
-        beforeSend: function(request){
-          request.setRequestHeader("myID", id);
-          alert('Results Request Sent With ID:');
-          alert(id);
-        },
-        url: 'http://' + document.domain + ':' + location.port + '/results',
-        success: function(data){
-          alert('Result Data Recieved');
-          window.location.href = data;
-        }
-      });
-    });
-
-    //socket.on('response', function(id) {
-    $('form#test').submit(function(event) {
-      console.log('here');
-      socket.emit('analyze');
-      id = "1123";
-      return false;
-    });
-
-});
-**/
