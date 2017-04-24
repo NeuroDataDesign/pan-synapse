@@ -46,7 +46,7 @@ html,body {
   font-size: 3vw;
   text-align: center;
   word-wrap: normal;
-  margin-top: 10vh;
+  margin-top: 15vh;
 }
 
 .error{
@@ -434,4 +434,39 @@ html,body {
     font-family: 'Quadon';
     text-align: left;
     color: #1E9E9E;
+}
+
+.social-media-images {
+    width: 15%;
+    margin: 3vh 3%;
+    padding-bottom: 3vh;
+}
+.social-media-images {
+    -webkit-transition: all 1s ease;
+    /* Safari and Chrome */
+    -moz-transition: all 1s ease;
+    /* Firefox */
+    -ms-transition: all 1s ease;
+    /* IE 9 */
+    -o-transition: all 1s ease;
+    /* Opera */
+    transition: all 1s ease;
+}
+.social-media-images:hover {
+    -webkit-transform: scale(1.25);
+    /* Safari and Chrome */
+    -moz-transform: scale(1.25);
+    /* Firefox */
+    -ms-transform: scale(1.25);
+    /* IE 9 */
+    -o-transform: scale(1.25);
+    /* Opera */
+    transform: scale(1.25);
+}
+
+.contact {
+    text-align: center;
+    color: white;
+    font-size: 1.1vw;
+    padding-bottom: 5vh;
 }
