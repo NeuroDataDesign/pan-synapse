@@ -5,7 +5,6 @@ import boto3
 from flask import Flask, redirect, url_for, request, render_template, session, flash
 
 app = Flask(__name__)
-app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 
 def submitJob(name, tp1, tp2):
     client = boto3.client('batch')

@@ -31,15 +31,45 @@
     <div id="top"></div>
     <div id="particles-background" class="vertical-centered-box"></div>
     <div id="particles-foreground" class="vertical-centered-box"></div>
-    <div id="uploading">
-      <div class="content">
-      <h class="header-text" style="font-size: 5vw; position: absolute; margin-left: 30.5%; margin-top: 23vh;"> Uploading Data </h>
+    <div id="welcome">
 
-        <div class="loader-line-mask">
-          <div class="loader-line"></div>
+      <!-- Return to Top -->
+      <a href="javascript:" id="return-to-top" class="circle">
+          <span id="arrow-high" class="glyphicon glyphicon-menu-up"></span>
+          <span id="arrow-low" class="glyphicon glyphicon-menu-up"></span>
+      </a>
+      <div class="parallax">
+          <div id="analyzing">
+            <div class="content">
+            <h class="header-text" style="font-size: 5vw; position: absolute; margin-left: 30.5%; margin-top: 40vh;"> Analyzing Data </h>
+
+              <div class="loader-line-mask">
+                <div class="loader-line"></div>
+              </div>
+            </div>
         </div>
+          <a href='#blueSection'>
+              <div class="circle-center circle">
+                  <span id="arrow-high" class="glyphicon glyphicon-menu-down"></span>
+                  <span id="arrow-low" class="glyphicon glyphicon-menu-down"></span>
+              </div>
+          </a>
       </div>
-  </div>
+      <div class="panel">
+          <div class="opaque-wrapper service-text" id="blueSection">
+            <h2 class="service"> LINKS </h2>
+            <hr width = "15%" >
+            <div style="margin-left: 36%;">
+                <a href="https://github.com/NeuroDataDesign/pan-synapse"><img class="social-media-images" src="static/img/Github.png" z-index="100"></a>
+                <a href="https://www.neurodata.io"><img class="social-media-images" src="static/img/Neurodata.png" z-index="100"></a>
+            </div>
+            <div class="contact">
+                <div style="padding-bottom: 2vh; font-size: 1.7vw;">© 2017 Synapsys <br></div>
+                Designed with  <i class="fa fa-heart" aria-hidden="true" style="color:#1E9E9E;"></i> by the Synapsys team.
+            </div>
+          </div>
+      </div>
+    </div>
         <script src="../static/js/main.js"></script>
 
 </body>
