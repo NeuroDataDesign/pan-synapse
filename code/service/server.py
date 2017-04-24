@@ -5,7 +5,6 @@ import boto3
 from flask import Flask, redirect, url_for, request, render_template, session, flash
 
 app = Flask(__name__)
-app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/,?RT'
 
 def submitJob(name, tp1, tp2):
     client = boto3.client('batch')
@@ -46,10 +45,9 @@ def submit():
                                 errorTp2 = errorTp2,
                                 name = name,
                                 tp1 = tp1,
-                                tp2 = tp2,
-                                reload = True)
+                                tp2 = tp2)
     else:
-        #submitJob(name, tp1, tp2)
+        submitJob(name, tp1, tp2)
         return render_template('analyze.html')
 
 if __name__ == '__main__':
