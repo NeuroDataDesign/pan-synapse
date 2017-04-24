@@ -48,7 +48,7 @@ def submit():
                                 tp1 = tp1,
                                 tp2 = tp2)
     else:
-        #submitJob(name, tp1, tp2)
+        submitJob(name, tp1, tp2)
         return render_template('analyze.html')
 
 if __name__ == '__main__':

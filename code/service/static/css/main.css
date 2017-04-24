@@ -174,12 +174,6 @@ html,body {
       top: 5px;
   }
 
-  * {
-    -webkit-transition: all 0.3s;
-    -moz-transition: all 0.3s;
-    -o-transition: all 0.3s;
-    transition: all 0.3s;
-  }
 
 
   #particles-background,
@@ -371,10 +365,6 @@ html,body {
     border: solid 1px #b3aca7;
     border-bottom: none;
 
-    transition: all 0.3s ease-in-out;
-    -webkit-transition: all 0.3s ease-in-out;
-    -moz-transition: all 0.3s ease-in-out;
-    -ms-transition: all 0.3s ease-in-out;
   }
 
   input:hover {
@@ -468,5 +458,5 @@ html,body {
     text-align: center;
     color: white;
     font-size: 1.1vw;
-    padding-bottom: 5vh;
+    padding-bottom: 10vh;
 }
