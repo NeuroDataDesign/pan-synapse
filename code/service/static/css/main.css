@@ -55,7 +55,7 @@ html,body {
   letter-spacing: 2px;
   color: red;
   font-size: 2vw;
-  text-align: center;
+  text-align: left;
   word-wrap: normal;
 }
 
@@ -83,12 +83,9 @@ html,body {
     top: 75%
   }
 
-.circle:hover {
-  background: #1E9E9E;
-}
-
 .circle {
   border-color: #fff;
+  background-color:  rgba(22, 38, 38, .60);
   border: 1%;
   border-style: solid;
   -o-transition:color .2s ease-out, background .2s ease-in;
@@ -101,6 +98,10 @@ html,body {
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+}
+
+.circle:hover {
+  background: #1E9E9E;
 }
 
 #arrow-high {
@@ -137,8 +138,7 @@ html,body {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      background: rgb(0, 0, 0);
-      background: rgba(0, 0, 0, 0.7);
+      background-color:  rgba(22, 38, 38, .60);
       width: 50px;
       height: 50px;
       display: block;
@@ -174,30 +174,6 @@ html,body {
       top: 5px;
   }
 
-
-
-  body .vertical-centered-box {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    text-align: center;
-  }
-  body .vertical-centered-box:after {
-    content: '';
-    display: inline-block;
-    height: 100%;
-    vertical-align: middle;
-    margin-right: -0.25em;
-  }
-  body .vertical-centered-box .content {
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: border-box;
-    display: inline-block;
-    vertical-align: middle;
-    text-align: left;
-    font-size: 0;
-  }
   * {
     -webkit-transition: all 0.3s;
     -moz-transition: all 0.3s;
@@ -378,7 +354,7 @@ html,body {
   #form {
     position: relative;
     width: 90%;
-    margin: 8vh auto 8vh 8%;
+    margin: 8vh auto 8vh 10%;
   }
 
   input {
@@ -445,12 +421,13 @@ html,body {
   .opaque-wrapper {
      float: left;
      width: 60%;
-     height:100vh;
+     height: auto;
      background-color:  rgba(22, 38, 38, .60);
      text-align: default;
      font-size: 30px;
      position: absolute;
      margin-left: 20%;
+     margin-bottom: 20vh;
  }
 
  .service-text {
