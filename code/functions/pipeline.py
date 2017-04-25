@@ -36,6 +36,10 @@ def pipeline(fixedImg, movingImg, lowerFence = 0, upperFence = 180):
 
     # the connectivity structure matrix
     s = [[[1 for k in xrange(3)] for j in xrange(3)] for i in xrange(3)]
+    
+    # find connected components
+    print('Extracting Connected Components')
+    fixedImg, nr_objects = ndimage.label(fixedImg, s)
 
     print('ANTs transformation')
     realFixedClusters = rLib.ANTs(fixedImg, movingImg, fixedImgLandmarks, movingImgLandmarks, lowerFence, upperFence)
