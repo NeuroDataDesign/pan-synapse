@@ -19,33 +19,6 @@ import scipy.misc
 
 import scipy.ndimage as ndimage
 
-def knn_filter(volume, n):
-    #neighborList = []
-    outVolume = np.zeros_like(volume)
-    #for all voxels in volume
-    for z in range(volume.shape[0]):
-        for y in range(volume.shape[1]):
-            for x in range(volume.shape[2]):
-                #get all valid neighbors
-                neighbors = []
-                for a in (-1, 1):
-                    try:
-                        neighbors.append(volume[z][y+a][x])
-                        neighbors.append(volume[z][y][x+a])
-
-                    #just keep going and append nothing if on edge
-                    except IndexError:
-                        continue
-
-                #if at least half of your neighbors are true, be true
-                #neighborList.append(np.count_nonzero(neighbors))
-                if np.count_nonzero(neighbors) >= n:
-                    outVolume[z][y][x] = 1
-                else:
-                    outVolume[z][y][x] = 0
-
-    return outVolume
-
 def pipeline(fixedImg, movingImg, lowerFence = 0, upperFence = 180):
 
     fixedImgLandmarks = fixedImg[1]
@@ -58,60 +31,14 @@ def pipeline(fixedImg, movingImg, lowerFence = 0, upperFence = 180):
 
     print('performing knn filtering')
     #perform knn filtering
-    fixedImg = knn_filter(fixedImg, 1)
-    movingImg= knn_filter(movingImg, 1)
+    fixedImg = cLib.knn_filter(fixedImg, 2)
+    movingImg= cLib.knn_filter(movingImg, 2)
 
     # the connectivity structure matrix
     s = [[[1 for k in xrange(3)] for j in xrange(3)] for i in xrange(3)]
 
-    print('extracting connected components')
-    # find connected components
-    fixedImg, nr_objects = ndimage.label(fixedImg, s)
-
-
-    print('thresholding by volume')
-    #volume thresholding with upperFence
-    mask = fixedImg > fixedImg.mean()
-    sizes = ndimage.sum(mask, fixedImg, range(nr_objects + 1))
-    mask_size = sizes > upperFence
-    remove_pixel = mask_size[fixedImg]
-    fixedImg[remove_pixel] = 0
-    fixedImg, nr_objects = ndimage.label(fixedImg, s)
-
-
-    if not lowerFence == 0:
-        #volume thresholding with upperFence
-        mask = fixedImg > fixedImg.mean()
-        sizes = ndimage.sum(mask, fixedImg, range(nr_objects + 1))
-        mask_size = sizes < lowerFence
-        remove_pixel = mask_size[fixedImg]
-        fixedImg[remove_pixel] = 0
-        fixedImg, nr_objects = ndimage.label(fixedImg, s)
-
-    ##Connected Components + Volume Thresholding On Moving Image
-
-    # find connected components
-    labeled, nr_objects = ndimage.label(movingImg, s)
-
-    #volume thresholding with upperFence
-    mask = labeled > labeled.mean()
-    sizes = ndimage.sum(mask, labeled, range(nr_objects + 1))
-    mask_size = sizes > upperFence
-    remove_pixel = mask_size[labeled]
-    labeled[remove_pixel] = 0
-    labeled, nr_objects = ndimage.label(labeled, s)
-
-    if not lowerFence == 0:
-        #volume thresholding with lowerFence
-        mask = labeled > labeled.mean()
-        sizes = ndimage.sum(mask, labeled, range(nr_objects + 1))
-        mask_size = sizes < lowerFence
-        remove_pixel = mask_size[labeled]
-        labeled[remove_pixel] = 0
-        labeled, nr_objects = ndimage.label(labeled, s)
-
     print('ANTs transformation')
-    realFixedClusters = rLib.ANTs(fixedImg, labeled, fixedImgLandmarks, movingImgLandmarks, lowerFence, upperFence)
+    realFixedClusters = rLib.ANTs(fixedImg, movingImg, fixedImgLandmarks, movingImgLandmarks, lowerFence, upperFence)
 
     print('correcting mismatches')
     #filtering wrong ones

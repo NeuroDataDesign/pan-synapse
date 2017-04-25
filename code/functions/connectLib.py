@@ -13,65 +13,12 @@ from scipy import sparse
 import matplotlib.pyplot as plt
 import mouseVis as mv
 
-def meanNorm(volume):
-    toStack = []
-    for plane in volume:
-        normFactor = (65535./float(np.max(plane)))
-        toStack.append(normFactor * np.array(plane))
-    return np.stack(toStack)
-
-def windowMeanShiftNorm(volume, window):
-    retStack = []
-    rem = volume.shape[0]%window
-    for i in range(int(volume.shape[0])/int(window)):
-        idealMean = np.average(volume[i])
-        retStack.append(volume[i])
-        #starts at 1 since ideal mean volume is normed to itself already
-        for j in range(1, window):
-            retStack.append(volume[i+j]+(idealMean-np.average(volume[i+j])))
-
-    #deal with remainders
-    idealRemMean = np.average(volume[-rem])
-    for i in range(rem):
-        retStack.append(volume[-rem+i]+(idealRemMean-np.average(volume[-rem+i])))
-
-    return np.stack(retStack)
-
-def otsuVox(argVox):
-    probVox = np.nan_to_num(argVox)
-    bianVox = np.zeros_like(probVox)
-    for zIndex, curSlice in enumerate(probVox):
-        #if the array contains all the same values
-        if np.max(curSlice) == np.min(curSlice):
-            #otsu thresh will fail here, leave bianVox as all 0's
-            continue
-        thresh = threshold_otsu(curSlice)
-        bianVox[zIndex] = curSlice > thresh
-    return bianVox
-
 def clusterThresh(volume, lowerFence=0, upperFence=250):
     # the connectivity structure matrix
     s = [[[1 for k in xrange(3)] for j in xrange(3)] for i in xrange(3)]
 
     # find connected components
     labeled, nr_objects = ndimage.label(volume, s)
-
-    #volume thresholding with upperFence
-    mask = labeled > labeled.mean()
-    sizes = ndimage.sum(mask, labeled, range(nr_objects + 1))
-    mask_size = sizes > upperFence
-    remove_pixel = mask_size[labeled]
-    labeled[remove_pixel] = 0
-    labeled, nr_objects = ndimage.label(labeled, s)
-
-    if not lowerFence == 0:
-        #volume thresholding with lowerFence
-        mask = labeled > labeled.mean()
-        sizes = ndimage.sum(mask, labeled, range(nr_objects + 1))
-        mask_size = sizes < lowerFence
-        remove_pixel = mask_size[labeled]
-        labeled[remove_pixel] = 0
-        labeled, nr_objects = ndimage.label(labeled, s)
 
     #convert labeled to Sparse
     sparseLabeledIm = np.empty(len(labeled), dtype=object)
@@ -90,7 +37,8 @@ def clusterThresh(volume, lowerFence=0, upperFence=250):
             memberListWithZ = [[z] + list(tup) for tup in memberListWithoutZ]
             memberList.extend(memberListWithZ)
 
-        if not len(memberList) == 0:
+        #volume thresholding
+        if len(memberList) < upperFence and len(memberList) > lowerFence:
             clusterList.append(Cluster(memberList))
 
     return clusterList
@@ -130,68 +78,33 @@ def clusterAnalysis(rawData, lowerFence = 20, upperFence = 250, sliceVis=5, bins
         xRelationship[x] = np.mean(displayIm[:, :, x])
     mv.generatePlotlyLineForSliceDensities(xRelationship, figName="X-Slice Densities")
 
-#pass in list of clusters
-def densityOfSlice(clusters, minZ, maxZ, minY, maxY, minX, maxX):
-    count = 0
-    for cluster in clusters:
-        z, y, x = cluster.centroid
-        #if cluster is in given volume
-        if (z>=minZ) and (z<maxZ) and (y>=minY) and (y<maxY) and (x>=minX) and (x<maxX):
-            count+=1
+def knn_filter(volume, n):
+    #neighborList = []
+    outVolume = np.zeros_like(volume)
+    #for all voxels in volume
+    for z in range(volume.shape[0]):
+        for y in range(volume.shape[1]):
+            for x in range(volume.shape[2]):
+                #get all valid neighbors
+                neighbors = []
+                for a in (-1, 1):
+                    try:
+                        neighbors.append(volume[z][y+a][x])
+                        neighbors.append(volume[z][y][x+a])
 
-    clusterPerPixelCubed = float(count)/((maxX - minX) * (maxY - minY) * (maxZ - minZ))
-    #NOTE .12*.12*.5 microns is the resolution of the given data, this may need to be changed
-    #in future implementations for data of different resolutions
-    return str(clusterPerPixelCubed/(.12*.12*.5)) + 'clusters per cubic microns'
+                    #just keep going and append nothing if on edge
+                    except IndexError:
+                        continue
 
-#pass in list of clusters, return a list of thresholded clusters
-def thresholdByVolumePercentile(clusterList):
-    #putting the plosPipeline clusters volumes in a list
-    plosClusterVolList =[]
-    for cluster in (range(len(clusterList))):
-        plosClusterVolList.append(clusterList[cluster].getVolume())
+                #if at least half of your neighbors are true, be true
+                #neighborList.append(np.count_nonzero(neighbors))
+                if np.count_nonzero(neighbors) >= n:
+                    outVolume[z][y][x] = 1
+                else:
+                    outVolume[z][y][x] = 0
 
-    #finding the upper outlier fence
-    Q3 = np.percentile(plosClusterVolList, 75)
-    Q1 = np.percentile(plosClusterVolList, 25)
-    IQR = Q3 - Q1
-    upperThreshFence = Q3 + 1.5*IQR
-    lowerThreshFence = Q1 - 1.5*IQR
-
-    #filtering out the background cluster
-    upperThreshClusterList = []
-    for cluster in (range(len(clusterList))):
-        if clusterList[cluster].getVolume() < upperThreshFence:
-            upperThreshClusterList.append(clusterList[cluster])
-
-    return upperThreshClusterList
-
-#pass in list of clusters, return a list of thresholded clusters
-def thresholdByVolumeNaive(clusterList, lowerLimit = 0, upperLimit=200):
-
-    #filtering out the background cluster
-    naiveThreshClusterList = []
-    for cluster in (range(len(clusterList))):
-        if clusterList[cluster].getVolume() > lowerLimit and clusterList[cluster].getVolume() < upperLimit:
-            naiveThreshClusterList.append(clusterList[cluster])
-
-    return naiveThreshClusterList
-
-#pass in the list of clusters that have gone through the plos pipeline, and the list that hasn't
-def clusterCoregister(plosClusterList, rawClusterList):
-    #creating a list of all the member indices of the plos cluster list
-    plosClusterMemberList = []
-    for cluster in range(len(plosClusterList)):
-        plosClusterMemberList.extend(plosClusterList[cluster].members)
-
-    #creating a list of all the clusters without any decay
-    finalClusterList =[]
-    for rawCluster in range(len(rawClusterList)):
-        if any(i for i in rawClusterList[rawCluster].members if i in plosClusterMemberList) and not(rawClusterList[rawCluster] in finalClusterList):
-            finalClusterList.append(rawClusterList[rawCluster])
-
-    return finalClusterList
-
+    return outVolume
+    
 def adaptiveThreshold(inImg, sx, sy):
     max = np.max(inImg)
     outImg = np.zeros_like(inImg)
