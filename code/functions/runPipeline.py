@@ -24,24 +24,24 @@ def generateCSV(results):
 
     print 'pipeline complete'
 
-def uploadResults(key, results):
+def uploadResults(s3dir, key, results):
     s3 = boto3.resource('s3')
-    key = key + '_results' + '.csv'
+    key = s3dir + '/' + key + '_results' + '.csv'
     data = open(results, 'rb')
-    s3.Bucket('nddtestbucketresults').put_object(Key=key, Body=data)
+    s3.Bucket('nddtestbucket').put_object(Key=key, Body=data)
     return key
 
-def getData(keys, datadir):
+def getData(s3dir, keys, datadir):
     s3 = boto3.resource('s3')
     for key in keys:
         filename = datadir + '/' + key
-        data = s3.meta.client.download_file('nddtestbucket', key, filename)
+        data = s3.meta.client.download_file('nddtestbucket', s3dir + '/' + key, filename)
     return keys
 
 #This library is designed to act as the driver for the docker and the web service
 #Files MUST be named 'key_i.tif' where i is integer of time point.
-def runPipeline(keys):
-    getData(keys, '../../data')
+def runPipeline(s3dir, keys):
+    getData(s3dir, keys, '../../data')
     if len(glob.glob('../../data/*.tif')) != 0:
         fileList =  sorted(glob.glob('../../data/*.tif'))
     else:
@@ -55,9 +55,9 @@ def runPipeline(keys):
 
     #generate csv
     generateCSV(results)
-    uploadResults(key, '../../results/results.csv')
+    uploadResults(s3dir, key, '../../results/results.csv')
 
     return
 
 if __name__ == '__main__':
-    runPipeline(sys.argv[1:])
+    runPipeline(sys.arg[1], sys.argv[2:])

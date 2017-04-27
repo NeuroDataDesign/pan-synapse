@@ -58,6 +58,8 @@ Here is an example of the slice-wise average intensity across the x and y axes. 
 ![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/xplot.png?raw=true)
 ![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/yplot.png?raw=true)
 
+[Here is a link to our Adpative Thresholding notebook](https://github.com/NeuroDataDesign/pan-synapse/blob/master/background/AdaptiveThresholding_Algorithms.md.ipynb)
+
 **K-nearest Neighbors Filter:**
 
 Function: 
@@ -79,22 +81,6 @@ We use n = 1 for our data modality.
 
 ![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/exampleKNN.png?raw=true)
 
-**Volume Thresholding** 
-
-For volume thresholding, we used [Scipy's ndimage.label function](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.measurements.label.html) (which runs connected components). Then, for each unique label in the image, we find how many indices in the connected components image contain that value. If the number of indices is fewer than 10 or greater than 100, we set the values at those indices of the original image equal to 0 (i.e. say it isn't synapse).
-
-Here is an example of a distribution of volumes before and after volume thresholding: 
-
-![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/BeforeThresholding.png?raw=true)
-
-Note that all of those ticks look small because there is a very high amount of clusters with volume around 1, 2, or 3. We don't want those. 
-
-![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/AfterThresholding.png?raw=true)
-
-Note that all of those small ticks are now larger ticks. This means that we got rid of all of the volumes (around 1, 2, or 3) that we didn't want. 
-
-Furthermore, our average volume is 27 voxels. This corroborates the anatomical statistics we were given concerning the average volume of a synapse. Furthermore, our average synapse-to-total volume ratio ranges from 2-4% on average, which is also the biological range we are looking for.
-
 
 **ClusterThresh**
 
@@ -106,7 +92,19 @@ Inputs: an input image
 
 Outputs: an array of Class cluster
 
-To do so, we first run [Scipy's ndimage.label function](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.measurements.label.html). We then convert this matrix to sparse using [Scipy's sparse function](https://docs.scipy.org/doc/scipy/reference/sparse.html). Then, for each label, we search through this sparse matrix for which indices have value of that label and call these "members." We then call the construtor for a cluster class with "members" as the input. Doing so keeps track of these indices, the volume (number of indices), and the centroid (average of the indices). We then append this object of type cluster to a variable called clusterList. After we've iterated through each label, we return the clusterList.
+To do so, we first run [Scipy's ndimage.label function](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.measurements.label.html). We then convert this matrix to sparse using [Scipy's sparse function](https://docs.scipy.org/doc/scipy/reference/sparse.html). Then, for each label, we search through this sparse matrix for which indices have value of that label and call these "members." If the number of members (a.k.a. the volume of the cluster) is greater than 10 and less than 100, we then call the construtor for a cluster class with "members" as the input. Doing so keeps track of these indices, the volume (number of indices), and the centroid (average of the indices). We then append this object of type cluster to a variable called clusterList. After we've iterated through each label, we return the clusterList.
+
+For assurance that our volume thresholding is working, here is an example of a distribution of volumes before and after volume thresholding: 
+
+![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/BeforeThresholding.png?raw=true)
+
+Note that all of those ticks look small because there is a very high amount of clusters with volume around 1, 2, or 3. We don't want those. 
+
+![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/AfterThresholding.png?raw=true)
+
+Note that all of those small ticks are now larger ticks. This means that we got rid of all of the volumes (around 1, 2, or 3) that we didn't want. 
+
+Furthermore, our average volume is 27 voxels. This corroborates the anatomical statistics we were given concerning the average volume of a synapse. Furthermore, our average synapse-to-total volume ratio ranges from 2-4% on average, which is also the biological range we are looking for.
 	
 
 ### 3. Give each synapse in moving image a unique label 

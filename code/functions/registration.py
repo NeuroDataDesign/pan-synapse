@@ -53,6 +53,7 @@ def ANTs(fixedImg, movingImg, fixedImgLandmarks, movingImgLandmarks, lowerFence,
     img = nib.load(real_registered)
     real_registered_img = img.get_data()
 
+    print 'clustering'
     registeredClusters = cLib.clusterThresh(real_registered_img, lowerFence, upperFence)
     fixedClusters = cLib.clusterThresh(fixedImg, lowerFence, upperFence)
     movingClusters = cLib.clusterThresh(movingImg, lowerFence, upperFence)
