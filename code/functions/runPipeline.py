@@ -40,8 +40,8 @@ def getData(s3dir, keys, datadir):
 
 #This library is designed to act as the driver for the docker and the web service
 #Files MUST be named 'key_i.tif' where i is integer of time point.
-def runPipeline(keys):
-    getData(keys, '../../data')
+def runPipeline(s3dir, keys):
+    getData(s3dir, keys, '../../data')
     if len(glob.glob('../../data/*.tif')) != 0:
         fileList =  sorted(glob.glob('../../data/*.tif'))
     else:
@@ -55,9 +55,9 @@ def runPipeline(keys):
 
     #generate csv
     generateCSV(results)
-    uploadResults(key, '../../results/results.csv')
+    uploadResults(s3dir, key, '../../results/results.csv')
 
     return
 
 if __name__ == '__main__':
-    runPipeline(sys.argv[1:])
+    runPipeline(sys.arg[1], sys.argv[2:])
