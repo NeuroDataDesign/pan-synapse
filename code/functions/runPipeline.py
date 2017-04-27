@@ -31,6 +31,12 @@ def uploadResults(s3dir, key, results):
     s3.Bucket('nddtestbucket').put_object(Key=key, Body=data)
     return key
 
+def uploadData(s3dir, keys):
+    s3 = boto3.resource('s3')
+    for key in keys:
+        data = open('../../data/' + key)
+        s3.Bucket('nddtestbucket').put_object(Key = s3dir + '/' + key, Body = data)
+
 def getData(s3dir, keys, datadir):
     s3 = boto3.resource('s3')
     for key in keys:
@@ -49,15 +55,16 @@ def runPipeline(s3dir, keys):
     #Generate results form pipeline
     print 'Starting Pipeline'
     results = pipe.pipeline(loadTiff(fileList[0]), loadTiff(fileList[1]))
-    key = keys[0].split('_')[0]
+    result_key = keys[0].split('_')[0]
     #generate visualization
     #mv.generatePlotlyLineGraph(myID, results)
 
     #generate csv
     generateCSV(results)
-    uploadResults(s3dir, key, '../../results/results.csv')
+    uploadResults(s3dir, result_key, '../../results/results.csv')
 
     return
 
 if __name__ == '__main__':
-    runPipeline(sys.arg[1], sys.argv[2:])
+    #uploadData(sys.argv[1], sys.argv[2:])
+    runPipeline(sys.argv[1], sys.argv[2:])
