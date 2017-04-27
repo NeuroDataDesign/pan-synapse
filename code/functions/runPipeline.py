@@ -24,18 +24,18 @@ def generateCSV(results):
 
     print 'pipeline complete'
 
-def uploadResults(key, results):
+def uploadResults(s3dir, key, results):
     s3 = boto3.resource('s3')
-    key = key + '_results' + '.csv'
+    key = s3dir + '/' + key + '_results' + '.csv'
     data = open(results, 'rb')
-    s3.Bucket('nddtestbucketresults').put_object(Key=key, Body=data)
+    s3.Bucket('nddtestbucket').put_object(Key=key, Body=data)
     return key
 
-def getData(keys, datadir):
+def getData(s3dir, keys, datadir):
     s3 = boto3.resource('s3')
     for key in keys:
         filename = datadir + '/' + key
-        data = s3.meta.client.download_file('nddtestbucket', key, filename)
+        data = s3.meta.client.download_file('nddtestbucket', s3dir + '/' + key, filename)
     return keys
 
 #This library is designed to act as the driver for the docker and the web service
