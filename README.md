@@ -58,6 +58,8 @@ Here is an example of the slice-wise average intensity across the x and y axes. 
 ![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/xplot.png?raw=true)
 ![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/yplot.png?raw=true)
 
+[Here is a link to our Adpative Thresholding notebook](https://github.com/NeuroDataDesign/pan-synapse/blob/master/background/AdaptiveThresholding_Algorithms.md.ipynb)
+
 **K-nearest Neighbors Filter:**
 
 Function: 
