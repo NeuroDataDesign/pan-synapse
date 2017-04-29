@@ -9,6 +9,7 @@ import csv
 from tiffIO  import loadTiff
 from cluster import Cluster
 import boto3
+import argparse
 
 def generateCSV(results):
     myOutput = []
@@ -24,30 +25,30 @@ def generateCSV(results):
 
     print 'pipeline complete'
 
-def uploadResults(s3dir, key, results):
+def uploadResults(bucket, s3dir, key, results):
     s3 = boto3.resource('s3')
     key = s3dir + '/' + key + '_results' + '.csv'
     data = open(results, 'rb')
-    s3.Bucket('synapsysndd').put_object(Key=key, Body=data)
+    s3.Bucket(bucket).put_object(Key=key, Body=data)
     return key
 
-def uploadData(s3dir, keys):
+def uploadData(bucket, s3dir, keys):
     s3 = boto3.resource('s3')
     for key in keys:
         data = open('../../data/' + key)
-        s3.Bucket('synapsysndd').put_object(Key = s3dir + '/' + key, Body = data)
+        s3.Bucket(bucket).put_object(Key = s3dir + '/' + key, Body = data)
 
-def getData(s3dir, keys, datadir):
+def getData(bucket, s3dir, keys, datadir):
     s3 = boto3.resource('s3')
     for key in keys:
         filename = datadir + '/' + key
-        data = s3.meta.client.download_file('synapsysndd', s3dir + '/' + key, filename)
+        data = s3.meta.client.download_file(bucket, s3dir + '/' + key, filename)
     return keys
 
 #This library is designed to act as the driver for the docker and the web service
 #Files MUST be named 'key_i.tif' where i is integer of time point.
-def runPipeline(s3dir, keys):
-    getData(s3dir, keys, '../../data')
+def runPipeline(bucket, s3dir, keys):
+    getData(bucket, s3dir, keys, '../../data')
     if len(glob.glob('../../data/*.tif')) != 0:
         fileList =  sorted(glob.glob('../../data/*.tif'))
     else:
@@ -61,10 +62,24 @@ def runPipeline(s3dir, keys):
 
     #generate csv
     generateCSV(results)
-    uploadResults(s3dir, result_key, '../../results/results.csv')
+    uploadResults(bucket, s3dir, result_key, '../../results/results.csv')
 
     return
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Synapsys pipeline on the cloud')
+    parser.add_argument('--bucket', type = str, help='The S3 bucket with the input dataset')
+    parser.add_argument('--dir', type = str, help = 'The S3 folder with the input dataset')
+    parser.add_argument('--timepoint1', type = str, help = 'The key to the first timepoint file. Key'
+                                        'should be same as filename. Must be formated as
+                                        'uniqueID_1.tif. e.g. jhu_1.tif')
+    parser.add_argument('--timepoint2', type = str, help = 'The key to the second timepoint file. Key'
+                                        'should be same as filename. Must be formated as
+                                        'uniqueID_2.tif e.g. jhu_2.tif')
+    args = parser.parse_args()
+    bucket = args.bucket
+    path = args.dir
+    tp1 = args.timepoint1
+    tp2 = args.timepoint2
     #uploadData(sys.argv[1], sys.argv[2:])
-    runPipeline(sys.argv[1], sys.argv[2:])
+    runPipeline(bucket, path, [tp1, tp2])
