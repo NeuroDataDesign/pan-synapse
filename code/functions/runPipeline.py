@@ -28,20 +28,20 @@ def uploadResults(s3dir, key, results):
     s3 = boto3.resource('s3')
     key = s3dir + '/' + key + '_results' + '.csv'
     data = open(results, 'rb')
-    s3.Bucket('nddtestbucket').put_object(Key=key, Body=data)
+    s3.Bucket('synapsysndd').put_object(Key=key, Body=data)
     return key
 
 def uploadData(s3dir, keys):
     s3 = boto3.resource('s3')
     for key in keys:
         data = open('../../data/' + key)
-        s3.Bucket('nddtestbucket').put_object(Key = s3dir + '/' + key, Body = data)
+        s3.Bucket('synapsysndd').put_object(Key = s3dir + '/' + key, Body = data)
 
 def getData(s3dir, keys, datadir):
     s3 = boto3.resource('s3')
     for key in keys:
         filename = datadir + '/' + key
-        data = s3.meta.client.download_file('nddtestbucket', s3dir + '/' + key, filename)
+        data = s3.meta.client.download_file('synapsysndd', s3dir + '/' + key, filename)
     return keys
 
 #This library is designed to act as the driver for the docker and the web service
