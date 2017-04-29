@@ -68,18 +68,19 @@ def runPipeline(bucket, s3dir, keys):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Synapsys pipeline on the cloud')
-    parser.add_argument('--bucket', type = str, help='The S3 bucket with the input dataset')
-    parser.add_argument('--dir', type = str, help = 'The S3 folder with the input dataset')
-    parser.add_argument('--timepoint1', type = str, help = 'The key to the first timepoint file. Key'
-                                        'should be same as filename. Must be formated as
+    parser.add_argument('bucket', type = str, help='The S3 bucket with the input dataset')
+    parser.add_argument('path', type = str, help = 'The S3 folder with the input dataset')
+    parser.add_argument('timepoint1', type = str, help = 'The key to the first timepoint file. Key '+
+                                        'should be same as filename. Must be formated as '+
                                         'uniqueID_1.tif. e.g. jhu_1.tif')
-    parser.add_argument('--timepoint2', type = str, help = 'The key to the second timepoint file. Key'
-                                        'should be same as filename. Must be formated as
+    parser.add_argument('timepoint2', type = str, help = 'The key to the second timepoint file. Key '+
+                                        'should be same as filename. Must be formated as '+
                                         'uniqueID_2.tif e.g. jhu_2.tif')
     args = parser.parse_args()
     bucket = args.bucket
-    path = args.dir
+    path = args.path
     tp1 = args.timepoint1
     tp2 = args.timepoint2
+
     #uploadData(sys.argv[1], sys.argv[2:])
     runPipeline(bucket, path, [tp1, tp2])
