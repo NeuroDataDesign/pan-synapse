@@ -6,7 +6,7 @@ from flask import Flask, redirect, url_for, request, render_template, session, f
 
 app = Flask(__name__)
 
-def submitJob(name, tp1, tp2):
+def submitJob(name, path, tp1, tp2):
     client = boto3.client("batch")
     createComputeEnvironment()
     createJobQueue()
@@ -16,54 +16,9 @@ def submitJob(name, tp1, tp2):
         jobQueue = "synapsys_jobs",
         jobDefinition = "synapsys_pipeline",
         containerOverrides = {
-            "command": ["python", "runPipeline.py", tp1, tp2]
+            "command": ["python", "runPipeline.py", path, tp1, tp2]
         }
     )
-
-def createJobDefinition():
-    response = client.register_job_definition(
-        jobDefinitionName= "synapsys_pipeline",
-        type = "container",
-        containerProperties = {
-            "image": "389826612951.dkr.ecr.us-east-1.amazonaws.com/synapsys",
-            "vcpus": 2,
-            "memory": 5000,
-            "command": ["python", "runPipeline.py"]
-        },
-    )
-    print "JOB DEF:\n" + response
-    return "synapsys_pipeline"
-
-def createJobQueue(computeEnviron):
-    response = client.create_job_queue(
-        jobQueueName= "synapsys_jobs",
-        state = "ENABLED",
-        priority = 1,
-        computeEnvironmentOrder = [
-            {
-                "order": 1,
-                "computeEnvironment": computeEnviron
-            }
-        ],
-    )
-    print "JOB QUEUE:\n" + response
-    return "synapsys_jobs"
-
-def createComputeEnvironment():
-    response = client.create_compute_environment(
-        computeEnvironmentName = "synapsys_ce",
-        type = "MANAGED",
-        state = "ENABLED",
-        computeResources = {
-            "type": "EC2",
-            "minvCpus": 0,
-            "maxvCpus": 256,
-            "desiredvCpus": 0,
-            "instanceTypes": ["t2.large"],
-        },
-    )
-    print "COMPUTE ENV:\n" + response
-    return "synapsys_ce"
 
 @app.route("/", methods = ["GET"])
 def index():
