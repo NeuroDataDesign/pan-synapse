@@ -214,7 +214,7 @@ def adaptiveThreshold(inImg, sx, sy):
         for yInc in range(1, sy + 1):
             for xInc in range(1, sx + 1):
                 sub = inImg[(zInc-1)*subzLen: zInc*subzLen, (yInc-1)*subYLen: yInc*subYLen, (xInc-1)*subxLen: xInc*subxLen]
-                percentile = 100 - 20 * (np.mean(sub) - mean)/std
+                percentile = 95 - 20 * (np.mean(sub) - mean)/std
                 if percentile > 100:
                     percentile = 100
                 if percentile < 0:
