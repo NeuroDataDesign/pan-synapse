@@ -221,7 +221,7 @@ def adaptiveThreshold(inImg, sx, sy):
                     percentile = 0
                 subThresh = binaryThreshold(sub, percentile)
                 outImg[(zInc-1)*subzLen: zInc*subzLen, (yInc-1)*subYLen: yInc*subYLen, (xInc-1)*subxLen: xInc*subxLen] = subThresh
-    return outImg/256
+    return outImg
 
 def binaryThreshold(img, percentile=80):
     img = (256*img).astype('uint8')
@@ -229,4 +229,4 @@ def binaryThreshold(img, percentile=80):
     percentile = np.percentile(img, percentile)
     for i in range(len(img)):
         threshImg[i] = cv2.threshold(img[i], percentile, 255, cv2.THRESH_TOZERO)[1]
-    return threshImg
+    return threshImg/256
