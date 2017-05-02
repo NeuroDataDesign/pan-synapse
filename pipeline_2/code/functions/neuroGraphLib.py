@@ -172,3 +172,61 @@ def nthAve(img, n, stepY, stepX):
             sub = img[yStart:yStart+stepY, xStart:xStart+stepX]
             out[yStart:yStart+stepY, xStart:xStart+stepX] = np.average(sub)**n
     return np.stack(out)
+
+def generateTube(x0, x1, y0, y1, thickness, mat):
+    x = np.linspace(x0, x1, int(np.sqrt(np.abs((x1 - x0)**2 + (y1 - y0)**2))))
+    y = np.linspace(y0, y1, int(np.sqrt(np.abs((x1 - x0)**2 + (y1 - y0)**2))))
+    coords = zip(x, y)
+    perpSlope = -1.0*(x1 - x0)/(y1 - y0)
+    numSamplePoints = thickness/2
+    netCoords = []
+    for coord in coords:
+        xtop = coord[0] + numSamplePoints/np.sqrt(1 + perpSlope*perpSlope)
+        xbot = coord[0] - numSamplePoints/np.sqrt(1 + perpSlope*perpSlope)
+        ytop = coord[1] + perpSlope*numSamplePoints/np.sqrt(1 + perpSlope*perpSlope)
+        ybot = coord[1] - perpSlope*numSamplePoints/np.sqrt(1 + perpSlope*perpSlope)
+        xperp = np.linspace(xtop, xbot, int(np.sqrt(np.abs((xtop - xbot)**2 + (ytop - ybot)**2))))
+        yperp = np.linspace(ytop, ybot, int(np.sqrt(np.abs((xtop - xbot)**2 + (ytop - ybot)**2))))
+        coordsPerp = zip(xperp, yperp)
+        finalCoordsPerp = []
+        for coordPerp in coordsPerp:
+            if coordPerp[0] > 0 and coordPerp[1] > 0 and coordPerp[0] < mat.shape[0] - 1 and coordPerp[1] < mat.shape[1] - 1:
+                finalCoordsPerp.append(((int(math.floor(coordPerp[1]))), (int(math.floor(coordPerp[0])))))
+        netCoords.append(finalCoordsPerp)
+    return netCoords
+
+def adaptiveThreshold(inImg, sx, sy):
+    outImg = np.zeros_like(inImg)
+    shape = outImg.shape
+    sz = shape[0]
+    subzLen = shape[0]/sz
+    subYLen = shape[1]/sy
+    subxLen = shape[2]/sx
+    averages = []
+    for zInc in range(1, sz + 1):
+        for yInc in range(1, sy + 1):
+            for xInc in range(1, sx + 1):
+                sub = inImg[(zInc-1)*subzLen: zInc*subzLen, (yInc-1)*subYLen: yInc*subYLen, (xInc-1)*subxLen: xInc*subxLen]
+                averages.append(np.mean(sub))
+    mean = np.mean(averages)
+    std = np.std(averages)
+    for zInc in range(1, sz + 1):
+        for yInc in range(1, sy + 1):
+            for xInc in range(1, sx + 1):
+                sub = inImg[(zInc-1)*subzLen: zInc*subzLen, (yInc-1)*subYLen: yInc*subYLen, (xInc-1)*subxLen: xInc*subxLen]
+                percentile = 100 - 20 * (np.mean(sub) - mean)/std
+                if percentile > 100:
+                    percentile = 100
+                if percentile < 0:
+                    percentile = 0
+                subThresh = binaryThreshold(sub, percentile)
+                outImg[(zInc-1)*subzLen: zInc*subzLen, (yInc-1)*subYLen: yInc*subYLen, (xInc-1)*subxLen: xInc*subxLen] = subThresh
+    return outImg/256
+
+def binaryThreshold(img, percentile=80):
+    img = (256*img).astype('uint8')
+    threshImg = np.zeros_like(img)
+    percentile = np.percentile(img, percentile)
+    for i in range(len(img)):
+        threshImg[i] = cv2.threshold(img[i], percentile, 255, cv2.THRESH_TOZERO)[1]
+    return threshImg
