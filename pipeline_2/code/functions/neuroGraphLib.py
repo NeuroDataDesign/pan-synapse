@@ -1,8 +1,11 @@
+import sys
 import cv2
 import time
+import math
 import numpy as np
 
 from random import randint
+from scipy.stats import zscore
 from scipy.spatial import KDTree
 from scipy.ndimage.filters import convolve
 from skimage.exposure import equalize_adapthist
@@ -12,6 +15,45 @@ class neuroGraph:
         self._nodes = nodes
         self._edges = edges
         self._vis = vis
+
+
+def adaptiveThreshold(inImg, sx, sy):
+    outImg = np.zeros_like(inImg)
+    shape = outImg.shape
+    sz = shape[0]
+    subzLen = shape[0]/sz
+    subYLen = shape[1]/sy
+    subxLen = shape[2]/sx
+    averages = []
+    for zInc in range(1, sz + 1):
+        for yInc in range(1, sy + 1):
+            for xInc in range(1, sx + 1):
+
+                sub = inImg[(zInc-1)*subzLen: zInc*subzLen, (yInc-1)*subYLen: yInc*subYLen, (xInc-1)*subxLen: xInc*subxLen]
+                averages.append(np.mean(sub))
+    mean = np.mean(averages)
+    std = np.std(averages)
+    for zInc in range(1, sz + 1):
+        for yInc in range(1, sy + 1):
+            for xInc in range(1, sx + 1):
+                sub = inImg[(zInc-1)*subzLen: zInc*subzLen, (yInc-1)*subYLen: yInc*subYLen, (xInc-1)*subxLen: xInc*subxLen]
+                percentile = 95 - 20 * (np.mean(sub) - mean)/std
+                if percentile > 100:
+                    percentile = 100
+                if percentile < 0:
+                    percentile = 0
+                subThresh = binaryThreshold(sub, percentile)
+                outImg[(zInc-1)*subzLen: zInc*subzLen, (yInc-1)*subYLen: yInc*subYLen, (xInc-1)*subxLen: xInc*subxLen] = subThresh
+    return outImg/256
+
+
+def binaryThreshold(img, percentile=80):
+    img = (256*img).astype('uint8')
+    threshImg = np.zeros_like(img)
+    percentile = np.percentile(img, percentile)
+    for i in range(len(img)):
+        threshImg[i] = cv2.threshold(img[i], percentile, 255, cv2.THRESH_TOZERO)[1]
+    return threshImg
 
 
 def boostDendrites(imgStack, n=2, neighborhood=16, dilations=5, percentile=50):
@@ -57,30 +99,33 @@ def estimateGraph(nodeImg, dendrites, thickness=10, neighbors=6, baselineSize=10
     edges = []
 
     nodes = zip(*(np.nonzero(nodeImg)))
-    tree = KDTree(nodes)
-    for curIdx, node in enumerate(nodes):
-        partnerIdxList = tree.query(node, k=neighbors)[1]
-        partners = []
-        for partnerIdx in partnerIdxList:
-            if partnerIdx > curIdx:
-                partners.append(nodes[partnerIdx])
+    if len(nodes) != 0:
+        tree = KDTree(nodes)
+        for curIdx, node in enumerate(nodes):
+            partnerIdxList = tree.query(node, k=neighbors)[1]
+            partners = []
+            for partnerIdx in partnerIdxList:
+                if partnerIdx > curIdx:
+                    partners.append(nodes[partnerIdx])
 
-        for partner in partners:
-            y0, x0 = node
-            y1, x1 = partner
+            for partner in partners:
+                y0, x0 = node
+                y1, x1 = partner
 
-            length = int(np.hypot(x1-x0, y1-y0))
-            x, y = np.linspace(x0, x1, length).astype(int), np.linspace(y0, y1, length).astype(int)
+                length = int(np.hypot(x1-x0, y1-y0))
+                x, y = np.linspace(x0, x1, length).astype(int), np.linspace(y0, y1, length).astype(int)
 
-            edgeStats = []
-            for k in range(length):
-                sub = dendrites[max(y[k]-thickness,0):min(y[k]+thickness, dendrites.shape[0]), max(x[k]-thickness, 0):min(x[k]+thickness, dendrites.shape[1])]
-                edgeStats.append(np.mean(sub))
+                edgeStats = []
+                for k in range(length):
+                    sub = dendrites[max(y[k]-thickness,0):min(y[k]+thickness, dendrites.shape[0]), max(x[k]-thickness, 0):min(x[k]+thickness, dendrites.shape[1])]
+                    edgeStats.append(np.mean(sub))
 
-            dp = np.mean(edgeStats)
-            z = (dp - baseMu)/float(baseSig)
-            if z > 1.5:
-                edges.append([y, x])
+                dp = np.mean(edgeStats)
+                z = (dp - baseMu)/float(baseSig)
+                if z > 2:
+                    edges.append([y, x])
+    else:
+        print 'No Nodes!'
 
     for edge in edges:
         y = edge[0]
@@ -112,6 +157,7 @@ def generateNeuroGraphStack(data):
 
     print 'Growing Dendrites'
     dendriteImgs = evolveDendrites(data, epochs=10, dilations=10)
+
     print 'Estimating Graph Connections. Completion:'
     for idx, dendriteImg in enumerate(dendriteImgs):
         print '\t', idx/float(len(dendriteImgs))
@@ -163,21 +209,19 @@ def generateNodeImg(dendriteImg, step=64):
     return nonMaxSuppression
 
 
-def nthAve(img, n, stepY, stepX):
-    #divide the image
-    out = np.zeros_like(img)
-    for yStart in range(0, img.shape[0], stepY):
-        curRow = []
-        for xStart in range(0, img.shape[1], stepX):
-            sub = img[yStart:yStart+stepY, xStart:xStart+stepX]
-            out[yStart:yStart+stepY, xStart:xStart+stepX] = np.average(sub)**n
-    return np.stack(out)
-
 def generateTube(x0, x1, y0, y1, thickness, mat):
     x = np.linspace(x0, x1, int(np.sqrt(np.abs((x1 - x0)**2 + (y1 - y0)**2))))
     y = np.linspace(y0, y1, int(np.sqrt(np.abs((x1 - x0)**2 + (y1 - y0)**2))))
     coords = zip(x, y)
-    perpSlope = -1.0*(x1 - x0)/(y1 - y0)
+
+    perpSlope = None
+    if y1-y0 == 0:
+        perpSlope = 1000
+    elif x1-x0 == 0:
+        perpSlope == .0001
+    else:
+        perpSlope = -1.0*(x1 - x0)/(y1 - y0)
+
     numSamplePoints = thickness/2
     netCoords = []
     for coord in coords:
@@ -195,38 +239,72 @@ def generateTube(x0, x1, y0, y1, thickness, mat):
         netCoords.append(finalCoordsPerp)
     return netCoords
 
-def adaptiveThreshold(inImg, sx, sy):
-    outImg = np.zeros_like(inImg)
-    shape = outImg.shape
-    sz = shape[0]
-    subzLen = shape[0]/sz
-    subYLen = shape[1]/sy
-    subxLen = shape[2]/sx
-    averages = []
-    for zInc in range(1, sz + 1):
-        for yInc in range(1, sy + 1):
-            for xInc in range(1, sx + 1):
-                sub = inImg[(zInc-1)*subzLen: zInc*subzLen, (yInc-1)*subYLen: yInc*subYLen, (xInc-1)*subxLen: xInc*subxLen]
-                averages.append(np.mean(sub))
-    mean = np.mean(averages)
-    std = np.std(averages)
-    for zInc in range(1, sz + 1):
-        for yInc in range(1, sy + 1):
-            for xInc in range(1, sx + 1):
-                sub = inImg[(zInc-1)*subzLen: zInc*subzLen, (yInc-1)*subYLen: yInc*subYLen, (xInc-1)*subxLen: xInc*subxLen]
-                percentile = 95 - 20 * (np.mean(sub) - mean)/std
-                if percentile > 100:
-                    percentile = 100
-                if percentile < 0:
-                    percentile = 0
-                subThresh = binaryThreshold(sub, percentile)
-                outImg[(zInc-1)*subzLen: zInc*subzLen, (yInc-1)*subYLen: yInc*subYLen, (xInc-1)*subxLen: xInc*subxLen] = subThresh
-    return outImg
+def getSynapseROIs(neuroGraph, data):
+    boostedImg, _ = boostDendrites([data], percentile=50)
+    adaptiveImg = adaptiveThreshold(boostedImg, 32, 32)[0]
+    synapseROIs = []
+    for i in range(0, len(neuroGraph._edges)):
+        try:
 
-def binaryThreshold(img, percentile=80):
-    img = (256*img).astype('uint8')
-    threshImg = np.zeros_like(img)
-    percentile = np.percentile(img, percentile)
-    for i in range(len(img)):
-        threshImg[i] = cv2.threshold(img[i], percentile, 255, cv2.THRESH_TOZERO)[1]
-    return threshImg/256
+            y, x = neuroGraph._edges[i]
+
+            curROI = np.array(generateTube(x[0], x[-1], y[0], y[-1], 20, adaptiveImg))
+
+            ROIDist = []
+            ROIDistLedger = []
+            for orthagonal in curROI:
+                orthagonalDist = []
+                orthagonalMaxLedger = []
+                for elem in orthagonal:
+                    #since will returns xy
+                    orthagonalDist.append(adaptiveImg[elem[0]][elem[1]])
+                    orthagonalMaxLedger.append((elem[0], elem[1]))
+                ROIDist.append(np.max(orthagonalDist))
+                ROIDistLedger.append(orthagonalMaxLedger[np.argmax(orthagonalDist)])
+
+            valid = np.array(np.where(zscore(ROIDist) > 1.5)[0])
+
+            if len(valid) > 0:
+                for idx in valid:
+                    synapseROIs.append(ROIDistLedger[idx])
+
+        except:
+            print sys.exc_info()[0]
+
+    return synapseROIs
+
+
+def nthAve(img, n, stepY, stepX):
+    #divide the image
+    out = np.zeros_like(img)
+    for yStart in range(0, img.shape[0], stepY):
+        curRow = []
+        for xStart in range(0, img.shape[1], stepX):
+            sub = img[yStart:yStart+stepY, xStart:xStart+stepX]
+            out[yStart:yStart+stepY, xStart:xStart+stepX] = np.average(sub)**n
+    return np.stack(out)
+
+
+def resolveROIList(synapseROIList, data):
+    roiImgStack = []
+    for synapseROIs in synapseROIStack:
+        curImg = np.zeros_like(data[0])
+        for y, x in synapseROIs:
+            curImg[y][x] = 1
+        roiImgStack.append(curImg)
+
+    roiImgStack = np.stack(roiImgStack)
+
+    smoothROIStack = np.stack([smoothROI(roiImg) for roiImg in roiImgStack])
+
+    return smoothROIStack
+    
+
+def smoothROI(roiImg):
+    kernel_a = np.ones((8, 8))
+    kernel_b = np.ones((4, 4))
+    kernel_c = np.ones((2, 2))
+    roiSmooth = np.add(convolve(roiImg, kernel_a)[0:1024, 0:1024],
+                       np.add(convolve(roiImg, kernel_b)[0:1024 ,0:1024],
+                              convolve(roiImg, kernel_c)[0:1024, 0:1024]))
+    return roiSmooth
