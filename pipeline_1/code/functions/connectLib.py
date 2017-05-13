@@ -104,25 +104,39 @@ def knn_filter(volume, n):
                     outVolume[z][y][x] = 0
 
     return outVolume
-    
+
 def adaptiveThreshold(inImg, sx, sy):
-    max = np.max(inImg)
     outImg = np.zeros_like(inImg)
     shape = outImg.shape
     sz = shape[0]
     subzLen = shape[0]/sz
     subYLen = shape[1]/sy
     subxLen = shape[2]/sx
+    averages = []
+    for zInc in range(1, sz + 1):
+        for yInc in range(1, sy + 1):
+            for xInc in range(1, sx + 1):
+
+                sub = inImg[(zInc-1)*subzLen: zInc*subzLen, (yInc-1)*subYLen: yInc*subYLen, (xInc-1)*subxLen: xInc*subxLen]
+                averages.append(np.mean(sub))
+    mean = np.mean(averages)
+    std = np.std(averages)
     for zInc in range(1, sz + 1):
         for yInc in range(1, sy + 1):
             for xInc in range(1, sx + 1):
                 sub = inImg[(zInc-1)*subzLen: zInc*subzLen, (yInc-1)*subYLen: yInc*subYLen, (xInc-1)*subxLen: xInc*subxLen]
-                subThresh = binaryThreshold(sub, 90)
+                percentile = 95 - 20 * (np.mean(sub) - mean)/std
+                if percentile > 100:
+                    percentile = 100
+                if percentile < 0:
+                    percentile = 0
+                subThresh = binaryThreshold(sub, percentile)
                 outImg[(zInc-1)*subzLen: zInc*subzLen, (yInc-1)*subYLen: yInc*subYLen, (xInc-1)*subxLen: xInc*subxLen] = subThresh
     return outImg
 
-def binaryThreshold(img, percentile=90):
-    img = (img/256).astype('uint8')
+
+def binaryThreshold(img, percentile=80):
+    img = (img).astype('uint8')
     threshImg = np.zeros_like(img)
     percentile = np.percentile(img, percentile)
     for i in range(len(img)):
