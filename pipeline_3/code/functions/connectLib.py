@@ -6,7 +6,6 @@ import time
 import pickle
 
 import numpy as np
-import plosLib as pLib
 
 import scipy.ndimage as ndimage
 import matplotlib.pyplot as plt
@@ -98,7 +97,7 @@ def clusterAnalysis(rawData, lowerFence = 20, upperFence = 250, sliceVis=5, bins
 
 
 def nonMaximaSuppression(clusterList, originalData, thresh=47):
-    finalCluster = []
+    finalClusters = []
     for cluster in clusterList:
         myDist = [originalData[elem[0]][elem[1]][elem[2]] for elem in cluster.members]
         ave = np.mean(myDist)
@@ -110,7 +109,7 @@ def nonMaximaSuppression(clusterList, originalData, thresh=47):
 
 def generateAnnotations(clusterList, originalData):
     outVol = np.zeros_like(originalData)
-    for cluster in finalClusters:
+    for cluster in clusterList:
         for member in cluster.members:
             outVol[member[0]][member[1]][member[2]] = 1
 

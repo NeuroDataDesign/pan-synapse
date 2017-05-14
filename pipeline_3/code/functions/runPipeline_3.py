@@ -1,4 +1,5 @@
 import pipeline as pipe
+import cluster
 import matIO as io
 import numpy as np
 import glob
@@ -13,7 +14,6 @@ def generateCSV(results):
     myOutput = []
     for elem in results:
         centroid1 = elem.getCentroid()
-        centroid2 = elem.timeRegistration.getCentroid()
         myOutput.append([centroid1[0], centroid1[1], centroid1[2], elem.getVolume()])
 
     with open('../../results/results.csv','w') as outFile:
@@ -40,7 +40,7 @@ def getData(bucket, key, datadir):
 #This library is designed to act as the driver for the docker and the web service
 def runPipeline(bucket, key):
     print 'Getting Data'
-    getData(bucket, key, '../../data')
+    #getData(bucket, key, '../../data')
     if len(glob.glob('../../data/*.mat')) != 0:
         fileList =  sorted(glob.glob('../../data/*.mat'))
     else:
@@ -48,13 +48,14 @@ def runPipeline(bucket, key):
     data = np.array(io.loadMat('../../data/' + key))
     print 'Starting Pipeline'
     results = pipe.pipeline(data)
-    result_key = key + '_results.csv'
+    result_key = key + '_results.dat'
 
     print 'Generating Results'
-    generateCSV(results)
+    #generateCSV(results)
+    pickle.dump(results, open('../../results/out.dat', 'w'))
 
     print 'Uploading Results'
-    uploadResults(bucket, result_key, '../../results/results.csv')
+    uploadResults(bucket, result_key, '../../results/out.dat')
 #ADD other result formats (visuals, etc)
     print 'Synapsys finished'
     return

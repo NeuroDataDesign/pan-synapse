@@ -11,8 +11,9 @@ RUN mkdir /workdirectory
 WORKDIR /workdirectory
 RUN mkdir data
 RUN mkdir code
+RUN mkdir results
 RUN mkdir code/functions
 ADD ./code/functions ./code/functions
 
 WORKDIR /workdirectory/code/functions
-CMD ["python", "runPipeline.py"]
+CMD ["python", "runPipeline_3.py"]
