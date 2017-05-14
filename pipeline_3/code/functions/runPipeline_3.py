@@ -40,7 +40,7 @@ def getData(bucket, key, datadir):
 #This library is designed to act as the driver for the docker and the web service
 def runPipeline(bucket, key):
     print 'Getting Data'
-    #getData(bucket, key, '../../data')
+    getData(bucket, key, '../../data')
     if len(glob.glob('../../data/*.mat')) != 0:
         fileList =  sorted(glob.glob('../../data/*.mat'))
     else:

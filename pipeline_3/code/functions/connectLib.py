@@ -1,14 +1,12 @@
 import sys
 sys.path.insert(0, '../functions/')
 
-import cv2
 import time
 import pickle
 
 import numpy as np
 
 import scipy.ndimage as ndimage
-import matplotlib.pyplot as plt
 
 from scipy import sparse
 from cluster import Cluster
