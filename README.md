@@ -34,9 +34,6 @@ Inputs:
 Outputs: 
 1. binarized volume.
 
-![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/pipeline_3/background/OTSU_Notebook.ipynb
-)
-
 Here is an example of an input image into otsuVox, and an output from otsuVox: 
 ![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/pipeline_3/background/images/input.png)
 
@@ -48,63 +45,25 @@ Here is an example of an output input image's histogram, and an output image's h
 ![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/pipeline_3/background/images/otsuHist.png)
 
 [Here is a link to our otsuVox notebook](https://github.com/NeuroDataDesign/pan-synapse/blob/master/pipeline_3/background/OTSU_Notebook.ipynb)
+	
 
-**K-nearest Neighbors Filter:**
+### 2. Clustering
 
-Function: 
-
-KNN gets rid of the values in the image that have no neighbors that are not identified as synapse
-
-Inputs: 
-1. image volume
-2. n
-
-Outputs: 
-1. The filtered image
-
-Notes:
-
-The KNN filter simply goes through each index, appends its neighbors to a temporary array, and checks how many of those neighbors are nonzero. If there are at least n neighbors that are considered synapse, don't change anything. Otherwise, set the value at that index it to 0 (i.e. say it isn't synapse) 
-
-We use n = 1 for our data modality.
-
-![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/exampleKNN.png?raw=true)
-
+For Clustering, we use a custom algorithm called ClusterThresh. 
 
 **ClusterThresh**
 
 Function: 
 
-ClusterThresh identifies clusters from an image and keeps track of statistics.
+ClusterThresh identifies clusters from an image and keeps track of statistics (centroids, member indices, volume).
 
-Inputs: an input image
+Inputs: an input image, a lower bound, an upper bound
 
 Outputs: an array of Class cluster
 
-To do so, we first run [Scipy's ndimage.label function](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.measurements.label.html). We then convert this matrix to sparse using [Scipy's sparse function](https://docs.scipy.org/doc/scipy/reference/sparse.html). Then, for each label, we search through this sparse matrix for which indices have value of that label and call these "members." If the number of members (a.k.a. the volume of the cluster) is greater than 10 and less than 100, we then call the construtor for a cluster class with "members" as the input. Doing so keeps track of these indices, the volume (number of indices), and the centroid (average of the indices). We then append this object of type cluster to a variable called clusterList. After we've iterated through each label, we return the clusterList.
+To do so, we first run [Scipy's ndimage.label function](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.measurements.label.html). We then convert this matrix to sparse using [Scipy's sparse function](https://docs.scipy.org/doc/scipy/reference/sparse.html). Then, for each label, we search through this sparse matrix for which indices have value of that label and call these "members." If the number of members (a.k.a. the volume of the cluster) is greater than the lower bound and less than the upper bound, we then call the construtor for a cluster class with "members" as the input. Doing so keeps track of these indices, the volume (number of indices), and the centroid (average of the indices). We then append this object of type cluster to a variable called clusterList. After we've iterated through each label, we return the clusterList.
 
-For assurance that our volume thresholding is working, here is an example of a distribution of volumes before and after volume thresholding: 
-
-![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/BeforeThresholding.png?raw=true)
-
-Note that all of those ticks look small because there is a very high amount of clusters with volume around 1, 2, or 3. We don't want those. 
-
-![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/AfterThresholding.png?raw=true)
-
-Note that all of those small ticks are now larger ticks. This means that we got rid of all of the volumes (around 1, 2, or 3) that we didn't want. 
-
-Furthermore, our average volume is 27 voxels. This corroborates the anatomical statistics we were given concerning the average volume of a synapse. Furthermore, our average synapse-to-total volume ratio ranges from 2-4% on average, which is also the biological range we are looking for.
-	
-
-### 3. Give each synapse in moving image a unique label 
-
-To do so, we simply use connected components. Specifically, we use [Scipy's ndimage.label function](https://docs.scipy.org/doc/scipy-0.14.0/reference/generated/scipy.ndimage.measurements.label.html).
-
-Example Connected Components Output: 
-
-![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/Connected.png?raw=true)
-
-Note that each cluster has its own label. It appears to be a gradient because there are so many clusters and synapses that are close to each other will have similarly valued labels, and thus appear to be similar colors - the rainbow simply ran out of colors.
+[Here is a link to our clusterThresh notebook](https://github.com/NeuroDataDesign/pan-synapse/blob/master/pipeline_3/background/Cluster_Thresh_Algorithms.md.ipynb)
 
 ### 4. ANTs registration
 
