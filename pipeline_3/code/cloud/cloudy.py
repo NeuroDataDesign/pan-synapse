@@ -1,21 +1,24 @@
 import boto3
 import sys
 import argparse
-sys.path.insert(0, "../functions")
+import time
 
 def submitJob(bucket, name):
     try:
         createComputeEnvironment()
     except:
         print "Using existing Compute Environment."
+    time.sleep(3)
     try:
         createJobQueue()
     except:
         print "Using existing Job Queue."
+    time.sleep(3)
     try:
         createJobDefinition()
     except:
         print "Using existing Job Definition."
+    time.sleep(3)
     response = client.submit_job(
         jobName = name.split('.')[0],
         jobQueue = "synapsys_jobs",
@@ -24,6 +27,7 @@ def submitJob(bucket, name):
             "command": ["python", "runPipeline_3.py", bucket, name]
         }
     )
+    print "Submitted Job"
 
 def verifyCredentials():
     return
@@ -39,7 +43,7 @@ def createJobDefinition():
             "command": ["python", "runPipeline_3.py"]
         },
     )
-    print "JOB DEF:\n" + str(response)
+    print "Created job definition"
     return "synapsys_pipeline"
 
 def createJobQueue():
@@ -54,7 +58,7 @@ def createJobQueue():
             }
         ],
     )
-    print "JOB QUEUE:\n" + str(response)
+    print "Created Job Queue"
     return "synapsys_jobs"
 
 def createComputeEnvironment():
@@ -74,7 +78,13 @@ def createComputeEnvironment():
         },
         serviceRole='arn:aws:iam::389826612951:role/service-role/AWSBatchServiceRole'
     )
-    print "COMPUTE ENV:\n" + response
+    iam = boto3.client('iam')
+    response = iam.attach_role_policy(
+        RoleName = "ecsInstanceRole",
+        PolicyArn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+    )
+    print "Updated role permissions"
+    print "Created compute environment"
     return "synapsys_ce"
 
 if __name__ == '__main__':

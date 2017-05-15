@@ -31,10 +31,7 @@ def uploadResults(bucket, result_key, results):
 def getData(bucket, key, datadir):
     s3 = boto3.resource('s3')
     filename = datadir + '/' + key
-    try:
-        data = s3.meta.client.download_file(bucket, key, filename)
-    except:
-        sys.exit('File does not exist, or incorrect bucket/key')
+    data = s3.meta.client.download_file(bucket, key, filename)
     return key
 
 #This library is designed to act as the driver for the docker and the web service
