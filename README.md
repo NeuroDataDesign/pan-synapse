@@ -36,7 +36,6 @@ Outputs:
 
 Here is an example of an input image into otsuVox, and an output from otsuVox: 
 ![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/pipeline_3/background/images/input.png)
-
 ![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/pipeline_3/background/images/otsu.png)
 
 Here is an example of an output input image's histogram, and an output image's histogram: 
