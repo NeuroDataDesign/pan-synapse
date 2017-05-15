@@ -94,13 +94,26 @@ def clusterAnalysis(rawData, lowerFence = 20, upperFence = 250, sliceVis=5, bins
     mv.generatePlotlyLineForSliceDensities(xRelationship, figName="X-Slice Densities")
 
 
-def nonMaximaSuppression(clusterList, originalData, thresh=47):
-    finalClusters = []
+def nonMaximaSupression(clusterList, image, z):
+    randClusterDist = []
+    for i in range(100000):
+        point = [int(random.random()*image.shape[0]), int(random.random()*image.shape[1]), int(random.random()*image.shape[2])]
+        randClusterDist.append(image[point[0]][point[1]][point[2]])
+
+    mu = np.average(randClusterDist)
+    sigma = np.std(randClusterDist)
+
+    aveList = []
     for cluster in clusterList:
-        myDist = [originalData[elem[0]][elem[1]][elem[2]] for elem in cluster.members]
-        ave = np.mean(myDist)
-        if (ave > thresh):
-            finalClusters.append(cluster)
+        curClusterDist = []
+        for member in cluster.members:
+            curClusterDist.append(image[member[0]][member[1]][member[2]])
+        aveList.append(np.mean(curClusterDist))
+
+    finalClusters = []
+    for i in range(len(aveList)): #this is bad and i should feel bad
+        if (aveList[i] - mu)/float(sigma) > z:
+            finalClusters.append(clusterList[i])
 
     return finalClusters
 
