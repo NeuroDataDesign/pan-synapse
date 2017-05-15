@@ -1,4 +1,5 @@
 from cluster import Cluster
+import numpy as np
 
 def precision_recall_f1(labels, predictions):
 
