@@ -3,6 +3,20 @@ import sys
 import argparse
 import time
 
+client = boto3.client('batch')
+
+def uploadData(bucket, data, key):
+    s3 = boto3.resource('s3')
+    data = open(data, 'rb')
+    s3.Bucket(bucket).put_object(Key=key, Body=data)
+    return key
+
+def getResults(bucket, resultsdir, key):
+    s3 = boto3.resource('s3')
+    filename = resultsdir + '/' + key + '_results.dat'
+    data = s3.meta.client.download_file(bucket, key + '_results.dat', filename)
+    return key
+
 def submitJob(bucket, name):
     try:
         createComputeEnvironment()
@@ -95,5 +109,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
     name = args.name
     bucket = args.bucket
-    client = boto3.client('batch')
     submitJob(bucket, name)
