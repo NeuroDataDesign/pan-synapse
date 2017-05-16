@@ -14,6 +14,10 @@ from skimage.measure import label
 from skimage.filters import threshold_otsu
 
 
+def getCentroidList(clusterList):
+    centroidList = [elem.getCentroid() for elem in clusterList]
+    return centroidList
+
 def otsuVox(argVox):
     probVox = np.nan_to_num(argVox)
     bianVox = np.zeros_like(probVox)

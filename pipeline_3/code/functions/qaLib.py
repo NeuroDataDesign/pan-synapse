@@ -1,5 +1,6 @@
 from cluster import Cluster
 import numpy as np
+import matplotlib.pyplot as plt
 
 def precision_recall_f1(labels, predictions):
 
@@ -73,6 +74,6 @@ def visDiff(sliceA, sliceB):
 def visVolDiff(volumeA, volumeB):
     for i in range(volumeA.shape[0]):
         plt.figure()
-        plt.title('Disperity at z=' + str(i))
+        plt.title('Disparity at z=' + str(i))
         plt.imshow(visDiff(volumeA[i], volumeB[i]))
         plt.show()
