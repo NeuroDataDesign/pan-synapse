@@ -3,6 +3,7 @@ sys.path.insert(0, '../functions/')
 
 import time
 import pickle
+import random
 
 import numpy as np
 
@@ -98,7 +99,7 @@ def clusterAnalysis(rawData, lowerFence = 20, upperFence = 250, sliceVis=5, bins
     mv.generatePlotlyLineForSliceDensities(xRelationship, figName="X-Slice Densities")
 
 
-def nonMaximaSupression(clusterList, image, z):
+def noiseSuppression(clusterList, image, z):
     randClusterDist = []
     for i in range(100000):
         point = [int(random.random()*image.shape[0]), int(random.random()*image.shape[1]), int(random.random()*image.shape[2])]
