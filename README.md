@@ -7,7 +7,7 @@ Synapsys detects synapses from two-fluorescent microscope images.
 1. A PSD95_448 image.
 
 ### Output:
-1. An annotation image.
+1. An annotation image, a list of centroids.
 
 _____________________________________________________________________________
 ### Overall Steps
