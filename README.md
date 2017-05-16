@@ -14,8 +14,8 @@ _____________________________________________________________________________
 
 1. Otsu's Binarization on the input image to binarize the image.
 2. Cluster the image from Step 1 into Objects of type Cluster. 
-3. Non-Maxima Supression on the clusters in step 2. 
-4. Generate annotations of the output from 3. 
+3. Noise Supression of clusters from Step 2. 
+4. Generate annotations of the output from Step 3. 
 _____________________________________________________________________________
 
 ### 1. Otsu's Binarization:
@@ -35,6 +35,7 @@ Outputs:
 1. binarized volume.
 
 Here is an example of an input image into otsuVox, and an output from otsuVox: 
+
 ![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/pipeline_3/background/images/input.png)
 ![](https://github.com/NeuroDataDesign/pan-synapse/blob/master/pipeline_3/background/images/otsu.png)
 
@@ -64,25 +65,26 @@ To do so, we first run [Scipy's ndimage.label function](https://docs.scipy.org/d
 
 [Here is a link to our clusterThresh notebook](https://github.com/NeuroDataDesign/pan-synapse/blob/master/pipeline_3/background/Cluster_Thresh_Algorithms.md.ipynb)
 
-### 4. ANTs registration
+### 3. Noise Supression
 
-For ANTs registration, we used Translational, Rigid, and Affine linear registration with MeanSquares as our similarity metric. For more information on ANTs, click [here](http://stnava.github.io/ANTs/_). Specifically, we used the following parameters: 
-* transform parameters: 0.1
-* number of iterations: [10000, 111110, 11110]
-* metric: MeanSquares
-* convergence threshold: 1 * 10^(-8)
-* convergence window size: 20
-* smoothing sigmas: [4, 2, 1]
-* shrink factors: [6, 4, 2]
+For Noise Supression, we use a custom algorithm called nonMaximaSupression
 
-### 5. L2 centroid distance match 
+**nonMaximaSupression** 
 
-To centroid match, we iterate through the clusters in the fixed image, find its centroid, then iterate through the clusters in the moving image, then find its centroid, as well as the distance between the moving clusters' centroid and the fixed clusters' centroid. We store this distance in an array. We then find which distance was the smallest and say that the cluster in the moving image that corresponds to that distance is the L2 centroid distance match of the fixed cluster.
+Function: 
 
-### 6. For each cluster in (1), note the label of its L2 centroid registered pair, then find which cluster in (3) has that color. Set this cluster to the "timeRegistration" datamember of its corresponding cluster in (1).
+nonMaximaSupression simply takes the brightest clusters using z-score. 
 
-For each cluster in the filtered moving image, make note of its L2 centroid distance match's centroid. Then find the value of the registered moving image at that centroid. That is the label of that filtered moving image clusters' L2 centroid distance match. Then search through the connected components + filtered fixed image for which indices have that label. Call the cluster class's constructor on this list of indices, and name this "registered cluster". Say that the moving image clusters's "timeRegistration" data member is this new object of type cluster, "registered cluster." 
+Inputs: a clusterList, a raw image, and a z-score
 
-To search through the connected components + filtered fixed image, we first convert it to sparse using [Scipy's sparse function](https://docs.scipy.org/doc/scipy/reference/sparse.html), and then search. 
+Outputs: a supressed list of clusters
 
-![Cloud Figure](https://github.com/NeuroDataDesign/pan-synapse/blob/master/figures/Screen%20Shot%202017-04-10%20at%205.11.16%20PM.png)
+To supress the non-bright clusters, we graph the distribution of the raw image, keeping track of the mean and the standard deviation. For each of the cluster in clusterList, we find the average brightness of that cluster in the raw image, and if that average brightness is at least the input z-score standard deviation from the mean of the raw image, we keep it. Otherwise, we say it is not synapse. 
+
+[Here is a link to our nonMaximaSupression notebook](https://github.com/NeuroDataDesign/pan-synapse/blob/master/pipeline_3/background/non_maxima_supression.ipynb)
+
+### 4. Generate Annotations 
+
+To generate annotations, we return an image where the indices of the remaining synapses from Step 3 are 1, and everything else is 0. We also return a list of centroids, by simply taking the average of the indices of each synapse individually and adding that centroid to the list. 
+
+
